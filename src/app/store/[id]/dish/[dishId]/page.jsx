@@ -12,7 +12,7 @@ import { useCart } from "@/context/cartContext";
 import { dishService } from "@/api/dishService";
 import { useAuth } from "@/context/authContext";
 import { cartService } from "@/api/cartService";
-import { Atom } from "react-loading-indicators";
+import { ThreeDot } from "react-loading-indicators";
 import Swal from "sweetalert2";
 
 const page = () => {
@@ -216,42 +216,41 @@ const page = () => {
     console.log(toppings);
   }, [toppings]);
 
-  const handleAddToCart = async () => {
-    if (storeCart?.store?.openStatus === "CLOSED") {
-      toast.error("Cửa hàng hiện đang đóng cửa, vui lòng quay lại sau!");
-      return;
-    }
+const handleAddToCart = async () => {
+  if (storeCart?.store?.openStatus === "CLOSED") {
+    toast.error("Cửa hàng hiện đang đóng cửa, vui lòng quay lại sau!");
+    return;
+  }
 
-    if (dishInfo?.stockStatus === "OUT_OF_STOCK") {
-      toast.error("Món ăn này hiện đang hết hàng, vui lòng quay lại sau!");
-      return;
-    }
+  if (dishInfo?.stockStatus === "OUT_OF_STOCK") {
+    toast.error("Món ăn này hiện đang hết hàng, vui lòng quay lại sau!");
+    return;
+  }
 
-    if (user) {
-      try {
-        await cartService.updateCart({ storeId, dishId, quantity, toppings, note });
-        // Swal.fire({
-        //   toast: true,
-        //   icon: "success",
-        //   title: "Cập nhật giỏ hàng thành công",
-        //   showConfirmButton: false,
-        //   timer: 2000,
-        //   timerProgressBar: true,
-        // });
+  if (user) {
+    const res = await cartService.updateCart({
+      storeId,
+      dishId,
+      quantity,
+      toppings,
+      note,
+    });
 
-        Swal.fire({
-          title: "Cập nhật giỏ hàng thành công",
-          icon: "success",
-        });
-
-        refreshCart();
-      } catch (error) {
-        console.error(error);
-      }
+    if (res.success) {
+      Swal.fire({
+        title: "Cập nhật giỏ hàng thành công",
+        icon: "success",
+      });
+      refreshCart();
     } else {
-      toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
+      // Show backend error
+      toast.error(res.errorMessage || "Không thể cập nhật giỏ hàng!");
     }
-  };
+  } else {
+    toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
+  }
+};
+
 
   const handleRemoveFromCart = async () => {
     if (user) {
@@ -270,7 +269,7 @@ const page = () => {
   if (loading) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
-        <Atom color='#fc6011' size='medium' text='' textColor='' />
+        <ThreeDot color='#fc6011' size='medium' text='' textColor='' />
       </div>
     );
   }
