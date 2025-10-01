@@ -1,31 +1,20 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const getUserFavorite = async () => {
-  const response = await instance.get(`/favorite`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/favorite`, config()));
 };
 
 const addFavorite = async (storeId) => {
-  const response = await instance.post(`/favorite/add/${storeId}`, null, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.post(`/favorite/add/${storeId}`, null, config()));
 };
 
 const removeFavorite = async (storeId) => {
-  const response = await instance.delete(`/favorite/remove/${storeId}`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.delete(`/favorite/remove/${storeId}`, config()));
 };
 
 const removeAllFavorite = async () => {
-  const response = await instance.delete(`/favorite/remove-all`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.delete(`/favorite/remove-all`, config()));
 };
 
 export const favoriteService = {

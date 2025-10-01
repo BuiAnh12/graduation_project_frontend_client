@@ -1,20 +1,16 @@
 import { instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const getAllStore = async ({ keyword, category, sort, limit, page, lat, lon }) => {
-  const response = await instance.get(`/store/all`, {
-    params: { keyword, category, sort, limit, page, lat, lon },
-  });
-
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(
+    instance.get(`/store/all`, {
+      params: { keyword, category, sort, limit, page, lat, lon },
+    })
+  );
 };
 
 const getStoreInformation = async (id) => {
-  const response = await instance.get(`/store/${id}`);
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/store/${id}`));
 };
 
 export const storeService = {

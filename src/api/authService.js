@@ -1,45 +1,42 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const register = async (userData) => {
-  const response = await instance.post(`/auth/register`, userData);
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.post(`/auth/register`, userData, config()));
 };
 
 const login = async (userData) => {
-  const response = await instance.post("/auth/login", userData);
-  const data = response.data.data
-  if (data) {
+  const result = await handleApiResponse(instance.post(`/auth/login`, userData, config()));
+
+  if (result.success && result.data) {
+    const data = result.data;
     localStorage.setItem("userId", JSON.stringify(data._id));
     localStorage.setItem("token", JSON.stringify(data.token));
-    return data;
+    return result;
   }
+
+  return result;
 };
 
-
-// const logout = async () => {
-//   const response = await instance.get(`/auth/logout`);
-//   if (response.data) {
-//     localStorage.removeItem("userId");
-//     localStorage.removeItem("token");
-//     return response.data;
-//   }
-// };
-
 const logout = async () => {
+  // optional: call backend logout if needed
+  // await handleApiResponse(instance.get(`/auth/logout`, config()));
+
   localStorage.removeItem("userId");
   localStorage.removeItem("token");
+
+  return { success: true, message: "Logged out successfully" };
 };
 
 const refreshAccessToken = async () => {
-  const response = await instance.get(`/auth/refresh`);
-  const data = response.data.data
-  if (data) {
-    return data;
-  }
-};
+  const result = await handleApiResponse(instance.get(`/auth/refresh`, config()));
 
+  if (result.success && result.data) {
+    return result;
+  }
+
+  return result;
+};
 
 export const authService = {
   register,

@@ -1,38 +1,29 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const getAllStoreRating = async ({ storeId, sort, limit, page }) => {
-  const response = await instance.get(`/rating/${storeId}`, { sort, limit, page });
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(
+    instance.get(`/rating/${storeId}`, {
+      ...config(),
+      params: { sort, limit, page },
+    })
+  );
 };
 
 const getDetailRating = async (ratingId) => {
-  const response = await instance.get(`/rating/detail/${ratingId}`);
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/rating/detail/${ratingId}`, config()));
 };
 
 const addStoreRating = async (data) => {
-  const response = await instance.post(`/rating/add-rating`, data, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.post(`/rating/add-rating`, data, config()));
 };
 
 const editStoreRating = async ({ ratingId, data }) => {
-  const response = await instance.put(`/rating/edit-rating/${ratingId}`, data, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.put(`/rating/edit-rating/${ratingId}`, data, config()));
 };
 
 const deleteStoreRating = async (ratingId) => {
-  const response = await instance.delete(`/rating/delete-rating/${ratingId}`, config);
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.delete(`/rating/delete-rating/${ratingId}`, config()));
 };
 
 export const ratingService = {

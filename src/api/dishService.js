@@ -1,17 +1,12 @@
 import { config, instance } from "../utils/axiosConfig";
+import { handleApiResponse } from "../utils/apiHelper";
 
 const getAllDish = async (storeId) => {
-  const response = await instance.get(`/store/${storeId}/dish`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/store/${storeId}/dish`, config()));
 };
 
 const getDish = async (dishId) => {
-  const response = await instance.get(`/store/dish/${dishId}`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/store/dish/${dishId}`, config()));
 };
 
 export const dishService = {

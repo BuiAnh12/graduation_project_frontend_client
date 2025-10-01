@@ -1,45 +1,28 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const getUserCart = async () => {
-  const response = await instance.get(`/cart`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/cart`, config()));
 };
 
 const getDetailCart = async (cartId) => {
-  const response = await instance.get(`/cart/detail/${cartId}`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/cart/detail/${cartId}`, config()));
 };
 
 const updateCart = async (data) => {
-  const response = await instance.post(`/cart/update`, data, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.post(`/cart/update`, data, config()));
 };
 
 const completeCart = async (data) => {
-  const response = await instance.post(`/cart/complete`, data, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.post(`/cart/complete`, data, config()));
 };
 
 const clearCartItem = async (storeId) => {
-  const response = await instance.delete(`/cart/clear/item/${storeId}`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.delete(`/cart/clear/item/${storeId}`, config()));
 };
 
 const clearCart = async () => {
-  const response = await instance.delete(`/cart/clear`, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.delete(`/cart/clear`, config()));
 };
 
 export const cartService = {
