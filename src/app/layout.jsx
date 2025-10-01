@@ -5,11 +5,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { HelmetProvider } from "react-helmet-async";
 import { ForgotPassEmailProvider } from "@/context/forgotPassEmailContext";
 import { ProvinceProvider } from "@/context/provinceContext";
-import { OrderProvider } from "@/context/OrderContext";
+import { OrderProvider } from "@/context/orderContext";
 import { FavoriteProvider } from "@/context/favoriteContext";
 import { SocketProvider } from "@/context/socketContext";
 import { AuthProvider, useAuth } from "@/context/authContext";
-import { Atom } from "react-loading-indicators";
+import { ThreeDot } from "react-loading-indicators";
 import { StoreLocationProvider } from "@/context/storeLocationContext";
 import { LocationProvider } from "@/context/locationContext";
 import { VoucherProvider } from "@/context/voucherContext";
@@ -21,7 +21,7 @@ function AppProviders({ children }) {
     if (authLoading) {
         return (
             <div className='w-full h-screen flex items-center justify-center'>
-                <Atom color='#fc6011' size='medium' text='' textColor='' />
+                <ThreeDot color='#fc6011' size='medium' text='' textColor='' />
             </div>
         );
     }

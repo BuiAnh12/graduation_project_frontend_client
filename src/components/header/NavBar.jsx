@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/authContext";
 import { useCart } from "@/context/cartContext";
 import { useFavorite } from "@/context/favoriteContext";
-import { useOrder } from "@/context/OrderContext";
+import { useOrder } from "@/context/orderContext";
 import { useSocket } from "@/context/socketContext";
 import Image from "next/image";
 import Link from "next/link";
