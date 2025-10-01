@@ -56,7 +56,7 @@ const page = () => {
   const [allStoreRatingDesc, setAllStoreRatingDesc] = useState(null);
   const [storeLoading, setStoreLoading] = useState(true);
 
-  // const { notifications } = useSocket();
+  const { notifications } = useSocket();
   const { cart } = useCart();
   const { favorite, refreshFavorite } = useFavorite();
   const { user } = useAuth();

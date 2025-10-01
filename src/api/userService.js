@@ -1,18 +1,12 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const getCurrentUser = async (id) => {
-  const response = await instance.get(`/user/${id}`, config());
-
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.get(`/user/${id}`, config()));
 };
 
 const updateUser = async (data) => {
-  const response = await instance.put(`/user/`, data, config());
-  if (response.data) {
-    return response.data;
-  }
+  return handleApiResponse(instance.put(`/user/`, data, config()));
 };
 
 export const userService = {
