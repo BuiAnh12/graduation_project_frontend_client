@@ -86,7 +86,7 @@ const page = () => {
         limit: "",
         page: "",
       });
-      setAllStoreRating(response);
+      setAllStoreRating(response.data);
     } catch (error) {}
   };
 
@@ -129,6 +129,7 @@ const page = () => {
 
   useEffect(() => {
     if (allStoreRating) {
+      console.log(allStoreRating)
       const allRatings = allStoreRating?.data?.reduce(
         (acc, item) => {
           acc[item.ratingValue] = (acc[item.ratingValue] || 0) + 1;
@@ -141,27 +142,31 @@ const page = () => {
     }
   }, [allStoreRating]);
 
-  const calculateCartPrice = () => {
-    const { totalPrice, totalQuantity } = storeCart.items.reduce(
-      (acc, item) => {
-        const dishPrice = Number(item.dish?.price || 0) * Number(item.quantity || 0);
+const calculateCartPrice = () => {
+  if (!storeCart?.items) return;
 
-        const toppingsPrice =
-          (Array.isArray(item.toppings)
-            ? item.toppings.reduce((sum, topping) => sum + Number(topping.price || 0), 0)
-            : 0) * Number(item.quantity || 0);
+  const { totalPrice, totalQuantity } = storeCart.items.reduce(
+    (acc, item) => {
+      // Prefer the flat item.price (already correct total per dish * quantity in your schema)
+      const dishPrice = Number(item.price || item.dishId?.price || 0) * Number(item.quantity || 0);
 
-        acc.totalPrice += dishPrice + toppingsPrice;
-        acc.totalQuantity += item.quantity;
+      // Toppings are stored as an array (might be empty)
+      const toppingsPrice =
+        (Array.isArray(item.toppings)
+          ? item.toppings.reduce((sum, topping) => sum + Number(topping.price || 0), 0)
+          : 0) * Number(item.quantity || 0);
 
-        return acc;
-      },
-      { totalPrice: 0, totalQuantity: 0 }
-    );
+      acc.totalPrice += dishPrice + toppingsPrice;
+      acc.totalQuantity += Number(item.quantity || 0);
 
-    setCartPrice(totalPrice);
-    setCartQuantity(totalQuantity);
-  };
+      return acc;
+    },
+    { totalPrice: 0, totalQuantity: 0 }
+  );
+
+  setCartPrice(totalPrice);
+  setCartQuantity(totalQuantity);
+};
 
   useEffect(() => {
     if (cart) {
