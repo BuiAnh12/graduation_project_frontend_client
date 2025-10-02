@@ -260,7 +260,7 @@ const calculateCartPrice = () => {
             {/* Cover */}
             <div className='relative pt-[45%] lg:pt-[30%] overflow-hidden'>
               <Image
-                src={storeInfo?.cover?.url || "/assets/logo_app.png"}
+                src={storeInfo?.coverImage?.url || "/assets/logo_app.png"}
                 alt='Store Cover'
                 layout='fill'
                 loading='lazy'
@@ -274,7 +274,7 @@ const calculateCartPrice = () => {
               {/* Avatar */}
               <div className='relative w-[100px] h-[100px] rounded-xl overflow-hidden ring-4 ring-white shadow-md'>
                 <Image
-                  src={storeInfo?.avatar?.url || "/assets/logo_app.png"}
+                  src={storeInfo?.avatarImage?.url || "/assets/logo_app.png"}
                   alt='Store Avatar'
                   layout='fill'
                   loading='lazy'

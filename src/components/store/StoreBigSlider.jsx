@@ -7,6 +7,7 @@ import { Navigation } from "swiper/modules";
 import StoreBigCard from "./StoreBigCard.jsx";
 
 const StoreBigSlider = ({ allStore }) => {
+  console.log(allStore)
   return (
     <>
       <div className='hidden sm:block'>
