@@ -11,13 +11,14 @@ const StoreBigCard = ({ store }) => {
     >
       {/* Ảnh cửa hàng */}
       <div className='relative w-full pt-[55%] rounded-t-2xl overflow-hidden'>
-        <Image src={store.avatar.url || "/placeholder.png"} alt={store.name} fill className='object-cover' />
+        <Image src={store.avatarImage?.url || "/placeholder.png"} alt={store?.name} fill className='object-cover' />
 
         {/* Overlay gradient */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
 
         {/* Rating */}
-        {store.avgRating > 0 && store.amountRating > 0 && (
+        {store.avgRating && store.amountRating && (
+          // {store.avgRating > 0 && store.amountRating > 0 && (
           <div className='absolute left-3 bottom-2 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full'>
             <div className='relative w-5 h-5 flex-shrink-0'>
               <Image src='/assets/star_active.png' alt='rating' fill className='object-contain' />
@@ -31,7 +32,7 @@ const StoreBigCard = ({ store }) => {
 
       {/* Nội dung */}
       <div className='p-3'>
-        <h4 className='text-gray-800 text-lg font-semibold truncate'>{store.name}</h4>
+        <h4 className='text-gray-800 text-lg font-semibold truncate'>{store?.name}</h4>
         <div className='mt-1 text-sm text-gray-500 line-clamp-1'>
           {store.storeCategory &&
             store.storeCategory.map((category, index) => (

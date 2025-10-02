@@ -33,12 +33,12 @@ export const groupStoresByCategory = (stores) => {
   const groupedStores = {};
 
   stores.forEach((store) => {
-    store.storeCategory.forEach((category) => {
+    store.systemCategoryId.forEach((category) => {
       const categoryId = category._id;
 
       if (!groupedStores[categoryId]) {
         groupedStores[categoryId] = {
-          category: category,
+          category: category, // category object { _id, name }
           stores: [],
         };
       }
@@ -49,6 +49,7 @@ export const groupStoresByCategory = (stores) => {
 
   return Object.values(groupedStores);
 };
+
 
 export const groupDishesByCategory = (dishes) => {
   const groupedDishes = {};

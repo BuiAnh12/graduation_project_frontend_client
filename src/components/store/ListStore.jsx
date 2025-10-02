@@ -5,6 +5,7 @@ import StoreSlider from "./StoreSlider";
 import { groupStoresByCategory } from "@/utils/functions";
 
 const ListStore = ({ allStore }) => {
+  console.log(allStore)
   const groupedStores = groupStoresByCategory(allStore);
 
   return (

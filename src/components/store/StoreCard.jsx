@@ -10,7 +10,7 @@ const StoreCard = ({ store }) => {
     >
       {/* Hình ảnh cửa hàng */}
       <div className='relative w-[90px] h-[90px] flex-shrink-0 rounded-xl overflow-hidden'>
-        <Image src={store.avatar.url || "/placeholder.png"} alt={store.name} fill className='object-cover' />
+        <Image src={store?.avatarImage.url || "/placeholder.png"} alt={store.name} fill className='object-cover' />
       </div>
 
       {/* Nội dung */}
@@ -26,7 +26,7 @@ const StoreCard = ({ store }) => {
                 <Link href={`/search?category=${category._id}`} className='hover:text-[#fc6011] transition'>
                   {category.name}
                 </Link>
-                {index !== store.storeCategory.length - 1 && (
+                {index !== store.systemCategoryId.length - 1 && (
                   <span className='inline-block w-1 h-1 my-[3px] mx-[5px] bg-[#fc6011] rounded-full'></span>
                 )}
               </div>
