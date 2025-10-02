@@ -6,7 +6,7 @@ const getUserCart = async () => {
 };
 
 const getDetailCart = async (cartId) => {
-  return handleApiResponse(instance.get(`/cart/detail/${cartId}`, config()));
+  return handleApiResponse(instance.get(`/cart/${cartId}`, config()));
 };
 
 const updateCart = async (data) => {
