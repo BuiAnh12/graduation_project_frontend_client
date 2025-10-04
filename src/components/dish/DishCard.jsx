@@ -27,7 +27,7 @@ const DishCard = ({ dish, storeInfo, cartItems }) => {
     }
 
     if (user) {
-      if (dish.toppingGroups.length > 0) {
+      if (dish.toppingGroups?.length > 0) {
         router.push(`/store/${storeInfo?._id}/dish/${dish._id}`);
       } else {
         try {

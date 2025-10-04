@@ -9,11 +9,11 @@ const OrderItem = ({ history, order }) => {
       data-order-id={order._id}
     >
       <Link
-        href={`/store/${order.store._id}`}
+        href={`/store/${order.stores._id}`}
         className='flex gap-[15px] h-fit md:flex-col p-[10px] md:p-0 md:gap-[10px]'
       >
         <div className='relative flex flex-col gap-[4px] w-[70px] pt-[70px] md:w-full md:pt-[45%] md:rounded-[8px] rounded-full overflow-hidden'>
-          <Image src={order.store.avatar.url} alt='' layout='fill' objectFit='cover' />
+          <Image src={order.stores.avatar.url} alt='' layout='fill' objectFit='cover' />
         </div>
 
         <div className='flex flex-col md:px-[10px] md:pb-[10px] max-w-[calc(100%-85px)] md:max-w-full'>
@@ -36,7 +36,7 @@ const OrderItem = ({ history, order }) => {
             <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Đặt lại</span>
           </div>
           <Link
-            href={`/store/${order.store._id}/rating/add-rating/${order._id}`}
+            href={`/store/${order.stores._id}/rating/add-rating/${order._id}`}
             className='flex-1 flex justify-center p-[10px] hover:bg-[#e0e0e0a3] rounded-br-md cursor-pointer'
           >
             <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Đánh giá</span>

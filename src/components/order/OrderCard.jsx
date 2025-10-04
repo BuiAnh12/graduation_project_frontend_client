@@ -32,7 +32,7 @@ const OrderCard = ({ order }) => {
       <div className='relative w-32 h-32 rounded-xl overflow-hidden'>
         {order.items.slice(0, 4).map((item, index) => {
           const total = order.items.length;
-          const imageUrl = item.dish?.image?.url || "/assets/logo_app.png";
+          const imageUrl = item.dishId?.image?.url || "/assets/logo_app.png";
 
           let className = "absolute w-full h-full"; // default for 1
           if (total === 2) {
@@ -60,7 +60,7 @@ const OrderCard = ({ order }) => {
 
       {/* Nội dung */}
       <div className='flex flex-col justify-between flex-1 overflow-hidden'>
-        <h4 className='text-gray-800 text-lg font-bold line-clamp-1'>{order.store.name}</h4>
+        <h4 className='text-gray-800 text-lg font-bold line-clamp-1'>{order?.stores?.name}</h4>
         <span className='text-gray-600 text-sm line-clamp-1'>
           Đã đặt:{" "}
           {order.items.map((dish, index) => (
