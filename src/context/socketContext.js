@@ -28,6 +28,7 @@ export const SocketProvider = ({ children }) => {
     // Nhận danh sách thông báo cũ khi kết nối
     newSocket.on("getAllNotifications", (allNotifications) => {
       setNotifications(allNotifications);
+      console.log(allNotifications)
     });
 
     // Nhận thông báo mới
