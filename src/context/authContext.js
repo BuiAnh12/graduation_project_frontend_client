@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, use, useContext, useEffect, useState } from "react";
 import { userService } from "@/api/userService";
 
 const AuthContext = createContext();
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await userService.getCurrentUser(id);
-      setUser(res);
+      setUser(res.data);
     } catch (error) {
       console.error("Lỗi lấy thông tin user:", error);
       setUser(null);
