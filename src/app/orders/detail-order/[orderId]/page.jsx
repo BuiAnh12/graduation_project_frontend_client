@@ -214,7 +214,7 @@ const Page = () => {
                       </button>
                     </div>
                   )}
-                  {orderDetail?.status === "taken" && (
+                  {orderDetail?.status === "delivering" && (
                     <div className='hidden sm:block'>
                       <button
                         className='flex items-center gap-2 px-4 py-2 text-nowrap rounded-full bg-gradient-to-r from-[#fc6011] to-[#ff8743] text-white font-semibold shadow-md hover:shadow-xl transition hover:scale-105'

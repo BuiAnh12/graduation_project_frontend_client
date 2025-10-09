@@ -98,7 +98,7 @@ const page = () => {
         limit,
         page,
       });
-      setPaginationRating(response);
+      setPaginationRating(response.data);
     } catch (error) {}
   };
 
@@ -110,7 +110,7 @@ const page = () => {
         limit: "5",
         page: "1",
       });
-      setAllStoreRatingDesc(response);
+      setAllStoreRatingDesc(response.data);
     } catch (error) {}
   };
 
@@ -139,6 +139,7 @@ const page = () => {
       );
 
       setRatings(allRatings);
+      console.log(allRatings)
     }
   }, [allStoreRating]);
 
@@ -189,8 +190,8 @@ const calculateCartPrice = () => {
   }, [storeCart]);
 
   useEffect(() => {
-    if (favorite && Array.isArray(favorite.store)) {
-      setStoreFavorite(favorite.store.some((s) => s._id === storeId));
+    if (favorite && Array.isArray(favorite.stores)) {
+      setStoreFavorite(favorite.stores.some((s) => s._id === storeId));
     } else {
       setStoreFavorite(null);
     }
@@ -361,16 +362,16 @@ const calculateCartPrice = () => {
 
               {/* Map */}
               <div className='w-full h-[150px] my-4 relative rounded-xl overflow-hidden shadow-md z-10'>
-                {typeof window !== "undefined" && storeInfo?.address && storeInfo?.address.lat && (
+                {typeof window !== "undefined" && storeInfo?.location && storeInfo?.location.lat && (
                   <MapContainer
-                    key={`${storeInfo.address.lat}-${storeInfo.address.lon}`}
-                    center={[storeInfo.address.lat, storeInfo.address.lon]}
+                    key={`${storeInfo.location.lat}-${storeInfo.location.lon}`}
+                    center={[storeInfo.location.lat, storeInfo.location.lon]}
                     zoom='12'
                     style={{ width: "100%", height: "100%" }}
                   >
                     <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
-                    <Marker position={[storeInfo.address.lat, storeInfo.address.lon]} icon={homeIcon}>
-                      <Popup>{storeInfo?.address.full_address || "Cửa hàng"}</Popup>
+                    <Marker position={[storeInfo.location.lat, storeInfo.location.lon]} icon={homeIcon}>
+                      <Popup>{storeInfo?.location.location || "Cửa hàng"}</Popup>
                     </Marker>
                   </MapContainer>
                 )}
@@ -402,7 +403,7 @@ const calculateCartPrice = () => {
                     </div>
 
                     <div className='hidden md:block'>
-                      <RatingBar ratings={ratings} />
+                      {ratings && <RatingBar ratings={ratings} /> }
                       {paginationRating &&
                         paginationRating.data.map((rating) => (
                           <RatingItem

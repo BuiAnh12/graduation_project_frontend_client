@@ -67,7 +67,7 @@ const page = () => {
                 </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
-                  {favorite.store.map((store) => (
+                  {favorite.stores.map((store) => (
                     <FavoriteItem key={store._id} store={store} />
                   ))}
                 </div>

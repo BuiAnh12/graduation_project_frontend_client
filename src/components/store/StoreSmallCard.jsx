@@ -11,7 +11,7 @@ const StoreSmallCard = ({ store }) => {
       {/* Ảnh cửa hàng */}
       <div className='relative w-[70px] h-[70px] shrink-0 rounded-lg overflow-hidden shadow-sm'>
         <Image
-          src={store.avatarImage.url || "/assets/default_store.png"}
+          src={store?.avatarImage?.url || "/assets/default_store.png"}
           alt={store.name}
           layout='fill'
           objectFit='cover'

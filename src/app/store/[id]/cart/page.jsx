@@ -113,28 +113,35 @@ const page = () => {
     }, [detailCart]);
 
     const fetchPlaceName = async (lon, lat) => {
-        const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}
-        &format=json&addressdetails=1&accept-language=vi`;
-
-        const res = await fetch(url, {
-            headers: {
-                "User-Agent": "your-app-name",
-            },
-        });
-        const data = await res.json();
-        if (data) {
+        try {
+          // ✅ Use LocationIQ instead of Nominatim
+          const url = `https://us1.locationiq.com/v1/reverse?key=${process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY}&lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=vi`;
+      
+          const res = await fetch(url);
+      
+          if (!res.ok) {
+            throw new Error(`API error: ${res.status}`);
+          }
+      
+          const data = await res.json();
+      
+          if (data) {
             setStoreLocation({
-                address: data.display_name,
-                contactName: user.name,
-                contactPhonenumber: user.phonenumber,
-                detailAddress: "",
-                name: "Vị trí hiện tại",
-                note: "",
-                lat: lat,
-                lon: lon,
+              address: data.display_name,
+              contactName: user.name,
+              contactPhonenumber: user.phonenumber,
+              detailAddress: "",
+              name: "Vị trí hiện tại",
+              note: "",
+              lat,
+              lon,
             });
+          }
+        } catch (error) {
+          console.error("Error fetching location:", error);
         }
-    };
+      };
+      
 
     useEffect(() => {
         if (storeLocation.lon === 200 && user) {
@@ -300,11 +307,11 @@ const page = () => {
                 ...commonPayload,
             });
 
-            if (response?.orderId) {
+            if (response?.data?.orderId) {
                 toast.success("Đặt thành công");
                 refreshOrder?.();
                 refreshCart?.();
-                router.push(`/orders/detail-order/${response.orderId}`);
+                router.push(`/orders/detail-order/${response?.data?.orderId}`);
             } else {
                 toast.error("Lỗi phương thức thanh toán tiền mặt");
             }

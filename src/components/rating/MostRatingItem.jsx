@@ -10,7 +10,7 @@ const MostRatingItem = ({ rating }) => {
         <Image src='/assets/star_active.png' alt='' width={15} height={15} />
         <span className='text-[#636464]'>{rating.ratingValue}</span>
         <div className='w-[4px] h-[4px] rounded-full bg-[#636464]'></div>
-        <span className='text-[#636464]'>{rating.user.name}</span>
+        <span className='text-[#636464]'>{rating?.users?.name}</span>
       </div>
     </div>
   );

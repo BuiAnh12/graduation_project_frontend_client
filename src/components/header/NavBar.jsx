@@ -182,9 +182,9 @@ const NavBar = ({ page }) => {
                   Yêu Thích
                 </p>
 
-                {favorite && favorite.store.length > 0 && (
+                {favorite && favorite.stores.length > 0 && (
                   <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
-                    <span className='text-[11px] text-white'>{favorite.store.length}</span>
+                    <span className='text-[11px] text-white'>{favorite.stores.length}</span>
                   </div>
                 )}
               </Link>

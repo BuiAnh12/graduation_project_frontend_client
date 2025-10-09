@@ -10,7 +10,7 @@ const StoreCard = ({ store }) => {
     >
       {/* Hình ảnh cửa hàng */}
       <div className='relative w-[90px] h-[90px] flex-shrink-0 rounded-xl overflow-hidden'>
-        <Image src={store?.avatarImage.url || "/placeholder.png"} alt={store.name} fill className='object-cover' />
+        <Image src={store?.avatarImage?.url || "/placeholder.png"} alt={store.name} fill className='object-cover' />
       </div>
 
       {/* Nội dung */}
