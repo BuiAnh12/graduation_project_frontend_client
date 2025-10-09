@@ -1,9 +1,10 @@
 import Image from "next/image";
 import React from "react";
 
-const RatingBar = ({ ratings }) => {
+const RatingBar = ( {ratings} ) => {
+  
   const totalRatings = Object.values(ratings).reduce((sum, value) => sum + value, 0);
-
+  
   const totalScore = Object.entries(ratings).reduce((sum, [star, count]) => sum + Number(star) * count, 0);
 
   const avgRating = totalRatings ? (totalScore / totalRatings).toFixed(2) : "0.00";

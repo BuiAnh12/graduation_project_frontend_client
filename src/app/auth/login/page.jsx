@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Header from "@/components/header/Header";
 import Heading from "@/components/Heading";
 import { authService } from "@/api/authService";
+import ErrorCode from "@/constants/ErrorCode";
 
 const page = () => {
   const router = useRouter();
@@ -29,10 +30,17 @@ const page = () => {
     validationSchema: schema,
     onSubmit: async (values) => {
       try {
-        await authService.login(values);
-        router.push("/home");
-        toast.success("Đăng nhập thành công!");
-        formik.resetForm();
+        const res = await authService.login(values);
+        console.log(res)
+        if (res.success == false) {
+          const errorCode = res.errorCode
+          toast.error("Đăng nhập thất bại")
+        }
+        else {
+          router.push("/home");
+          toast.success("Đăng nhập thành công!");
+          formik.resetForm();
+        }
       } catch (error) {
         toast.error(error.response.data.message);
       }

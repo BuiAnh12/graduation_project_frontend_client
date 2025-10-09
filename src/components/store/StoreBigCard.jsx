@@ -11,7 +11,7 @@ const StoreBigCard = ({ store }) => {
     >
       {/* Ảnh cửa hàng */}
       <div className='relative w-full pt-[55%] rounded-t-2xl overflow-hidden'>
-        <Image src={store.avatarImage?.url || "/placeholder.png"} alt={store?.name} fill className='object-cover' />
+        <Image src={store?.avatarImage?.url || "/placeholder.png"} alt={store?.name} fill className='object-cover' />
 
         {/* Overlay gradient */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />

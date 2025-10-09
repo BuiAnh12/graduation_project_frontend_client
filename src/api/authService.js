@@ -12,14 +12,25 @@ const login = async (userData) => {
     const data = result.data;
     localStorage.setItem("userId", JSON.stringify(data._id));
     localStorage.setItem("token", JSON.stringify(data.token));
-    return result;
   }
 
   return result;
 };
 
+// const loginWithGoogle = async (userData) => {
+//   const result = await handleApiResponse(instance.post(`/auth/login/google`, userData, config()));
+
+//   if (result.success && result.data) {
+//     const data = result.data;
+//     localStorage.setItem("userId", JSON.stringify(data._id));
+//     localStorage.setItem("token", JSON.stringify(data.token));
+//   }
+
+//   return result;
+// };
+
 const logout = async () => {
-  // optional: call backend logout if needed
+  // Optionally call backend logout if needed
   // await handleApiResponse(instance.get(`/auth/logout`, config()));
 
   localStorage.removeItem("userId");
@@ -29,18 +40,33 @@ const logout = async () => {
 };
 
 const refreshAccessToken = async () => {
-  const result = await handleApiResponse(instance.get(`/auth/refresh`, config()));
+  return handleApiResponse(instance.get(`/auth/refresh`, config()));
+};
 
-  if (result.success && result.data) {
-    return result;
-  }
+const forgotPassword = async (data) => {
+  return handleApiResponse(instance.post(`/auth/forgot-password`, data, config()));
+};
 
-  return result;
+const checkOTP = async (data) => {
+  return handleApiResponse(instance.post(`/auth/check-otp`, data, config()));
+};
+
+const resetPassword = async (data) => {
+  return handleApiResponse(instance.put(`/auth/reset-password`, data, config()));
+};
+
+const changePassword = async (data) => {
+  return handleApiResponse(instance.put(`/auth/change-password`, data, config()));
 };
 
 export const authService = {
   register,
   login,
+  // loginWithGoogle,
   logout,
   refreshAccessToken,
+  forgotPassword,
+  checkOTP,
+  resetPassword,
+  changePassword,
 };

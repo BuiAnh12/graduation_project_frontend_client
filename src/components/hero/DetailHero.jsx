@@ -6,7 +6,7 @@ const DetailHero = ({ store }) => {
     <Link href={`/store/${store._id}`} className='relative block w-full h-[calc(100vh-225px)] overflow-hidden group'>
       {/* Ảnh nền */}
       <Image
-        src={store.avatar.url || "/assets/logo_app.png"}
+        src={store?.avatarImage?.url || "/assets/logo_app.png"}
         alt={store.name}
         layout='fill'
         objectFit='cover'

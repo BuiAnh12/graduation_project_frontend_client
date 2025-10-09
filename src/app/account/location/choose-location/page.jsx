@@ -59,37 +59,34 @@ const Page = () => {
   const fetchSuggestions = useCallback(
     debounce(async (query, province) => {
       if (!query) return;
-
-      // Kiểm tra province trước khi sử dụng tọa độ
+  
+      // Construct location bias if province is provided
       const viewbox = province
         ? `${province.lon - 0.5},${province.lat + 0.5},${province.lon + 0.5},${province.lat - 0.5}`
         : "";
-
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}
-          &format=json&addressdetails=1&countrycodes=VN&accept-language=vi${
-            viewbox ? `&viewbox=${viewbox}&bounded=1` : ""
-          }`;
-
+  
+      const url = `https://us1.locationiq.com/v1/search?key=${process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY}&q=${encodeURIComponent(
+        query
+      )}&format=json&addressdetails=1&countrycodes=VN&accept-language=vi${
+        viewbox ? `&viewbox=${viewbox}&bounded=1` : ""
+      }`;
+  
       try {
-        const res = await fetch(url, {
-          headers: {
-            "User-Agent": "your-app-name",
-          },
-        });
-
+        const res = await fetch(url);
+  
         if (!res.ok) {
           throw new Error(`API error: ${res.status}`);
         }
-
+  
         const data = await res.json();
-
-        // Chuyển dữ liệu thành format mong muốn
+  
+        // Map results to suggestion format
         const suggestions = data.map((place) => ({
           name: place.display_name,
           lat: parseFloat(place.lat),
           lon: parseFloat(place.lon),
         }));
-
+  
         setSuggestions(suggestions);
       } catch (error) {
         console.error("Fetch suggestions error:", error);
@@ -97,6 +94,7 @@ const Page = () => {
     }, 2000),
     []
   );
+  
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -138,30 +136,45 @@ const Page = () => {
     return null;
   };
 
+  // const fetchPlaceName = async (lon, lat) => {
+  //   try {
+  //     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}
+  //       &format=json&addressdetails=1&accept-language=vi`;
+
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         "User-Agent": "your-app-name",
+  //       },
+  //     });
+
+  //     if (!res.ok) {
+  //       throw new Error(`API error: ${res.status}`);
+  //     }
+
+  //     const data = await res.json();
+
+  //     // Lấy tên địa điểm từ display_name
+  //     setDragMarkInput(data.display_name);
+  //   } catch (error) {
+  //     console.error("Error fetching location:", error);
+  //     return null;
+  //   }
+  // };
+  
   const fetchPlaceName = async (lon, lat) => {
     try {
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}
-        &format=json&addressdetails=1&accept-language=vi`;
-
-      const res = await fetch(url, {
-        headers: {
-          "User-Agent": "your-app-name",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-      }
-
+      const url = `https://us1.locationiq.com/v1/reverse?key=${process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY}&lat=${lat}&lon=${lon}&format=json&accept-language=vi`;
+  
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+  
       const data = await res.json();
-
-      // Lấy tên địa điểm từ display_name
       setDragMarkInput(data.display_name);
     } catch (error) {
       console.error("Error fetching location:", error);
-      return null;
     }
   };
+  
 
   useEffect(() => {
     if ("geolocation" in navigator) {

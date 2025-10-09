@@ -42,12 +42,12 @@ const RatingItem = ({ rating, userId, refetchAllStoreRating, refetchPaginationRa
       <div className='relative'>
         <div className='flex items-center gap-[10px]'>
           <div className='relative w-[65px] h-[65px] pt-[65px] rounded-full overflow-hidden'>
-            <Image layout='fill' src={rating.user.avatar.url} alt='' objectFit='cover' />
+            <Image layout='fill' src={rating?.users?.avatarImage?.url} alt='' objectFit='cover' />
           </div>
 
           <div className='flex flex-1 items-center justify-between'>
             <div className='flex flex-col flex-start h-full'>
-              <h4 className='text-[#4A4B4D] text-[24px] font-semibold md:text-[20px]'>{rating.user.name}</h4>
+              <h4 className='text-[#4A4B4D] text-[24px] font-semibold md:text-[20px]'>{rating?.users?.name}</h4>
               <div className='flex items-center gap-[8px]'>
                 <StarRating ratingValue={rating.ratingValue} />
                 <div className='w-[4px] h-[4px] rounded-full bg-[#636464]'></div>
@@ -86,7 +86,7 @@ const RatingItem = ({ rating, userId, refetchAllStoreRating, refetchPaginationRa
           </div>
         </div>
 
-        {rating.images.length > 0 && (
+        {rating?.images?.length > 0 && (
           <div className='flex flex-row gap-[10px] mt-[10px]'>
             {rating.images.map((img) => (
               <div className='relative flex flex-col gap-[4px] w-[150px] pt-[150px]' key={img.filePath}>
