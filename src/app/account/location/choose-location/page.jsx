@@ -275,7 +275,7 @@ const Page = () => {
                     className='w-full bg-gray-200 text-lg p-2 rounded-lg'
                   />
                   {suggestions.length > 0 && (
-                    <ul className='absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md z-50 max-h-60 overflow-auto shadow-lg'>
+                    <ul className='absolute top-full left-0 w-full bg-white border border-red-500 rounded-md z-50 max-h-60 overflow-auto shadow-lg'>
                       {suggestions.map((place, index) => (
                         <li
                           key={index}

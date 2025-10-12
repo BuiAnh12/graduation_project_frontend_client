@@ -19,7 +19,6 @@ const Header = ({ page }) => {
         setCurrentLocation({ lat: prov.lat, lon: prov.lon });
     };
 
-
     useEffect(() => {
         if (currentLocation.lat !== 200) {
             setProvince(getClosestProvince(currentLocation));
@@ -96,14 +95,20 @@ const Header = ({ page }) => {
                             </button>
 
                             {openSelectProvince && (
-                                <div className="absolute top-[60px] right-0 ...">
+                                <div className="absolute top-[40px] right-0 w-[200px] bg-white border rounded-md border-red-500 shadow-lg z-50 max-h-50 overflow-auto">
                                     {provinces.map((prov) => (
                                         <div
-                                            onClick={() =>
-                                                handleProvinceChange(prov)
-                                            }
+                                            key={prov.name}
+                                            onClick={() => {
+                                                handleProvinceChange(prov); // updates selected province and center on map
+                                            }}
+                                            className={`p-2 cursor-pointer hover:bg-gray-200 ${
+                                                prov.name === province.name
+                                                    ? "bg-gray-300 font-semibold"
+                                                    : ""
+                                            }`}
                                         >
-                                            ...
+                                            {prov.name}
                                         </div>
                                     ))}
                                 </div>
