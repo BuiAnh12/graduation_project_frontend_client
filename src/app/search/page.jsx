@@ -44,211 +44,202 @@ const page = () => {
 
     return (
         <>
-            <Heading title="Tìm kiếm" description="" keywords="" />
-            {openFilter ? (
-                <div className="pb-[160px] pt-[85px]">
-                    <div className="fixed top-0 right-0 left-0 z-10 flex items-center gap-[20px] bg-[#fff] h-[85px] px-[20px]">
-                        <Image
-                            src="/assets/close.png"
-                            className="cursor-pointer"
-                            alt=""
-                            width={25}
-                            height={25}
-                            onClick={() => setOpenFilter(null)}
-                        />
+          <Heading title="Tìm kiếm" description="" keywords="" />
+    
+          {openFilter ? (
+            <div className="pb-[160px] pt-[85px]">
+              {/* Fixed Filter Header */}
+              <div className="fixed top-0 right-0 left-0 z-10 flex items-center gap-5 bg-white h-[85px] px-5 border-b border-gray-200 shadow-md">
+                <Image
+                  src="/assets/close.png"
+                  className="cursor-pointer hover:scale-110 transition-transform"
+                  alt="Close filter"
+                  width={25}
+                  height={25}
+                  onClick={() => setOpenFilter(null)}
+                />
+                <h3 className="text-lg font-semibold text-gray-700">
+                  {openFilter === "All Filter"
+                    ? "Bộ lọc"
+                    : openFilter === "Sort By"
+                    ? "Sắp xếp theo"
+                    : "Danh mục"}
+                </h3>
+              </div>
+    
+              {/* Filter Components */}
+              <div className="mt-[85px] space-y-4 px-5">
+                {openFilter === "All Filter" && (
+                  <>
+                    <SortBy />
+                    <CategoryFilter />
+                  </>
+                )}
+                {openFilter === "Sort By" && <SortBy />}
+                {openFilter === "Category Filter" && <CategoryFilter />}
+              </div>
+            </div>
+          ) : (
+            <div className="pt-[150px] pb-[100px] px-[20px] md:pt-[90px] md:w-[90%] md:mx-auto md:px-0">
+              <Header />
+    
+              <div className="py-5">
+                <CategorySlider />
+    
+                {/* Main Layout */}
+                <div className="grid grid-cols-12 gap-9 md:mt-5">
+                  {/* Left Content */}
+                  <div className="xl:col-span-9 lg:col-span-8 md:col-span-8 col-span-12">
+                    {/* Mobile Filters */}
+                    <div className="block md:hidden mb-4">
+                      <div className="flex items-center gap-4 overflow-x-auto whitespace-nowrap">
+                        {/* All Filter */}
+                        <button
+                          className="flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-2 hover:bg-gray-200 transition"
+                          onClick={() => setOpenFilter("All Filter")}
+                        >
+                          <div className="relative w-[24px] h-[24px]">
+                            <Image src="/assets/filter.png" alt="Filter" fill />
+                          </div>
+                        </button>
+    
+                        {/* Sort By */}
+                        <button
+                          className="flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-2 hover:bg-gray-200 transition"
+                          onClick={() => setOpenFilter("Sort By")}
+                        >
+                          <div className="relative w-[24px] h-[24px]">
+                            <Image src="/assets/arrow_up_down.png" alt="Sort" fill />
+                          </div>
+                          <span className="text-gray-700 text-base font-medium">
+                            Sắp xếp theo
+                          </span>
+                        </button>
+    
+                        {/* Category Filter */}
+                        <button
+                          className="flex items-center gap-2 bg-gray-100 rounded-xl px-4 py-2 hover:bg-gray-200 transition"
+                          onClick={() => setOpenFilter("Category Filter")}
+                        >
+                          <div className="relative w-[24px] h-[24px]">
+                            <Image src="/assets/promotion.png" alt="Category" fill />
+                          </div>
+                          <span className="text-gray-700 text-base font-medium">
+                            Danh mục
+                          </span>
+                        </button>
+    
+                        {/* Refresh */}
+                        <Link
+                          href="/search"
+                          className="text-[#e60012] text-base font-semibold hover:underline whitespace-nowrap"
+                        >
+                          Làm mới
+                        </Link>
+                      </div>
                     </div>
-
-                    {openFilter === "All Filter" ? (
-                        <>
-                            <SortBy />
-                            <CategoryFilter />
-                        </>
-                    ) : openFilter === "Sort By" ? (
-                        <SortBy />
-                    ) : (
-                        <CategoryFilter />
-                    )}
-                </div>
-            ) : (
-                <div className="pt-[150px] pb-[100px]  px-[20px] md:pt-[90px] md:w-[90%] md:mx-auto md:px-0">
-                    <Header />
-
-                    <div className="py-[20px]">
-                        <CategorySlider />
-
-                        <div className="grid grid-cols-12 gap-[35px] md:mt-[20px]">
-                            <div className="xl:col-span-9 lg:col-span-8 md:col-span-8 col-span-12">
-                                <div className="block md:hidden">
-                                    <div className="flex items-center gap-[15px] overflow-x-auto whitespace-nowrap my-[15px]">
-                                        <div
-                                            className="flex items-center gap-[10px] bg-[#e8e9e9] rounded-[15px] px-[15px] py-[10px] md:py-[6px] z-10 cursor-pointer"
-                                            onClick={() =>
-                                                setOpenFilter("All Filter")
-                                            }
-                                        >
-                                            <div className="relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]">
-                                                <Image
-                                                    src="/assets/filter.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="fill"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            className="relative flex items-center gap-[10px] bg-[#e8e9e9] rounded-[15px] px-[15px] py-[10px] md:py-[6px] cursor-pointer"
-                                            onClick={() =>
-                                                setOpenFilter("Sort By")
-                                            }
-                                        >
-                                            <div className="relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]">
-                                                <Image
-                                                    src="/assets/arrow_up_down.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="fill"
-                                                />
-                                            </div>
-                                            <span className="text-[#4A4B4D] text-[18px] md:text-[16px]">
-                                                Sắp xếp theo
-                                            </span>
-                                        </div>
-
-                                        <div
-                                            className="flex items-center gap-[10px] bg-[#e8e9e9] rounded-[15px] px-[15px] py-[10px] md:py-[6px] cursor-pointer"
-                                            onClick={() =>
-                                                setOpenFilter("Category Filter")
-                                            }
-                                        >
-                                            <div className="relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]">
-                                                <Image
-                                                    src="/assets/promotion.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="fill"
-                                                />
-                                            </div>
-                                            <span className="text-[#4A4B4D] text-[18px] md:text-[16px]">
-                                                Danh mục
-                                            </span>
-                                        </div>
-                                        <Link
-                                            href="/search"
-                                            className="text-[#0054ff] text-[18px] md:text-[16px] font-semibold cursor-pointer"
-                                        >
-                                            Làm mới
-                                        </Link>
-                                    </div>
-                                </div>
-
-                                <div className="hidden md:block z-0">
-                                    <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-[20px]">
-                                        {allStore?.length > 0 ? (
-                                            allStore.map((store) => (
-                                                <StoreBigCard
-                                                    key={store._id}
-                                                    store={store}
-                                                />
-                                            ))
-                                        ) : (
-                                            <h3 className="text-[20px] text-[#4a4b4d] font-semibold">
-                                                Không tìm thấy cửa hàng nào
-                                            </h3>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="xl:col-span-3 lg:col-span-4 md:col-span-4 hidden md:block">
-                                <div className="rounded-md mb-6 bg-[#fff] overflow-hidden shadow-[rgba(0,0,0,0.24)_0px_3px_8px]">
-                                    <SortBy />
-                                </div>
-
-                                <div className="rounded-xl mb-6 bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                                    <h3 className="text-[#ffffff] text-[20px] bg-gradient-to-r from-[#fc6011] to-[#ff8743] border-b border-gray-200 text-center px-4 py-3 font-semibold">
-                                        Quán ăn nổi bật
-                                    </h3>
-                                    <ul className="flex flex-col gap-[10px] p-[10px] max-h-[280px] w-full overflow-y-auto overflow-x-hidden small-scrollbar box-border">
-                                        <ul className="flex flex-col gap-[10px] p-[10px] max-h-[280px] w-full overflow-y-auto overflow-x-hidden small-scrollbar box-border">
-                                            {standoutStore?.length > 0 ? (
-                                                standoutStore.map((store) => (
-                                                    <StoreSmallCard
-                                                        key={store._id}
-                                                        store={store}
-                                                    />
-                                                ))
-                                            ) : (
-                                                <li className="text-center text-gray-500 italic py-4">
-                                                    Không có dữ liệu
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </ul>
-                                </div>
-
-                                <div className="rounded-xl mb-6 bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                                    <h3 className="text-[#ffffff] text-[20px] bg-gradient-to-r from-[#fc6011] to-[#ff8743] border-b border-gray-200 text-center px-4 py-3 font-semibold">
-                                        Quán ăn được đánh giá tốt
-                                    </h3>
-                                    <ul className="flex flex-col gap-[10px] p-[10px] max-h-[280px] w-full overflow-y-auto overflow-x-hidden small-scrollbar box-border">
-                                        <ul className="flex flex-col gap-[10px] p-[10px] max-h-[280px] w-full overflow-y-auto overflow-x-hidden small-scrollbar box-border">
-                                            {ratingStore?.length > 0 ? (
-                                                ratingStore.map((store) => (
-                                                    <StoreSmallCard
-                                                        key={store._id}
-                                                        store={store}
-                                                    />
-                                                ))
-                                            ) : (
-                                                <li className="text-center text-gray-500 italic py-4">
-                                                    Không có dữ liệu
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </ul>
-                                </div>
-
-                                <div className="rounded-md mb-6 bg-[#fff] overflow-hidden shadow-[rgba(0,0,0,0.24)_0px_3px_8px]">
-                                    <CategoryFilter />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="block md:hidden">
-                            <div className="flex flex-col gap-[10px]">
-                                {allStore?.data?.length > 0 ? (
-                                    allStore.data.map((store) => (
-                                        <StoreBigCard
-                                            key={store._id}
-                                            store={store}
-                                        />
-                                    ))
-                                ) : (
-                                    <h3 className="text-[20px] text-[#4a4b4d] font-semibold">
-                                        Không tìm thấy cửa hàng nào
-                                    </h3>
-                                )}
-                            </div>
-                        </div>
-
-                        {allStore?.length > 0 && (
-                            <Pagination
-                                page={query.page}
-                                limit={query.limit}
-                                total={allStore.length} // fallback until API gives real total
-                            />
+    
+                    {/* Store Grid (Desktop) */}
+                    <div className="hidden md:block">
+                      <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-6">
+                        {allStore?.length > 0 ? (
+                          allStore.map((store) => (
+                            <StoreBigCard key={store._id} store={store} />
+                          ))
+                        ) : (
+                          <h3 className="text-lg text-gray-700 font-semibold">
+                            Không tìm thấy cửa hàng nào
+                          </h3>
                         )}
+                      </div>
                     </div>
+                  </div>
+    
+                  {/* Right Sidebar */}
+                  <div className="xl:col-span-3 lg:col-span-4 md:col-span-4 hidden md:block">
+                    {/* Sort Section */}
+                    <div className="rounded-xl mb-6 bg-white shadow-md hover:shadow-lg transition-shadow">
+                      <SortBy />
+                    </div>
+    
+                    {/* Standout Store */}
+                    <div className="rounded-xl mb-6 bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                      <h3 className="text-white text-[20px] bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-center px-4 py-3 font-semibold">
+                        Quán ăn nổi bật
+                      </h3>
+                      <ul className="flex flex-col gap-3 p-3 max-h-[280px] overflow-y-auto small-scrollbar">
+                        {standoutStore?.length > 0 ? (
+                          standoutStore.map((store) => (
+                            <StoreSmallCard key={store._id} store={store} />
+                          ))
+                        ) : (
+                          <li className="text-center text-gray-500 italic py-4">
+                            Không có dữ liệu
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+    
+                    {/* High Rating Store */}
+                    <div className="rounded-xl mb-6 bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                      <h3 className="text-white text-[20px] bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-center px-4 py-3 font-semibold">
+                        Quán ăn được đánh giá tốt
+                      </h3>
+                      <ul className="flex flex-col gap-3 p-3 max-h-[280px] overflow-y-auto small-scrollbar">
+                        {ratingStore?.length > 0 ? (
+                          ratingStore.map((store) => (
+                            <StoreSmallCard key={store._id} store={store} />
+                          ))
+                        ) : (
+                          <li className="text-center text-gray-500 italic py-4">
+                            Không có dữ liệu
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+    
+                    {/* Category Filter */}
+                    <div className="rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow">
+                      <CategoryFilter />
+                    </div>
+                  </div>
                 </div>
-            )}
-            {!openFilter && (
-                <div className="md:hidden">
-                    <NavBar page="" />
+    
+                {/* Mobile Store List */}
+                <div className="block md:hidden mt-6">
+                  <div className="flex flex-col gap-4">
+                    {allStore?.data?.length > 0 ? (
+                      allStore.data.map((store) => (
+                        <StoreBigCard key={store._id} store={store} />
+                      ))
+                    ) : (
+                      <h3 className="text-lg text-gray-700 font-semibold">
+                        Không tìm thấy cửa hàng nào
+                      </h3>
+                    )}
+                  </div>
                 </div>
-            )}
+    
+                {/* Pagination */}
+                {allStore?.length > 0 && (
+                  <Pagination
+                    page={query.page}
+                    limit={query.limit}
+                    total={allStore.length}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+    
+          {/* Bottom Navigation */}
+          {!openFilter && (
+            <div className="md:hidden">
+              <NavBar page="" />
+            </div>
+          )}
         </>
-    );
+      );
 };
 
 export default page;

@@ -215,7 +215,7 @@ const page = () => {
             });
             router.push(`/store/${storeId}/cart`);
           }}
-          className='flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] bg-[#fc6011] text-[#fff] py-[15px] px-[10px] w-full shadow-md hover:shadow-lg'
+          className='flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] bg-[#fc2111] text-[#fff] py-[15px] px-[10px] w-full shadow-md hover:shadow-lg'
         >
           <span className='text-[#fff] text-[20px] font-semibold'>Lưu</span>
         </button>

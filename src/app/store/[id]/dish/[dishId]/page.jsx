@@ -269,7 +269,7 @@ const handleAddToCart = async () => {
   if (loading) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
-        <ThreeDot color='#fc6011' size='medium' text='' textColor='' />
+        <ThreeDot color='#fc2111' size='medium' text='' textColor='' />
       </div>
     );
   }
@@ -288,7 +288,7 @@ const handleAddToCart = async () => {
               <div className='absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-[20px] pt-[20px]'>
                 <Link
                   href={`/store/${storeId}`}
-                  className='relative w-[40px] pt-[40px] rounded-full bg-[#e0e0e0a3] overflow-hidden'
+                  className='relative w-[40px] pt-[40px] rounded-full bg-gray-500 overflow-hidden'
                 >
                   <Image src='/assets/arrow_left_white.png' alt='' layout='fill' className='p-[8px]' />
                 </Link>
@@ -300,7 +300,7 @@ const handleAddToCart = async () => {
 
               <div className='bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition'>
                 <div className='flex justify-between'>
-                  <h3 className='text-[#4A4B4D] text-[28px] font-bold line-clamp-2' name='dishName'>
+                  <h3 className='text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]' name='dishName'>
                     {dishInfo?.name}
                   </h3>
                   <span className='text-[#4A4B4D] text-[28px] font-bold' name='dishPrice'>
@@ -310,7 +310,7 @@ const handleAddToCart = async () => {
                 <p className='text-[#a4a5a8]'>{dishInfo?.description}</p>
               </div>
 
-              <div className='h-[6px] w-full bg-gray-100 my-4 rounded-full'></div>
+              <div className='h-[6px] w-full bg-transparent my-4 rounded-full'></div>
 
               {dishInfo.toppingGroups && dishInfo.toppingGroups.length > 0 && (
                 <>
@@ -349,7 +349,7 @@ const handleAddToCart = async () => {
                   </div>
 
                   {/* Divider */}
-                  <div className='h-[6px] w-full bg-gray-100 my-4 rounded-full'></div>
+                  <div className='h-[6px] w-full bg-transparent my-4 rounded-full'></div>
                 </>
               )}
 
@@ -362,12 +362,12 @@ const handleAddToCart = async () => {
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className='p-[10px] w-full border border-solid border-[#a3a3a3a3] rounded-[10px] focus:ring-2 focus:ring-[#fc6011] resize-none'
+                  className='p-[10px] w-full border border-solid border-[#ffc6c0] rounded-[10px] focus:ring-2 focus:ring-[#fc2111] resize-none focus:border-[#fc2111]'
                   placeholder='Việc thực hiện yêu cầu còn tùy thuộc vào khả năng của quán'
                 />
               </div>
 
-              <div className='h-[6px] w-full bg-gray-100 my-4 rounded-full'></div>
+              <div className='h-[6px] w-full bg-transparent my-4 rounded-full'></div>
 
               <div className='flex items-center justify-center gap-4 bg-white p-5 border border-gray-100 rounded-2xl shadow-md md:p-6 hover:shadow-lg transition-all duration-200'>
                 {/* Nút giảm */}
@@ -394,7 +394,7 @@ const handleAddToCart = async () => {
                   type='number'
                   value={quantity}
                   onChange={handleQuantityInputChange}
-                  className='text-[#4A4B4D] text-2xl font-bold w-[70px] text-center bg-gray-50 border border-gray-200 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-[#fc6011] transition-all duration-200'
+                  className='text-[#4A4B4D] text-2xl font-bold w-[70px] text-center bg-gray-50 border border-gray-200 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-[#fc2111] transition-all duration-200'
                 />
 
                 {/* Nút tăng */}
@@ -404,7 +404,7 @@ const handleAddToCart = async () => {
                     e.preventDefault();
                     handleChangeQuantity(1);
                   }}
-                  className='w-[50px] h-[50px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#fc6011] to-[#ff7a33] 
+                  className='w-[50px] h-[50px] flex items-center justify-center rounded-full bg-gradient-to-r from-[#fc2111] to-[#ff7a33] 
                shadow-md cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95'
                 >
                   <Image
@@ -436,7 +436,7 @@ const handleAddToCart = async () => {
         {quantity > 0 ? (
           <div
             name='addCartBtn'
-            className='flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#fc6011] to-[#ff7a33] text-white py-4 px-6 
+            className='flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#fc2111] to-[#ff7a33] text-white py-4 px-6 
                  lg:w-[60%] md:w-[80%] w-full md:mx-auto cursor-pointer shadow-md hover:shadow-lg 
                  transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
             onClick={handleAddToCart}
@@ -451,7 +451,7 @@ const handleAddToCart = async () => {
           <div className='flex items-center gap-4 lg:w-[60%] md:w-[80%] w-full md:mx-auto'>
             <Link
               href={`/store/${storeId}`}
-              className='flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#fc6011] to-[#ff7a33] text-white py-4 px-4 sm:px-6 
+              className='flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#fc2111] to-[#ff7a33] text-white py-4 px-4 sm:px-6 
                    cursor-pointer w-[65%] md:w-[80%] shadow-md hover:shadow-lg 
                    transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'
             >

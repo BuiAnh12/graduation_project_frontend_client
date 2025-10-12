@@ -239,7 +239,7 @@ const page = () => {
           <div className='fixed bottom-0 left-0 right-0 bg-[#fff] px-[10px] py-[15px] z-[100]'>
             <button
               type='submit'
-              className={`flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] text-[#fff] py-[15px] px-[10px] w-full shadow-md hover:shadow-lg bg-[#fc6011] cursor-pointer`}
+              className={`flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] text-[#fff] py-[15px] px-[10px] w-full shadow-md hover:shadow-lg bg-[#fc2111] cursor-pointer`}
             >
               <span className='text-[#fff] text-[20px] font-semibold'>Lưu địa chỉ này</span>
             </button>

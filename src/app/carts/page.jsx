@@ -61,7 +61,7 @@ const page = () => {
                 <div className='flex items-center justify-between mb-[20px]'>
                   <h3 className='text-[#4A4B4D] text-[24px] font-bold hidden md:block'>Các cửa hàng đang đặt món</h3>
                   <div
-                    className='flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#fc6011] to-[#ff8743] cursor-pointer shadow-md hover:shadow-xl transition-transform hover:scale-105'
+                    className='flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#fc2111] to-[#ff8743] cursor-pointer shadow-md hover:shadow-xl transition-transform hover:scale-105'
                     onClick={confirmClearCart}
                   >
                     <Image src='/assets/trash_white.png' alt='' width={20} height={20} />
@@ -86,7 +86,7 @@ const page = () => {
                 <p className='text-gray-500 mt-2'>Hãy chọn vài món ăn ngon ngay nào!</p>
                 <Link
                   href={`/search`}
-                  className='mt-5 px-6 py-3 bg-[#fc6011] text-white rounded-full shadow hover:scale-105 transition-transform'
+                  className='mt-5 px-6 py-3 bg-[#fc2111] text-white rounded-full shadow hover:scale-105 transition-transform'
                 >
                   Mua sắm ngay
                 </Link>
@@ -95,7 +95,7 @@ const page = () => {
           </>
         ) : (
           <div className='w-full h-screen flex items-center justify-center'>
-            <Atom color='#fc6011' size='medium' text='' textColor='' />
+            <Atom color='#fc2111' size='medium' text='' textColor='' />
           </div>
         )}
       </div>

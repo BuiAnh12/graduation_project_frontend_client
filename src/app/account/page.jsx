@@ -18,8 +18,12 @@ const page = () => {
       title: "Bạn có chắc chắn muốn đăng xuất không?",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "#e50914",
+      cancelButtonColor: "#aaa",
       confirmButtonText: "Đồng ý",
       cancelButtonText: "Hủy",
+      background: "#fff",
+      color: "#333",
     });
 
     if (result.isConfirmed) {
@@ -34,127 +38,107 @@ const page = () => {
   };
 
   return (
-    <div className='pt-[30px] pb-[100px] md:pt-[75px] md:mt-[20px] md:px-0 bg-[#fff] md:bg-[#f9f9f9]'>
-      <Heading title='Tài khoản' description='' keywords='' />
-      <div className='hidden md:block'>
-        <Header page='account' />
-      </div>
+    <div className="pt-[30px] pb-[100px] md:pt-[75px] md:mt-[20px] md:px-0 bg-[#fff] md:bg-[#f7f7f7] min-h-screen">
+      <Heading title="Tài khoản" description="" keywords="" />
 
+      {/* Header */}
+      <div className="hidden md:block">
+        <Header page="account" />
+      </div>
       <MobileHeader />
-      <div className='bg-[#fff] lg:w-[75%] px-[20px] md:w-[80%] pb-[20px] mb-[20px] md:mx-auto md:border md:border-[#a3a3a3a3] md:border-solid md:rounded-[10px] md:shadow-[rgba(0,0,0,0.24)_0px_3px_8px] md:overflow-hidden'>
-        <Link href='/account/profile' className='flex gap-[15px] my-[20px] cursor-pointer'>
-          <div className='relative w-[60px] pt-[60px]'>
+
+      {/* Account Content */}
+      <div className="bg-white lg:w-[70%] md:w-[80%] mx-auto rounded-[12px] md:shadow-[0_4px_15px_rgba(0,0,0,0.1)] overflow-hidden px-5 pb-6 md:pb-10 mt-4">
+        {/* Profile section */}
+        <Link
+          href="/account/profile"
+          className="flex items-center gap-4 py-4 border-b border-gray-200 hover:bg-gray-50 transition"
+        >
+          <div className="relative w-[60px] h-[60px] flex-shrink-0">
             <Image
               src={
                 user?.avatarImage?.url ||
                 "https://res.cloudinary.com/datnguyen240/image/upload/v1722168751/avatars/avatar_pnncdk.png"
               }
-              alt=''
-              layout='fill'
-              objectFit='cover'
-              className='rounded-[6px]'
+              alt="Avatar"
+              fill
+              className="rounded-md object-cover"
             />
           </div>
-          <div className='flex flex-1 justify-between items-center'>
-            <div className=''>
-              <p className='text-[#4A4B4D] text-[22px] font-semibold'>{user?.name}</p>
-              <p className='text-[#636464] text-[16px]'>{user?.phonenumber}</p>
+          <div className="flex flex-1 justify-between items-center">
+            <div>
+              <p className="text-[20px] font-semibold text-gray-800">{user?.name}</p>
+              <p className="text-[15px] text-gray-500">{user?.phonenumber}</p>
             </div>
-
-            <div className='relative w-[30px] pt-[30px]'>
-              <Image src='/assets/pencil.png' alt='' layout='fill' objectFit='contain' />
-            </div>
+            <Image
+              src="/assets/pencil.png"
+              alt="Edit"
+              width={24}
+              height={24}
+              className="opacity-80"
+            />
           </div>
         </Link>
 
-        <div className='hidden md:block lg:hidden'>
-          <Link
-            href='/favorite'
-            className='bg-[#fff] flex items-center justify-between border-b-[1px] border-t-[0px] border-x-[0px] border-b-[#a3a3a3] border-solid px-[8px] py-[12px] my-[20px]'
-          >
-            <div className='flex items-center gap-[10px]'>
-              <div className='relative w-[30px] pt-[30px] md:w-[25px] md:pt-[25px]'>
-                <Image src='/assets/favorite.png' alt='' layout='fill' objectFit='contain' />
-              </div>
-              <span className='text-[#4A4B4D] text-[20px] font-semibold'>Yêu thích</span>
-            </div>
-            <div className='relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]'>
-              <Image src='/assets/arrow_right.png' alt='' layout='fill' objectFit='contain' />
-            </div>
-          </Link>
+        {/* Menu links */}
+        <div className="divide-y divide-gray-200 mt-4">
+          <MenuItem
+            href="/account/location"
+            icon="/assets/location.png"
+            label="Địa chỉ"
+          />
+          {!user?.isGoogleLogin && (
+            <MenuItem
+              href="/account/change-password"
+              icon="/assets/lock.png"
+              label="Đổi mật khẩu"
+            />
+          )}
+          <MenuItem
+            href="/favorite"
+            icon="/assets/favorite.png"
+            label="Yêu thích"
+            className="md:hidden"
+          />
         </div>
 
-        <Link
-          href='/account/location'
-          className='bg-[#fff] flex items-center justify-between border-b-[1px] border-t-[0px] border-x-[0px] border-b-[#a3a3a3] border-solid px-[8px] py-[12px] my-[20px]'
-        >
-          <div className='flex items-center gap-[10px]'>
-            <div className='relative w-[30px] pt-[30px] md:w-[25px] md:pt-[25px]'>
-              <Image src='/assets/location.png' alt='' layout='fill' objectFit='contain' />
-            </div>
-            <span className='text-[#4A4B4D] text-[20px] font-semibold'>Địa chỉ</span>
-          </div>
-          <div className='relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]'>
-            <Image src='/assets/arrow_right.png' alt='' layout='fill' objectFit='contain' />
-          </div>
-        </Link>
-        {/* <Link
-          href='/account/all-payment-method'
-          className='bg-[#fff] flex items-center justify-between border-b-[1px] border-t-[0px] border-x-[0px] border-b-[#a3a3a3] border-solid px-[8px] py-[12px] my-[20px]'
-        >
-          <div className='flex items-center gap-[10px]'>
-            <div className='relative w-[30px] pt-[30px] md:w-[25px] md:pt-[25px]'>
-              <Image src='/assets/credit_card.png' alt='' layout='fill' objectFit='contain' />
-            </div>
-            <span className='text-[#4A4B4D] text-[20px] font-semibold'>Phương thức thanh toán</span>
-          </div>
-          <div className='relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]'>
-            <Image src='/assets/arrow_right.png' alt='' layout='fill' objectFit='contain' />
-          </div>
-        </Link> */}
-
-        {!user?.isGoogleLogin && (
-          <Link
-            href='/account/change-password'
-            className='bg-[#fff] flex items-center justify-between border-b-[1px] border-t-[0px] border-x-[0px] border-b-[#a3a3a3] border-solid px-[8px] py-[12px] my-[20px]'
-          >
-            <div className='flex items-center gap-[10px]'>
-              <div className='relative w-[30px] pt-[30px] md:w-[25px] md:pt-[25px]'>
-                <Image src='/assets/lock.png' alt='' layout='fill' objectFit='contain' />
-              </div>
-              <span className='text-[#4A4B4D] text-[20px] font-semibold'>Đổi mật khẩu</span>
-            </div>
-            <div className='relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]'>
-              <Image src='/assets/arrow_right.png' alt='' layout='fill' objectFit='contain' />
-            </div>
-          </Link>
-        )}
-
-        {/* <div className='bg-[#fff] flex items-center justify-between border-b-[1px] border-t-[0px] border-x-[0px] border-b-[#a3a3a3] border-solid px-[8px] py-[12px] my-[20px]'>
-          <div className='flex items-center gap-[10px]'>
-            <div className='relative w-[30px] pt-[30px] md:w-[25px] md:pt-[25px]'>
-              <Image src='/assets/setting.png' alt='' layout='fill' objectFit='contain' />
-            </div>
-            <span className='text-[#4A4B4D] text-[20px] font-semibold'>Cài đặt</span>
-          </div>
-          <div className='relative w-[25px] pt-[25px] md:w-[20px] md:pt-[20px]'>
-            <Image src='/assets/arrow_right.png' alt='' layout='fill' objectFit='contain' />
-          </div>
-        </div> */}
-
+        {/* Logout Button */}
         <button
           onClick={confirmLogout}
-          className='bg-[#fc6011] text-[#fff] font-semibold w-full p-[20px] rounded-full my-[10px] cursor-pointer shadow-md hover:shadow-lg'
+          className="mt-6 bg-gradient-to-r from-[#e50914] to-[#ff1f1f] text-white font-semibold w-full py-4 rounded-full shadow-md hover:shadow-lg active:scale-[0.98] transition-transform"
         >
           Đăng Xuất
         </button>
       </div>
 
-      <div className='block md:hidden'>
-        <NavBar page='account' />
+      {/* Bottom Nav */}
+      <div className="block md:hidden">
+        <NavBar page="account" />
       </div>
     </div>
   );
 };
 
 export default page;
+
+/* --- Sub Component for MenuItem --- */
+const MenuItem = ({ href, icon, label, className = "" }) => (
+  <Link
+    href={href}
+    className={`flex justify-between items-center py-3 px-2 hover:bg-gray-50 transition ${className}`}
+  >
+    <div className="flex items-center gap-3">
+      <div className="relative w-[28px] h-[28px]">
+        <Image src={icon} alt={label} fill className="object-contain" />
+      </div>
+      <span className="text-[18px] font-medium text-gray-700">{label}</span>
+    </div>
+    <Image
+      src="/assets/arrow_right.png"
+      alt="arrow"
+      width={18}
+      height={18}
+      className="opacity-70"
+    />
+  </Link>
+);

@@ -1,64 +1,78 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const OrderItem = ({ history, order }) => {
+  if (!order || !order.stores) return null;
+
   return (
     <div
-      className='order-item flex flex-col overflow-hidden border border-[#a3a3a3a3] border-solid rounded-[8px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px]'
+      className="order-item flex flex-col overflow-hidden border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow"
       data-order-id={order._id}
     >
       <Link
         href={`/store/${order.stores._id}`}
-        className='flex gap-[15px] h-fit md:flex-col p-[10px] md:p-0 md:gap-[10px]'
+        className="flex gap-4 h-fit md:flex-col p-3 md:p-0 md:gap-2"
       >
-        <div className='relative flex flex-col gap-[4px] w-[70px] pt-[70px] md:w-full md:pt-[45%] md:rounded-[8px] rounded-full overflow-hidden'>
-          <Image src={order.stores.avatar.url} alt='' layout='fill' objectFit='cover' />
+        {/* Image */}
+        <div className="relative flex flex-col gap-1 w-[70px] pt-[70px] md:w-full md:pt-[45%] md:rounded-t-lg rounded-full overflow-hidden">
+          <Image
+            src={order.stores.avatar?.url || "/default-store.jpg"}
+            alt={order.stores.name}
+            fill
+            className="object-cover"
+          />
         </div>
 
-        <div className='flex flex-col md:px-[10px] md:pb-[10px] max-w-[calc(100%-85px)] md:max-w-full'>
-          <span className='store-name text-[#4A4B4D] text-[20px] font-bold line-clamp-1'>{order.store.name}</span>
-          <div className='flex items-center gap-[6px]'>
-            <span className='text-[#a4a5a8] whitespace-nowrap'>{order.items.length} món</span>
-            <div className='w-[4px] h-[4px] rounded-full bg-[#a4a5a8]'></div>
-            {/* <span className='address text-[#a4a5a8] line-clamp-1 w-[80%]'>{order.shipLocation.address}</span> */}
+        {/* Info */}
+        <div className="flex flex-col md:px-3 md:pb-3 max-w-[calc(100%-85px)] md:max-w-full">
+          <span className="text-red-600 text-lg font-bold line-clamp-1">
+            {order.stores.name}
+          </span>
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
+            <span>{order.items.length} món</span>
+            <div className="w-1 h-1 rounded-full bg-gray-400"></div>
+            {/* Optionally re-enable address line if needed */}
+            {/* <span className="truncate">{order.shipLocation?.address}</span> */}
           </div>
         </div>
       </Link>
 
-      {history ? (
-        <div className='flex items-center' style={{ borderTop: "1px solid #e0e0e0a3" }}>
-          <div
-            onClick=''
-            className='flex-1 flex justify-center p-[10px] hover:bg-[#e0e0e0a3] rounded-bl-md cursor-pointer'
-            style={{ borderRight: "1px solid #e0e0e0a3" }}
-          >
-            <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Đặt lại</span>
-          </div>
-          <Link
-            href={`/store/${order.stores._id}/rating/add-rating/${order._id}`}
-            className='flex-1 flex justify-center p-[10px] hover:bg-[#e0e0e0a3] rounded-br-md cursor-pointer'
-          >
-            <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Đánh giá</span>
-          </Link>
-        </div>
-      ) : (
-        <div className='flex items-center' style={{ borderTop: "1px solid #e0e0e0a3" }}>
-          <div
-            onClick=''
-            className='flex-1 flex justify-center p-[10px] hover:bg-[#e0e0e0a3] rounded-bl-md cursor-pointer'
-            style={{ borderRight: "1px solid #e0e0e0a3" }}
-          >
-            <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Hủy đơn hàng</span>
-          </div>
-          <Link
-            href={`/orders/detail-order/${order._id}`}
-            className='flex-1 flex justify-center p-[10px] hover:bg-[#e0e0e0a3] rounded-br-md cursor-pointer'
-          >
-            <span className='text-[#4A4B4D] text-[18px] font-semibold md:text-[16px]'>Xem tiến trình</span>
-          </Link>
-        </div>
-      )}
+      {/* Footer */}
+      <div className="flex items-center border-t border-gray-200">
+        {history ? (
+          <>
+            <button
+              className="flex-1 flex justify-center p-3 hover:bg-red-50 text-red-600 font-semibold border-r border-gray-200 transition"
+              onClick={() => console.log("Reorder", order._id)}
+            >
+              Đặt lại
+            </button>
+            <Link
+              href={`/store/${order.stores._id}/rating/add-rating/${order._id}`}
+              className="flex-1 flex justify-center p-3 hover:bg-red-50 text-red-600 font-semibold transition"
+            >
+              Đánh giá
+            </Link>
+          </>
+        ) : (
+          <>
+            <button
+              className="flex-1 flex justify-center p-3 hover:bg-red-50 text-red-600 font-semibold border-r border-gray-200 transition"
+              onClick={() => console.log("Cancel order", order._id)}
+            >
+              Hủy đơn hàng
+            </button>
+            <Link
+              href={`/orders/detail-order/${order._id}`}
+              className="flex-1 flex justify-center p-3 hover:bg-red-50 text-red-600 font-semibold transition"
+            >
+              Xem tiến trình
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 };

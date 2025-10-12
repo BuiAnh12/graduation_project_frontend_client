@@ -111,7 +111,7 @@ const EditRatingPage = () => {
           <span className='text-[#4A4B4D] text-2xl font-semibold'>Chỉnh sửa đánh giá bữa ăn</span>
           {detailRating && (
             <p className='text-gray-600 text-lg'>
-              Bạn thấy món ăn từ <span className='font-bold text-[#fc6011]'>{detailRating.store.name}</span> như thế
+              Bạn thấy món ăn từ <span className='font-bold text-[#fc2111]'>{detailRating.store.name}</span> như thế
               nào?
             </p>
           )}
@@ -144,7 +144,7 @@ const EditRatingPage = () => {
               <div {...getRootProps()} className='flex items-center gap-2 cursor-pointer'>
                 <input {...getInputProps()} />
                 <Image src='/assets/camera.png' alt='Upload' width={28} height={28} className='rounded-lg' />
-                <span className='text-[#fc6011] font-medium hover:underline'>Thêm ảnh</span>
+                <span className='text-[#fc2111] font-medium hover:underline'>Thêm ảnh</span>
               </div>
             )}
           </Dropzone>
@@ -171,7 +171,7 @@ const EditRatingPage = () => {
         {detailRating && (
           <button
             onClick={handleEditRating}
-            className='w-full md:w-[80%] mx-auto block rounded-lg bg-[#fc6011] text-white py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-105'
+            className='w-full md:w-[80%] mx-auto block rounded-lg bg-[#fc2111] text-white py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-105'
           >
             Chỉnh sửa đánh giá
           </button>

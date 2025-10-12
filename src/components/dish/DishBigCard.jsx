@@ -52,12 +52,14 @@ const DishBigCard = ({ dish, storeInfo, cartItems }) => {
   };
 
   return (
-    <div className='relative group'>
+    <div className="relative group transition-transform duration-300 hover:scale-[1.02]">
       {/* Overlay trạng thái cửa hàng */}
       {(storeInfo?.openStatus === "CLOSED" || dish?.stockStatus === "OUT_OF_STOCK") && (
-        <div className='absolute inset-0 bg-black/50 z-20 flex items-center justify-center rounded-2xl backdrop-blur-[2px]'>
-          <span className='text-white text-lg font-semibold px-4 text-center'>
-            {storeInfo?.openStatus === "CLOSED" ? "Cửa hàng hiện đang đóng" : "Món ăn hiện không còn phục vụ"}
+        <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center rounded-2xl backdrop-blur-[2px]">
+          <span className="text-white text-lg font-semibold px-4 text-center">
+            {storeInfo?.openStatus === "CLOSED"
+              ? "Cửa hàng hiện đang đóng"
+              : "Món ăn hiện không còn phục vụ"}
           </span>
         </div>
       )}
@@ -67,68 +69,68 @@ const DishBigCard = ({ dish, storeInfo, cartItems }) => {
         href={`/store/${dish.storeId}/dish/${dish._id}`}
         className={storeInfo?.openStatus === "CLOSED" ? "pointer-events-none" : ""}
       >
-        <div
-          className='relative flex flex-col gap-2 pt-[75%] w-full rounded-2xl overflow-hidden shadow-md bg-white transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl'
-          name='bigDishCard'
-        >
+        <div className="relative flex flex-col gap-2 pt-[75%] w-full rounded-2xl overflow-hidden shadow-lg bg-white hover:shadow-2xl transition-all duration-300">
           <Image
             src={dish?.image?.url}
             alt={dish?.name || "Dish"}
-            layout='fill'
-            objectFit='cover'
-            className='rounded-2xl transition-transform duration-300 group-hover:scale-105'
+            layout="fill"
+            objectFit="cover"
+            className="rounded-2xl transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Nút giỏ hàng */}
           {cartItem?.quantity > 0 ? (
-            <div className='absolute bottom-3 right-3 flex items-center bg-white gap-2 border border-[#fc6011] rounded-full px-3 py-1 shadow-lg z-10'>
-              <Image
-                src='/assets/minus.png'
-                alt='minus'
-                width={20}
-                height={20}
+            <div className="absolute bottom-3 right-3 flex items-center bg-white gap-2 border border-red-500 rounded-full px-3 py-1 shadow-lg z-10">
+              <button
                 onClick={(e) => {
                   e.preventDefault();
                   handleChangeQuantity(-1);
                 }}
-                className='cursor-pointer hover:scale-110 transition'
-              />
-              <span className='text-[#4A4B4D] text-lg font-bold w-[30px] text-center'>{cartItem?.quantity}</span>
-              <Image
-                src='/assets/plus_active.png'
-                alt='plus'
-                width={20}
-                height={20}
+                className="text-red-600 text-xl font-bold hover:scale-110 transition"
+              >
+                −
+              </button>
+              <span className="text-gray-800 text-lg font-semibold w-[30px] text-center">
+                {cartItem?.quantity}
+              </span>
+              <button
                 onClick={(e) => {
                   e.preventDefault();
                   handleChangeQuantity(1);
                 }}
-                className='cursor-pointer hover:scale-110 transition'
-              />
+                className="text-red-600 text-xl font-bold hover:scale-110 transition"
+              >
+                +
+              </button>
             </div>
           ) : (
-            <Image
-              src='/assets/add_active.png'
-              name='addingCart'
-              alt='add'
-              width={42}
-              height={42}
-              className='absolute bottom-3 right-3 bg-white rounded-full shadow-lg cursor-pointer hover:scale-110 transition'
+            <button
               onClick={(e) => {
                 e.preventDefault();
                 handleChangeQuantity(1);
               }}
-            />
+              className="absolute bottom-3 right-3 bg-red-600 text-white rounded-full w-[42px] h-[42px] flex items-center justify-center shadow-lg hover:bg-red-600 hover:scale-110 transition"
+            >
+              <Image
+                src="/assets/plus_white.png"
+                alt="add"
+                width={20}
+                height={20}
+                className=""
+              />
+            </button>
           )}
         </div>
 
         {/* Thông tin món ăn */}
-        <div className='mt-2'>
-          <h4 className='text-[#4A4B4D] text-lg font-semibold truncate' name='dishName'>
+        <div className="mt-3">
+          <h4 className="text-gray-900 text-lg font-semibold truncate group-hover:text-red-600 transition">
             {dish?.name}
           </h4>
-          {dish?.description && <p className='text-[#a4a5a8] text-sm truncate'>{dish?.description}</p>}
-          <p className='text-black font-bold mt-1' name='dishPrice'>
+          {dish?.description && (
+            <p className="text-gray-500 text-sm truncate">{dish?.description}</p>
+          )}
+          <p className="text-red-600 font-bold mt-1 text-[17px]">
             {Number(dish?.price).toLocaleString("vi-VN")}đ
           </p>
         </div>

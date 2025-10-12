@@ -23,16 +23,13 @@ const CategoryItem = ({ type }) => {
     let updatedCategories = [...selectedCategories];
 
     if (updatedCategories.includes(type._id)) {
-      // Nếu đã chọn, thì bỏ chọn
       updatedCategories = updatedCategories.filter((id) => id !== type._id);
     } else {
-      // Nếu chưa chọn, thì thêm vào danh sách
       updatedCategories.push(type._id);
     }
 
     setSelectedCategories(updatedCategories);
 
-    // Cập nhật URL
     const params = new URLSearchParams();
     if (name) params.set("name", name);
     if (updatedCategories.length > 0) params.set("category", updatedCategories.join(","));
@@ -43,38 +40,50 @@ const CategoryItem = ({ type }) => {
     router.push(`/search?${params.toString()}`);
   };
 
+  const isSelected = selectedCategories.includes(type._id);
+
   return (
     <div
-      className='category-item relative flex flex-col items-center gap-[4px] w-fit cursor-pointer'
+      className="category-item relative flex flex-col items-center gap-3 w-fit cursor-pointer group transition-all duration-300 hover:scale-[1.03]"
       onClick={handleCategoryClick}
-      data-category-name={category.name}
+      data-category-name={type.name}
     >
-      <div className='relative w-[100px] h-[100px] pt-[100px]'>
+      {/* Image container */}
+      <div
+        className={`relative w-[95px] h-[95px] sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden shadow-md transition-all duration-300 ${
+          isSelected
+            ? "ring-4 ring-red-500 ring-offset-2 shadow-red-200"
+            : "ring-2 ring-gray-200 hover:ring-red-300"
+        }`}
+      >
         <Image
-          src={type.image.url}
-          layout='fill'
-          alt=''
-          className={`rounded-full w-[100px] h-[100px] justify-center border-[4px] border-solid object-cover ${
-            selectedCategories.includes(type._id) ? "border-[#fc6011]" : "border-[#e8e9e9]"
-          }`}
+          src={type?.image?.url || "/placeholder.png"}
+          alt={type?.name}
+          fill
+          className="object-cover rounded-full group-hover:scale-110 transition-transform duration-300"
         />
+
+        {/* Checkmark overlay */}
+        {isSelected && (
+          <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-[3px] shadow-md">
+            <Image
+              src="/assets/check_box_circle_active.png"
+              alt="selected"
+              width={26}
+              height={26}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Category name */}
       <span
-        className={`text-[16px] text-center font-semibold line-clamp-2 ${
-          selectedCategories.includes(type._id) ? "text-[#fc6011]" : "text-[#4A4B4D]"
+        className={`text-[15px] sm:text-[16px] text-center font-semibold line-clamp-2 transition-colors duration-200 ${
+          isSelected ? "text-red-600" : "text-gray-700 group-hover:text-red-500"
         }`}
       >
         {type.name}
       </span>
-      {selectedCategories.includes(type._id) && (
-        <Image
-          src='/assets/check_box_circle_active.png'
-          alt=''
-          width={30}
-          height={30}
-          className='absolute top-[0px] right-[0px]'
-        />
-      )}
     </div>
   );
 };
