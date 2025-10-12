@@ -344,7 +344,7 @@ const Page = () => {
 
               <div className='fixed bottom-0 left-0 right-0 bg-[#fff] px-[20px] py-[15px] z-[100]'>
                 <div
-                  className='flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] bg-[#fc6011] text-[#fff] py-[15px] px-[20px] w-full cursor-pointer shadow-md hover:shadow-lg'
+                  className='flex items-center justify-center lg:w-[60%] md:w-[80%] md:mx-auto rounded-[8px] bg-[#fc2111] text-[#fff] py-[15px] px-[20px] w-full cursor-pointer shadow-md hover:shadow-lg'
                   onClick={() => {
                     handleChooseLocation({
                       address: dragMarkInput,

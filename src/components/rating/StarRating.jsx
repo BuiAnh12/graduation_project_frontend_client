@@ -1,16 +1,17 @@
 import Image from "next/image";
 
 const StarRating = ({ ratingValue }) => {
-  const maxStars = 5;
+  const stars = 5;
   return (
-    <div className='flex items-center gap-[4px]'>
-      {Array.from({ length: maxStars }).map((_, index) => (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: stars }).map((_, i) => (
         <Image
-          key={index}
-          src={index < ratingValue ? "/assets/star_active.png" : "/assets/star.png"}
-          alt='star'
-          width={15}
-          height={15}
+          key={i}
+          src={i < ratingValue ? "/assets/star_active.png" : "/assets/star.png"}
+          alt="star"
+          width={18}
+          height={18}
+          className="transition-transform hover:scale-110"
         />
       ))}
     </div>

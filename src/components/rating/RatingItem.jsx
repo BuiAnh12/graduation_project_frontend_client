@@ -8,7 +8,13 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import { ratingService } from "@/api/ratingService";
 
-const RatingItem = ({ rating, userId, refetchAllStoreRating, refetchPaginationRating, refetchAllStoreRatingDesc }) => {
+const RatingItem = ({
+  rating,
+  userId,
+  refetchAllStoreRating,
+  refetchPaginationRating,
+  refetchAllStoreRatingDesc,
+}) => {
   const [showOptionBox, setShowOptionBox] = useState(false);
 
   const handleDeleteRating = async () => {
@@ -30,6 +36,8 @@ const RatingItem = ({ rating, userId, refetchAllStoreRating, refetchPaginationRa
       showCancelButton: true,
       confirmButtonText: "Đồng ý",
       cancelButtonText: "Hủy",
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#6B7280",
     });
 
     if (result.isConfirmed) {
@@ -38,85 +46,103 @@ const RatingItem = ({ rating, userId, refetchAllStoreRating, refetchPaginationRa
   };
 
   return (
-    <div className='my-[15px]'>
-      <div className='relative'>
-        <div className='flex items-center gap-[10px]'>
-          <div className='relative w-[65px] h-[65px] pt-[65px] rounded-full overflow-hidden'>
-            <Image layout='fill' src={rating?.users?.avatarImage?.url} alt='' objectFit='cover' />
+    <div className="my-6">
+      <div className="relative bg-white rounded-2xl p-6 shadow-smooth transition-all duration-300 hover:shadow-[0_8px_30px_rgba(239,68,68,0.2)]">
+        {/* User info */}
+        <div className="flex items-center gap-4">
+          <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-primary shadow-sm">
+            <Image
+              src={rating?.users?.avatarImage?.url || "/assets/default_avatar.png"}
+              alt="avatar"
+              fill
+              className="object-cover"
+            />
           </div>
 
-          <div className='flex flex-1 items-center justify-between'>
-            <div className='flex flex-col flex-start h-full'>
-              <h4 className='text-[#4A4B4D] text-[24px] font-semibold md:text-[20px]'>{rating?.users?.name}</h4>
-              <div className='flex items-center gap-[8px]'>
+          <div className="flex flex-1 items-center justify-between">
+            <div className="flex flex-col justify-center">
+              <h4 className="text-text-primary text-xl font-semibold leading-tight">
+                {rating?.users?.name}
+              </h4>
+
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
                 <StarRating ratingValue={rating.ratingValue} />
-                <div className='w-[4px] h-[4px] rounded-full bg-[#636464]'></div>
-                <span className='text-[#636464]'>{moment.utc(rating?.createdAt).local().fromNow()}</span>
+                <div className="w-[4px] h-[4px] rounded-full bg-gray-400"></div>
+                <span>{moment.utc(rating?.createdAt).local().fromNow()}</span>
               </div>
             </div>
 
+            {/* Option menu */}
             {userId && rating.user?._id === userId && (
-              <Image
-                src='/assets/dots.png'
-                className='cursor-pointer'
-                alt=''
-                width={30}
-                height={30}
-                onClick={() => {
-                  setShowOptionBox(!showOptionBox);
-                }}
-              />
-            )}
-            {showOptionBox && (
-              <div className='absolute top-[0px] right-[35px] p-[10px] border border-[#a3a3a3a3] border-solid rounded-[6px] w-[150px] flex flex-col bg-white'>
-                <Link
-                  href={`/store/${rating.storeId}/rating/edit-rating/${rating?._id}`}
-                  className='text-[#4A4B4D] font-medium p-[6px] w-full rounded-[4px] hover:bg-[#00000011] cursor-pointer'
-                >
-                  Chỉnh sửa
-                </Link>
-                <span
-                  onClick={confirmDeleteRating}
-                  className='text-[#4A4B4D] font-medium p-[6px] w-full rounded-[4px] hover:bg-[#00000011] cursor-pointer'
-                >
-                  Xóa
-                </span>
+              <div className="relative">
+                <Image
+                  src="/assets/dots.png"
+                  alt="menu"
+                  width={28}
+                  height={28}
+                  className="cursor-pointer opacity-70 hover:opacity-100 transition"
+                  onClick={() => setShowOptionBox(!showOptionBox)}
+                />
+
+                {showOptionBox && (
+                  <div className="absolute top-8 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-36">
+                    <Link
+                      href={`/store/${rating.storeId}/rating/edit-rating/${rating?._id}`}
+                      className="block px-4 py-2 text-sm hover:bg-primary-light hover:text-white rounded-t-lg"
+                    >
+                      ✏️ Chỉnh sửa
+                    </Link>
+                    <button
+                      onClick={confirmDeleteRating}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
+                    >
+                      🗑 Xóa
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
 
+        {/* Images */}
         {rating?.images?.length > 0 && (
-          <div className='flex flex-row gap-[10px] mt-[10px]'>
+          <div className="flex flex-wrap gap-3 mt-4">
             {rating.images.map((img) => (
-              <div className='relative flex flex-col gap-[4px] w-[150px] pt-[150px]' key={img.filePath}>
-                <Image src={img.url} alt='' layout='fill' objectFit='cover' className='rounded-[6px] justify-center' />
+              <div
+                key={img.filePath}
+                className="relative w-[120px] h-[120px] rounded-xl overflow-hidden group"
+              >
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                />
               </div>
             ))}
           </div>
         )}
 
-        <p className='text-[#000] text-[18px] md:text-[16px] mt-[10px]'>{rating.comment}</p>
+        {/* Comment */}
+        <p className="text-text-primary text-base mt-4">{rating.comment}</p>
+
+        {/* Ordered items */}
         {rating.order && rating.order.items.length > 0 && (
-          <p className='text-[#636464] pb-[10px] pt-[6px] md:text-[14px] overflow-hidden text-ellipsis whitespace-nowrap'>
+          <p className="text-text-secondary text-sm mt-1 italic">
             Đã đặt:{" "}
-            {rating.order.items.map((dish, index) => (
-              <span key={index}>
-                {dish.dishName}
-                {index < rating.order.items.length - 1 ? ", " : ""}
-              </span>
-            ))}
+            {rating.order.items
+              .map((dish) => dish.dishName)
+              .join(", ")}
           </p>
         )}
       </div>
 
+      {/* Store reply */}
       {rating.storeReply && (
-        <div className='px-[20px] py-[15px] bg-[#e6e6e6] rounded-[8px]'>
-          <div className='flex items-center justify-between'>
-            <p className='text-[#000] font-bold md:text-[14px]'>Phản hồi từ quán</p>
-            {/* <p className='text-[#636464] text-[15px] md:text-[13px]'>6 ngày trước</p> */}
-          </div>
-          <p className='text-[#636464] md:text-[14px]'>{rating.storeReply}</p>
+        <div className="mt-3 bg-gradient-to-r from-primary to-accent text-white p-4 rounded-xl">
+          <p className="font-semibold mb-1">💬 Phản hồi từ quán</p>
+          <p className="opacity-90 text-sm">{rating.storeReply}</p>
         </div>
       )}
     </div>

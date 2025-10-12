@@ -36,7 +36,7 @@ const SortBy = () => {
 
   return (
     <div className='rounded-lg overflow-hidden bg-white shadow-md'>
-      <div className='bg-gradient-to-r from-[#fc6011] to-[#ff8743] text-white px-5 py-3 text-lg font-semibold text-center'>
+      <div className='bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-white px-5 py-3 text-lg font-semibold text-center'>
         Sắp xếp theo
       </div>
 

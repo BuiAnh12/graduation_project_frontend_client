@@ -6,25 +6,42 @@ const ToppingItemCheckBox = ({ topping, toppingGroup, selectedTopping, handleCho
 
   return (
     <div
-      className={`flex mb-[2px] items-center justify-between p-4 rounded-lg border transition cursor-pointer 
-        ${isChecked ? "bg-orange-50 border-[#fc6011]" : "bg-white border-gray-200 hover:shadow-md"}`}
       onClick={() => handleChooseTopping(topping, topping.price, toppingGroup)}
-      name='checkedBtn'
+      name="checkedBtn"
+      className={`flex items-center justify-between p-4 mb-2 rounded-xl border-2 transition-all cursor-pointer 
+        ${
+          isChecked
+            ? "bg-red-50 border-red-600 shadow-sm shadow-red-100"
+            : "bg-white border-gray-200 hover:border-red-300 hover:shadow-md"
+        }`}
     >
-      <div className='flex items-center gap-4'>
+      {/* Left: Icon + Label */}
+      <div className="flex items-center gap-4">
         <Image
           src={isChecked ? "/assets/check_box_checked.png" : "/assets/check_box_empty.png"}
           alt={isChecked ? "checked" : "unchecked"}
           width={22}
           height={22}
+          className="transition-transform duration-300 ease-in-out"
         />
-        <h3 className='text-[#333] text-[16px] md:text-[18px] font-medium' name='toppingName'>
+        <h3
+          name="toppingName"
+          className={`text-[16px] md:text-[18px] font-medium ${
+            isChecked ? "text-red-700" : "text-gray-800"
+          }`}
+        >
           {topping.name}
         </h3>
       </div>
 
+      {/* Right: Price */}
       {topping.price !== 0 && (
-        <span className='text-[#4A4B4D] text-[16px] md:text-[18px] font-semibold' name='toppingPrice'>
+        <span
+          name="toppingPrice"
+          className={`text-[16px] md:text-[18px] font-semibold ${
+            isChecked ? "text-red-600" : "text-gray-600"
+          }`}
+        >
           +{Number(topping.price).toLocaleString("vi-VN")}đ
         </span>
       )}

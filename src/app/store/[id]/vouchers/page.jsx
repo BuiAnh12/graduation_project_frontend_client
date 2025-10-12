@@ -176,7 +176,7 @@ const Page = () => {
           ${
             valid
               ? isSelected
-                ? "border-[#fc6011] bg-[#fff5f0] cursor-pointer hover:shadow-md"
+                ? "border-[#fc2111] bg-[#fff5f0] cursor-pointer hover:shadow-md"
                 : "border-gray-200 cursor-pointer hover:shadow-md hover:scale-[1.01]"
               : "opacity-50 cursor-not-allowed border-gray-200"
           }`}
@@ -217,7 +217,7 @@ const Page = () => {
               className={`flex items-center justify-center rounded-lg px-6 py-3 shadow-md transition-all duration-300 
               ${
                 selectedVouchers.length > 0
-                  ? "bg-[#fc6011] text-white hover:bg-[#e0560f] hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+                  ? "bg-[#fc2111] text-white hover:bg-[#e0560f] hover:shadow-lg hover:scale-[1.02] cursor-pointer"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
@@ -227,7 +227,7 @@ const Page = () => {
         </>
       ) : (
         <div className='w-full h-screen flex items-center justify-center'>
-          <Atom color='#fc6011' size='medium' text='' textColor='' />
+          <Atom color='#fc2111' size='medium' text='' textColor='' />
         </div>
       )}
     </div>

@@ -131,7 +131,7 @@ const page = () => {
                 type='submit'
                 name='submitBtn'
                 className={`text-center text-[#fff] font-semibold w-[90%] p-[20px] rounded-full my-[10px] shadow-md hover:shadow-lg ${
-                  formik.isValid && formik.dirty ? "bg-[#fc6011] cursor-pointer" : "bg-[#f5854d] cursor-not-allowed"
+                  formik.isValid && formik.dirty ? "bg-[#fc2111] cursor-pointer" : "bg-[#f5854d] cursor-not-allowed"
                 }`}
               >
                 Đăng nhập
@@ -177,7 +177,7 @@ const page = () => {
 
           <p className='text-[#636464] font-semibold mt-[20px]'>
             Chưa có tài khoản?{" "}
-            <Link href='/auth/register' className='text-[#fc6011] cursor-pointer'>
+            <Link href='/auth/register' className='text-[#fc2111] cursor-pointer'>
               Đăng ký
             </Link>
           </p>

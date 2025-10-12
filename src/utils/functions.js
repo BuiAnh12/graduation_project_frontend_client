@@ -52,10 +52,11 @@ export const groupStoresByCategory = (stores) => {
 
 
 export const groupDishesByCategory = (dishes) => {
+  
   const groupedDishes = {};
 
   dishes.forEach((dish) => {
-    const category = dish.category;
+    const category = dish.categories.name;
     const categoryId = category._id;
 
     if (!groupedDishes[categoryId]) {

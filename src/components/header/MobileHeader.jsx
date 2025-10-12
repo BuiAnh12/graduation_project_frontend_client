@@ -50,7 +50,7 @@ const MobileHeader = ({ page }) => {
       <div className='flex items-center gap-[15px]'>
         <div className='relative'>
           <button
-            className='flex items-center gap-2 p-2 bg-gradient-to-r from-[#fc6011] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition'
+            className='flex items-center gap-2 p-2 bg-gradient-to-r from-[#fc2111] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition'
             onClick={() => setOpenSelectProvince(!openSelectProvince)}
           >
             <Image src='/assets/star_yellow.png' alt='Location' width={18} height={18} className='drop-shadow-md' />
@@ -66,8 +66,8 @@ const MobileHeader = ({ page }) => {
                     setOpenSelectProvince(false);
                     handleProvinceChange(prov);
                   }}
-                  className={`py-3 px-4 cursor-pointer hover:bg-[#fc6011]/10 ${
-                    prov.name === province.name ? "bg-[#fc6011]/20 font-bold text-[#fc6011]" : "text-gray-700"
+                  className={`py-3 px-4 cursor-pointer hover:bg-[#fc2111]/10 ${
+                    prov.name === province.name ? "bg-[#fc2111]/20 font-bold text-[#fc2111]" : "text-gray-700"
                   }`}
                 >
                   {prov.name}
@@ -94,15 +94,15 @@ const MobileHeader = ({ page }) => {
                 className={`hidden group-hover:block ${page == "notifications" ? "!block" : ""}`}
               />
               <p
-                className={`text-[12px] group-hover:text-[#fc6011] ${
-                  page == "notifications" ? "text-[#fc6011]" : "text-[#4A4B4D]"
+                className={`text-[12px] group-hover:text-[#fc2111] ${
+                  page == "notifications" ? "text-[#fc2111]" : "text-[#4A4B4D]"
                 }`}
               >
                 Thông báo
               </p>
 
               {notifications.filter((noti) => noti.status === "unread").length > 0 && (
-                <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
+                <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc2111] border-solid border-[1px] border-white flex items-center justify-center'>
                   <span className='text-[11px] text-white'>
                     {notifications.filter((noti) => noti.status === "unread").length}
                   </span>

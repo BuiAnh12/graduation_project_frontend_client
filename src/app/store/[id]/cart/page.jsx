@@ -381,327 +381,226 @@ const page = () => {
 
     return (
         <>
-            {detailCart && (
-                <div className="pt-[20px] pb-[140px] bg-[#fff] md:pt-[110px]">
-                    <Heading title="Giỏ hàng" description="" keywords="" />
-                    <div className="hidden md:block">
-                        <Header />
+          {detailCart && (
+            <div className="pt-[20px] pb-[140px] bg-[#fff] md:pt-[110px]">
+              <Heading title="Giỏ hàng" description="" keywords="" />
+              <div className="hidden md:block">
+                <Header />
+              </div>
+      
+              <div className="lg:w-[60%] md:w-[80%] md:mx-auto">
+                <div className="relative bg-white flex flex-col p-5 border border-gray-100 rounded-2xl shadow-md md:p-6 hover:shadow-lg transition-all duration-300">
+      
+                  {/* --- Store Header --- */}
+                  <div className="fixed top-0 right-0 left-0 z-10 flex items-center gap-[40px] bg-[#fff] h-[85px] p-5 md:static md:gap-[20px] border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition-all duration-300">
+                    <Link href={`/store/${storeId}`} className="relative w-[30px] pt-[30px] md:hidden">
+                      <Image src="/assets/arrow_left_long.png" alt="" layout="fill" objectFit="contain" />
+                    </Link>
+      
+                    <Link
+                      href={`/store/${storeId}`}
+                      className="relative w-[70px] pt-[70px] rounded-[12px] overflow-hidden hidden md:block"
+                    >
+                      <Image
+                        src={detailCart?.store?.avatarImage?.url || "/assets/store_default.png"}
+                        alt=""
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </Link>
+      
+                    <div>
+                      <Link
+                        href={`/store/${storeId}`}
+                        className="text-red-600 text-[24px] font-bold line-clamp-1 hover:text-red-700 transition"
+                      >
+                        {detailCart?.store.name}
+                      </Link>
+      
+                      {storeLocation && storeLocation.lat !== 200 && (
+                        <p className="text-gray-500 text-[15px]">
+                          Khoảng cách tới chỗ bạn{" "}
+                          <span className="text-red-500 font-semibold">
+                            {haversineDistance(
+                              [storeLocation.lat, storeLocation.lon],
+                              [
+                                detailCart?.store?.location?.lat,
+                                detailCart?.store?.location?.lon,
+                              ]
+                            ).toFixed(2)}
+                            km
+                          </span>
+                        </p>
+                      )}
                     </div>
-
-                    <div className="lg:w-[60%] md:w-[80%] md:mx-auto">
-                        <div className="relative bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                            <div className="fixed top-0 right-0 left-0 z-10 flex items-center gap-[40px] bg-[#fff] h-[85px] p-5 md:static md:gap-[20px] border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <Link
-                                    href={`/store/${storeId}`}
-                                    className="relative w-[30px] pt-[30px] md:hidden"
-                                >
-                                    <Image
-                                        src="/assets/arrow_left_long.png"
-                                        alt=""
-                                        layout="fill"
-                                        objectFit="contain"
-                                    />
-                                </Link>
-                                <Link
-                                    href={`/store/${storeId}`}
-                                    className="relative w-[70px] pt-[70px] rounded-[8px] overflow-hidden hidden md:block"
-                                >
-                                    <Image
-                                        src={
-                                            detailCart?.store?.avatarImage?.url 
-                                            ||
-                                            "/assets/store_default.png"
-                                        }
-                                        alt=""
-                                        layout="fill"
-                                        objectFit="cover"
-                                    />
-                                </Link>
-                                <div>
-                                    <Link
-                                        href={`/store/${storeId}`}
-                                        className="text-[#4A4B4D] text-[24px] font-bold line-clamp-1"
-                                    >
-                                        {detailCart?.store.name}
-                                    </Link>
-                                    {storeLocation &&
-                                        storeLocation.lat !== 200 && (
-                                            <p className="text-[#636464]">
-                                                Khoảng cách tới chỗ bạn{" "}
-                                                {haversineDistance(
-                                                    [
-                                                        storeLocation.lat,
-                                                        storeLocation.lon,
-                                                    ],
-                                                    [
-                                                        detailCart?.store
-                                                            ?.location?.lat,
-                                                        detailCart?.store
-                                                            ?.location?.lon,
-                                                    ]
-                                                ).toFixed(2)}
-                                                km
-                                            </p>
-                                        )}
-                                </div>
-                            </div>
-
-                            <div className="h-[6px] w-full bg-gray-100 my-4 rounded-full"></div>
-
-                            <div className="mt-[25px] md:mt-0 bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <p className="text-[#4A4B4D] text-[18px] font-bold pb-[15px]">
-                                    Giao tới
-                                </p>
-
-                                <div className=" flex flex-col gap-[15px]">
-                                    <Link
-                                        href={`/account/location`}
-                                        className="flex gap-[15px]"
-                                    >
-                                        <Image
-                                            src="/assets/location_active.png"
-                                            alt=""
-                                            width={20}
-                                            height={20}
-                                            className="object-contain"
-                                        />
-                                        <div className="flex flex-1 items-center justify-between">
-                                            <div>
-                                                <h3 className="text-[#4A4B4D] text-[18px] font-bold">
-                                                    {storeLocation.name}
-                                                </h3>
-                                                <p className="text-[#a4a5a8] line-clamp-1">
-                                                    {storeLocation.address ||
-                                                        "Nhấn chọn để thêm địa chỉ giao hàng"}
-                                                </p>
-                                            </div>
-                                            <Image
-                                                src="/assets/arrow_right.png"
-                                                alt=""
-                                                width={20}
-                                                height={20}
-                                            />
-                                        </div>
-                                    </Link>
-
-                                    <Link
-                                        href={`/store/${storeId}/cart/edit-current-location`}
-                                        className="p-[10px] rounded-[6px] flex items-center justify-between bg-[#e0e0e0a3]"
-                                    >
-                                        <span className="text-[#4A4B4D]">
-                                            Thêm chi tiết địa chỉ và hướng dẫn
-                                            giao hàng
-                                        </span>
-                                        <span className="text-[#0054ff] font-semibold">
-                                            Thêm
-                                        </span>
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className="h-[6px] w-full bg-gray-100 my-4 rounded-full"></div>
-
-                            <div className="bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <div className="pb-[15px] flex items-center justify-between">
-                                    <span className="text-[#4A4B4D] text-[18px] font-bold">
-                                        Thông tin thanh toán
-                                    </span>
-                                </div>
-
-                                <div className="flex gap-[15px] mb-[10px]">
-                                    <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px]">
-                                        <Image
-                                            src="/assets/money.png"
-                                            alt=""
-                                            layout="fill"
-                                            objectFit="contain"
-                                        />
-                                    </div>
-                                    <div
-                                        className="flex flex-1 items-center justify-between"
-                                        onClick={() => setPaymentMethod("cash")}
-                                    >
-                                        <div className="flex items-center gap-[8px]">
-                                            <h3 className="text-[#4A4B4D] text-[18px] font-bold md:text-[16px]">
-                                                Tiền mặt
-                                            </h3>
-                                        </div>
-                                        {paymentMethod === "cash" ? (
-                                            <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px] cursor-pointer">
-                                                <Image
-                                                    src="/assets/button_active.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="contain"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px] cursor-pointer">
-                                                <Image
-                                                    src="/assets/button.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="contain"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-[15px]">
-                                    <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px]">
-                                        <Image
-                                            src="/assets/vnpay.jpg"
-                                            alt=""
-                                            layout="fill"
-                                            objectFit="contain"
-                                        />
-                                    </div>
-                                    <div
-                                        className="flex flex-1 items-center justify-between"
-                                        onClick={() =>
-                                            setPaymentMethod("VNPay")
-                                        }
-                                    >
-                                        <div className="flex items-center gap-[8px]">
-                                            <h3 className="text-[#4A4B4D] text-[18px] font-bold md:text-[16px]">
-                                                VNPay
-                                            </h3>
-                                        </div>
-                                        {paymentMethod === "VNPay" ? (
-                                            <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px] cursor-pointer">
-                                                <Image
-                                                    src="/assets/button_active.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="contain"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="relative w-[30px] pt-[30px] md:w-[20px] md:pt-[20px] cursor-pointer">
-                                                <Image
-                                                    src="/assets/button.png"
-                                                    alt=""
-                                                    layout="fill"
-                                                    objectFit="contain"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="h-[6px] w-full bg-gray-100 my-4 rounded-full"></div>
-
-                            <div className="bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <span className="text-[#4A4B4D] text-[18px] font-bold">
-                                    Ưu đãi
-                                </span>
-
-                                {/* Hiển thị danh sách voucher đã chọn */}
-                                {selectedVouchers.length > 0 ? (
-                                    <div className="mt-3 flex flex-col gap-2">
-                                        {selectedVouchers.map((voucher) => (
-                                            <div
-                                                key={voucher._id}
-                                                className="flex items-center justify-between p-3 rounded-lg border border-[#fc6011] bg-[#fff5f0]"
-                                            >
-                                                <span className="text-[#4A4B4D] font-medium">
-                                                    {voucher.code}
-                                                </span>
-                                                <span className="text-sm text-gray-500">
-                                                    {voucher.description}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="mt-3 text-sm text-gray-400">
-                                        Chưa có ưu đãi nào được chọn
-                                    </p>
-                                )}
-
-                                {/* Link sang trang chọn voucher */}
-                                <Link
-                                    href={`/store/${storeId}/vouchers`}
-                                    className="flex gap-[15px] mb-[10px] mt-[20px]"
-                                >
-                                    <div className="relative w-[30px] pt-[30px]">
-                                        <Image
-                                            src="/assets/marketing.png"
-                                            alt=""
-                                            layout="fill"
-                                            objectFit="contain"
-                                        />
-                                    </div>
-                                    <div className="flex flex-1 items-center justify-between">
-                                        <span className="text-[#4A4B4D] text-[18px]">
-                                            Sử dụng ưu đãi hoặc mã khuyến mãi
-                                        </span>
-                                        <div className="relative w-[20px] pt-[20px]">
-                                            <Image
-                                                src="/assets/arrow_right.png"
-                                                alt=""
-                                                layout="fill"
-                                                objectFit="contain"
-                                            />
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-
-                            <div className="h-[6px] w-full bg-gray-100 my-4 rounded-full"></div>
-
-                            <div className="bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <OrderSummary
-                                    detailItems={detailCart?.items}
-                                    subtotalPrice={subtotalPrice}
-                                    shippingFee={shippingFee}
-                                    totalDiscount={totalDiscount}
-                                />
-                            </div>
-
-                            <div className="h-[6px] w-full bg-gray-100 my-4 rounded-full"></div>
-
-                            <div className="bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <span className="text-[#4A4B4D] text-[16px]">
-                                    Bằng việc đặt đơn này, bạn đã đồng ý Điều
-                                    khoản Sử dụng và Quy chế hoạt động của chúng
-                                    tôi
-                                </span>
-                            </div>
+                  </div>
+      
+                  <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+      
+                  {/* --- Shipping Info --- */}
+                  <div className="mt-[25px] md:mt-0 bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
+                    <p className="text-red-600 text-[18px] font-bold pb-[15px]">Giao tới</p>
+      
+                    <div className="flex flex-col gap-[15px]">
+                      <Link href={`/account/location`} className="flex gap-[15px] items-center">
+                        <Image src="/assets/location_active.png" alt="" width={20} height={20} />
+                        <div className="flex flex-1 items-center justify-between">
+                          <div>
+                            <h3 className="text-[#4A4B4D] text-[18px] font-bold">{storeLocation.name}</h3>
+                            <p className="text-gray-500 line-clamp-1">
+                              {storeLocation.address || "Nhấn chọn để thêm địa chỉ giao hàng"}
+                            </p>
+                          </div>
+                          <Image src="/assets/arrow_right.png" alt="" width={20} height={20} />
                         </div>
+                      </Link>
+      
+                      <Link
+                        href={`/store/${storeId}/cart/edit-current-location`}
+                        className="p-[10px] rounded-[6px] flex items-center justify-between bg-[#fff5f5] border border-red-100 hover:bg-red-50 transition"
+                      >
+                        <span className="text-gray-700">
+                          Thêm chi tiết địa chỉ và hướng dẫn giao hàng
+                        </span>
+                        <span className="text-red-600 font-semibold">Thêm</span>
+                      </Link>
                     </div>
-
-                    <div className="fixed bottom-0 left-0 right-0 bg-[#fff] p-[15px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px]">
-                        <div className="flex items-center justify-between pb-[8px] lg:w-[60%] md:w-[80%] md:mx-auto">
-                            <span className="text-[#000] text-[18px]">
-                                Tổng cộng
-                            </span>
-                            <span className="text-[#4A4B4D] text-[24px] font-semibold">
-                                {Number(
-                                    (
-                                        subtotalPrice -
-                                        totalDiscount +
-                                        shippingFee
-                                    ).toFixed(0)
-                                ).toLocaleString("vi-VN")}
-                                đ
-                            </span>
-                        </div>
-                        <div
-                            onClick={handleCompleteCart}
-                            className="flex items-center justify-center rounded-[8px] bg-[#fc6011] text-[#fff] px-[20px] py-[10px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-pointer shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            <span className="text-[#fff] text-[20px] font-semibold md:text-[18px]">
-                                Đặt đơn
-                            </span>
-                        </div>
+                  </div>
+      
+                  <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+      
+                  {/* --- Payment Method --- */}
+                  <div className="bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
+                    <div className="pb-[15px] flex items-center justify-between">
+                      <span className="text-red-600 text-[18px] font-bold">Thông tin thanh toán</span>
                     </div>
+      
+                    {/* Tiền mặt */}
+                    <div className="flex gap-[15px] mb-[10px]">
+                      <div className="relative w-[30px] pt-[30px]">
+                        <Image src="/assets/money.png" alt="" layout="fill" objectFit="contain" />
+                      </div>
+                      <div
+                        className="flex flex-1 items-center justify-between cursor-pointer"
+                        onClick={() => setPaymentMethod("cash")}
+                      >
+                        <h3 className="text-[#4A4B4D] text-[18px] font-bold md:text-[16px]">Tiền mặt</h3>
+                        <Image
+                          src={`/assets/${paymentMethod === "cash" ? "button_active.png" : "button.png"}`}
+                          alt=""
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                    </div>
+      
+                    {/* VNPay */}
+                    <div className="flex gap-[15px]">
+                      <div className="relative w-[30px] pt-[30px]">
+                        <Image src="/assets/vnpay.jpg" alt="" layout="fill" objectFit="contain" />
+                      </div>
+                      <div
+                        className="flex flex-1 items-center justify-between cursor-pointer"
+                        onClick={() => setPaymentMethod("VNPay")}
+                      >
+                        <h3 className="text-[#4A4B4D] text-[18px] font-bold md:text-[16px]">VNPay</h3>
+                        <Image
+                          src={`/assets/${paymentMethod === "VNPay" ? "button_active.png" : "button.png"}`}
+                          alt=""
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+      
+                  {/* --- Vouchers --- */}
+                  <div className="bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
+                    <span className="text-red-600 text-[18px] font-bold">Ưu đãi</span>
+      
+                    {selectedVouchers.length > 0 ? (
+                      <div className="mt-3 flex flex-col gap-2">
+                        {selectedVouchers.map((voucher) => (
+                          <div
+                            key={voucher._id}
+                            className="flex items-center justify-between p-3 rounded-lg border border-[#fc2111] bg-[#fff5f0]"
+                          >
+                            <span className="text-gray-700 font-medium">{voucher.code}</span>
+                            <span className="text-sm text-gray-500">{voucher.description}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-sm text-gray-400">Chưa có ưu đãi nào được chọn</p>
+                    )}
+      
+                    <Link
+                      href={`/store/${storeId}/vouchers`}
+                      className="flex gap-[15px] items-center mt-[20px] hover:text-red-600 transition"
+                    >
+                      <div className="relative w-[30px] pt-[30px]">
+                        <Image src="/assets/marketing.png" alt="" layout="fill" objectFit="contain" />
+                      </div>
+                      <div className="flex flex-1 items-center justify-between">
+                        <span className="text-[#4A4B4D] text-[18px]">
+                          Sử dụng ưu đãi hoặc mã khuyến mãi
+                        </span>
+                        <Image src="/assets/arrow_right.png" alt="" width={20} height={20} />
+                      </div>
+                    </Link>
+                  </div>
+      
+                  <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+      
+                  {/* --- Summary --- */}
+                  <OrderSummary
+                      detailItems={detailCart?.items}
+                      subtotalPrice={subtotalPrice}
+                      shippingFee={shippingFee}
+                      totalDiscount={totalDiscount}
+                    />
+      
+                  <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+      
+                  {/* --- Terms --- */}
+                  <div className="bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
+                    <span className="text-gray-500 text-[15px] leading-relaxed">
+                      Bằng việc đặt đơn này, bạn đã đồng ý{" "}
+                      <span className="text-red-600 font-semibold cursor-pointer hover:underline">
+                        Điều khoản Sử dụng
+                      </span>{" "}
+                      và{" "}
+                      <span className="text-red-600 font-semibold cursor-pointer hover:underline">
+                        Quy chế hoạt động
+                      </span>{" "}
+                      của chúng tôi
+                    </span>
+                  </div>
                 </div>
-            )}
+              </div>
+      
+              {/* --- Bottom Bar --- */}
+              <div className="fixed bottom-0 left-0 right-0 bg-[#fff] p-[15px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px] border-t border-red-100">
+                <div className="flex items-center justify-between pb-[8px] lg:w-[60%] md:w-[80%] md:mx-auto">
+                  <span className="text-gray-700 text-[18px]">Tổng cộng</span>
+                  <span className="text-red-600 text-[24px] font-bold">
+                    {Number((subtotalPrice - totalDiscount + shippingFee).toFixed(0)).toLocaleString("vi-VN")}đ
+                  </span>
+                </div>
+                <div
+                  onClick={handleCompleteCart}
+                  className="flex items-center justify-center rounded-lg bg-[#fc2111] text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-pointer shadow-md hover:shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span className="text-[20px] font-semibold md:text-[18px]">Đặt đơn</span>
+                </div>
+              </div>
+            </div>
+          )}
         </>
-    );
+      );
+      
 };
 
 export default page;

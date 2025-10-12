@@ -13,7 +13,7 @@ import { useStoreSearch } from "@/hooks/useStoreSearch";
 import { ThreeDot } from "react-loading-indicators";
 import { useAuth } from "@/context/authContext";
 
-const page = () => {
+const Page = () => {
   const { allStore, ratingStore, standoutStore, loading: storeLoading } = useStoreSearch();
   const { setUserId } = useAuth();
 
@@ -24,98 +24,131 @@ const page = () => {
 
   if (storeLoading) {
     return (
-      <div className='w-full h-screen flex items-center justify-center'>
-        <ThreeDot color='#fc6011' size='medium' text='' textColor='' />
+      <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+        <ThreeDot color="#fc2111" size="medium" />
       </div>
     );
   }
 
   return (
-    <div className='pt-[140px] pb-[100px] md:pt-[75px]' name='home_page'>
-      <Heading title='Trang chủ' description='' keywords='' />
+    <div className="pt-[120px] pb-[100px] md:pt-[75px] bg-gradient-to-b from-white to-gray-50 min-h-screen" name="home_page">
+      <Heading title="Trang chủ" description="" keywords="" />
       <Header />
-      {ratingStore && ratingStore?.data?.length > 0 && <Hero allStore={ratingStore.data} />}
 
-      <div className='md:w-[90%] md:mx-auto'>
-        <div className='px-[20px] pt-[20px] md:px-0'>
+      {/* 🏙️ Hero Section */}
+      {ratingStore && ratingStore?.data?.length > 0 && (
+        <section className="mb-12">
+          <Hero allStore={ratingStore.data} />
+        </section>
+      )}
+
+      <main className="md:w-[90%] mx-auto space-y-12">
+        {/* 🍴 Category Slider */}
+        <section className="px-[20px] md:px-0">
           <CategorySlider />
-        </div>
+        </section>
 
-        <div className='my-[20px] md:hidden'>
-          <div className='flex items-center justify-between px-[20px] md:px-0 md:mb-[10px]'>
-            <h3 className='text-[#4A4B4D] text-[24px] font-bold line-clamp-1'>Nhà hàng nổi tiếng</h3>
-            <Link href='/search?sort=standout' className='text-[#fc6011] text-[16px] whitespace-nowrap'>
-              Xem tất cả
-            </Link>
-          </div>
+        {/* ⭐ Featured Store */}
+        {standoutStore && standoutStore?.data?.length > 0 && (
+          <section className="px-[20px] md:px-0">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">Nhà hàng nổi bật</h3>
+              <Link
+                href="/search?sort=standout"
+                className="text-[#fc2111] hover:text-[#e4510d] transition-colors text-sm sm:text-base font-medium"
+              >
+                Xem tất cả →
+              </Link>
+            </div>
 
-          {standoutStore && standoutStore?.data?.length > 0 && (
-            <div className=''>
-              <Link href={`/store/${standoutStore.data[0]._id}`} className='my-[20px]'>
-                <div className='relative w-full pt-[45%]'>
-                  <Image src={standoutStore.data[0].avatar.url} alt='' layout='fill' objectFit='fill' />
-                </div>
+            <Link
+              href={`/store/${standoutStore.data[0]._id}`}
+              className="group block rounded-2xl overflow-hidden bg-white shadow hover:shadow-lg transition-all duration-300"
+            >
+              <div className="relative w-full pt-[50%]">
+                <Image
+                  src={standoutStore.data[0].avatar.url}
+                  alt={standoutStore.data[0].name}
+                  layout="fill"
+                  objectFit="cover"
+                  className="group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
 
-                <h4 className='text-[#4A4B4D] text-[20px] font-semibold px-[20px] py-[4px] line-clamp-1'>
+              <div className="p-4 space-y-2">
+                <h4 className="text-lg font-semibold text-gray-900 truncate">
                   {standoutStore.data[0].name}
                 </h4>
 
-                <div
-                  className={`flex items-center px-[20px] ${standoutStore.data[0].amountRating != 0 && "gap-[10px]"}`}
-                >
-                  <div className='flex items-center gap-[6px] flex-shrink-0'>
-                    {standoutStore.data[0].avgRating != 0 && (
-                      <>
-                        <div className='relative w-[20px] h-[20px] md:w-[15px] md:h-[15px] flex-shrink-0'>
-                          <Image src='/assets/star_active.png' alt='' layout='fill' objectFit='cover' />
-                        </div>
-                        <span className='text-[#fc6011]'>{standoutStore.data[0].avgRating.toFixed(2)}</span>
-                      </>
-                    )}
-                    {standoutStore.data[0].amountRating != 0 && (
-                      <span className='text-[#636464]'>{`(${standoutStore.data[0].amountRating} đánh giá)`}</span>
-                    )}
-                  </div>
-
-                  {standoutStore.data[0].amountRating != 0 && (
-                    <div className='w-[4px] h-[4px] rounded-full bg-[#fc6011] flex-shrink-0'></div>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                  {standoutStore.data[0].avgRating > 0 && (
+                    <div className="flex items-center gap-1 text-[#fc2111]">
+                      <Image
+                        src="/assets/star_active.png"
+                        alt="rating"
+                        width={18}
+                        height={18}
+                      />
+                      <span>{standoutStore.data[0].avgRating.toFixed(1)}</span>
+                      {standoutStore.data[0].amountRating > 0 && (
+                        <span className="text-gray-500">
+                          ({standoutStore.data[0].amountRating} đánh giá)
+                        </span>
+                      )}
+                    </div>
                   )}
 
-                  <div className='flex items-center gap-[4px] min-w-0 overflow-hidden text-ellipsis whitespace-nowrap'>
+                  <div className="flex items-center flex-wrap gap-1">
                     {standoutStore.data[0].storeCategory.map((category, index) => (
-                      <Link href={`/search?category=${category._id}`} key={category._id} className='text-[#636464]'>
+                      <Link
+                        href={`/search?category=${category._id}`}
+                        key={category._id}
+                        className="hover:text-[#fc2111] transition-colors"
+                      >
                         {category.name}
-                        {index !== standoutStore.data[0].storeCategory.length - 1 && <span>, </span>}
+                        {index !== standoutStore.data[0].storeCategory.length - 1 && ","}
                       </Link>
                     ))}
                   </div>
                 </div>
+              </div>
+            </Link>
+          </section>
+        )}
+
+        {/* 🔥 Popular Stores */}
+        {ratingStore && ratingStore?.length > 0 && (
+          <section className="px-[20px] md:px-0">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">Phổ biến nhất</h3>
+              <Link
+                href="/search?sort=rating"
+                className="text-[#fc2111] hover:text-[#e4510d] transition-colors text-sm sm:text-base font-medium"
+              >
+                Xem tất cả →
               </Link>
             </div>
-          )}
-        </div>
+            <StoreBigSlider allStore={ratingStore} />
+          </section>
+        )}
 
-        <div className='my-[20px] px-[20px] md:px-0'>
-          <div className='flex items-center justify-between mb-[10px]'>
-            <h3 className='text-[#4A4B4D] text-[24px] font-bold'>Phổ biến nhất</h3>
-            <Link href='/search?sort=rating' className='text-[#fc6011] text-[16px]'>
-              Xem tất cả
-            </Link>
-          </div>
+        {/* 🏪 All Stores */}
+        {allStore && allStore?.length > 0 && (
+          <section className="px-[20px] md:px-0">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">Tất cả cửa hàng</h3>
+            </div>
+            <ListStore allStore={allStore} />
+          </section>
+        )}
+      </main>
 
-          { ratingStore && ratingStore?.length > 0 && <StoreBigSlider allStore={ratingStore} />}
-        </div>
-
-        <div className='my-[20px] px-[20px] md:px-0'>
-          { allStore && allStore?.length > 0 && <ListStore allStore={allStore} />}
-        </div>
-      </div>
-
-      <div className='md:hidden'>
-        <NavBar page='home' />
+      {/* 📱 Mobile Navbar */}
+      <div className="md:hidden">
+        <NavBar page="home" />
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;

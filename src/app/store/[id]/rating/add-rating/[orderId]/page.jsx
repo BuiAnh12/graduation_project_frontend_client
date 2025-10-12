@@ -75,7 +75,7 @@ const Page = () => {
   if (!orderDetail) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
-        <Atom color="#fc6011" size="medium" text="" textColor="" />
+        <Atom color="#fc2111" size="medium" text="" textColor="" />
       </div>
     );
   }
@@ -126,7 +126,7 @@ const Page = () => {
           </span>
           <p className="text-gray-600 text-lg">
             Bạn thấy món ăn từ{" "}
-            <span className="font-bold text-[#fc6011]">{store?.name}</span> như
+            <span className="font-bold text-[#fc2111]">{store?.name}</span> như
             thế nào?
           </p>
           <p className="text-gray-600 text-base">
@@ -180,7 +180,7 @@ const Page = () => {
                   height={28}
                   className="rounded-lg"
                 />
-                <span className="text-[#fc6011] font-medium hover:underline">
+                <span className="text-[#fc2111] font-medium hover:underline">
                   Thêm ảnh
                 </span>
               </div>
@@ -227,7 +227,7 @@ const Page = () => {
         <button
           onClick={handleAddRating}
           name="submitBtn"
-          className="w-full md:w-[80%] mx-auto block rounded-lg bg-[#fc6011] text-white py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-105"
+          className="w-full md:w-[80%] mx-auto block rounded-lg bg-[#fc2111] text-white py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-105"
         >
           Gửi đánh giá
         </button>

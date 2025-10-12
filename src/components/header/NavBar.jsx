@@ -6,222 +6,134 @@ import { useOrder } from "@/context/orderContext";
 import { useSocket } from "@/context/socketContext";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 const NavBar = ({ page }) => {
   const { user } = useAuth();
-
   const { notifications } = useSocket();
   const { favorite } = useFavorite();
   const { cart } = useCart();
   const { order } = useOrder();
 
-  const [currentOrders, setCurrentOrders] = useState([]);
+  const currentOrders = useMemo(() => order?.filter((o) => o.status !== "done"), [order]);
 
-  useEffect(() => {
-    setCurrentOrders(order?.filter((o) => o.status !== "done"));
-  }, [order]);
+  const NAV_ITEMS = [
+    {
+      id: "cart",
+      label: "Giỏ hàng",
+      href: "/carts",
+      icon: "/assets/cart.png",
+      activeIcon: "/assets/cart_active.png",
+      badge: cart?.length,
+    },
+    {
+      id: "orders",
+      label: "Đơn hàng",
+      href: "/orders",
+      icon: "/assets/ic_order.png",
+      activeIcon: "/assets/ic_order_active.png",
+      badge: currentOrders?.length,
+    },
+    {
+      id: "notifications",
+      label: "Thông báo",
+      href: "/notifications",
+      icon: "/assets/notification.png",
+      activeIcon: "/assets/notification_active.png",
+      badge: notifications.filter((n) => n.status === "unread").length,
+      desktopOnly: true,
+    },
+    {
+      id: "favorite",
+      label: "Yêu thích",
+      href: "/favorite",
+      icon: "/assets/favorite.png",
+      activeIcon: "/assets/favorite-active.png",
+      badge: favorite?.stores?.length,
+    },
+    {
+      id: "account",
+      label: "Tài khoản",
+      href: "/account",
+      icon: "/assets/account.png",
+      activeIcon: "/assets/account_active.png",
+    },
+  ];
+
+  if (!user)
+    return (
+      <div className="fixed bottom-0 z-[99] flex items-center justify-center gap-4 w-full h-[75px] bg-white shadow-[0_-5px_25px_rgba(0,0,0,0.1)] md:bg-transparent md:shadow-none md:relative">
+        <Link
+          href="/auth/login"
+          className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all"
+        >
+          Đăng nhập
+        </Link>
+        <Link
+          href="/auth/register"
+          className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all"
+        >
+          Đăng ký
+        </Link>
+      </div>
+    );
 
   return (
-    <div className='fixed bottom-0 right-0 left-0 z-[99] pt-[5px] bg-white md:bg-transparent w-full h-[75px] px-[25px] shadow-[0px_-10px_40px_0px_rgba(110,110,110,0.45)] md:relative md:w-fit md:p-0 md:shadow-none'>
-      {!user ? (
-        <div className='flex items-center gap-[20px] h-[75px]'>
-          <Link
-            href='/auth/login'
-            className='text-white text-[18px] font-semibold cursor-pointer bg-[#fc6011] flex-1 md:flex-none text-center p-[15px] md:py-[10px] md:px-[15px] rounded-[6px] shadow-md hover:shadow-lg'
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            href='/auth/register'
-            className='text-white text-[18px] font-semibold cursor-pointer bg-[#fc6011] flex-1 md:flex-none text-center p-[15px] md:py-[10px] md:px-[15px] rounded-[6px] shadow-md hover:shadow-lg'
-          >
-            Đăng ký
-          </Link>
-        </div>
-      ) : (
-        <div className='relative flex items-center justify-between h-full w-full md:justify-normal md:gap-[20px]'>
-          <div className='flex items-center gap-[20px]'>
-            <Link href='/carts' className='relative group flex flex-col items-center gap-[1px]'>
+    <nav className="fixed bottom-0 left-0 right-0 z-[99] flex items-center justify-between px-8 bg-white shadow-[0_-5px_25px_rgba(0,0,0,0.1)] md:relative md:bg-transparent md:shadow-none md:gap-6">
+      <div className="flex items-center gap-6 w-full justify-between md:justify-normal py-4">
+        {NAV_ITEMS.map((item) => {
+          if (item.desktopOnly && window.innerWidth < 768) return null;
+
+          const isActive = page === item.id;
+          const badgeCount = item.badge ?? 0;
+
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="relative group flex flex-col items-center gap-1"
+            >
               <Image
-                src='/assets/cart.png'
-                alt=''
+                src={isActive ? item.activeIcon : item.icon}
+                alt={item.label}
                 width={24}
                 height={24}
-                className={`group-hover:hidden  ${page == "carts" ? "!hidden" : ""}`}
-              />
-              <Image
-                src='/assets/cart_active.png'
-                alt=''
-                width={24}
-                height={24}
-                className={`hidden group-hover:block ${page == "carts" ? "!block" : ""}`}
+                className="transition-transform duration-200 group-hover:scale-110"
               />
               <p
-                className={`text-[12px] md:text-[11px] lg:text-[12px] group-hover:text-[#fc6011] ${
-                  page == "carts" ? "text-[#fc6011]" : "text-[#4A4B4D]"
-                }`}
+                className={`text-xs ${
+                  isActive ? "text-primary font-medium" : "text-gray-600"
+                } group-hover:text-primary`}
               >
-                Giỏ hàng
+                {item.label}
               </p>
 
-              {cart && cart.length > 0 && (
-                <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
-                  <span className='text-[11px] text-white'>{cart.length}</span>
+              {badgeCount > 0 && (
+                <div className="absolute -top-1 left-8 w-[24px] h-[24px] text-center rounded-full bg-primary text-red text-[12px] flex items-center justify-center border border-red">
+                  {badgeCount}
                 </div>
               )}
             </Link>
+          );
+        })}
+      </div>
 
-            <Link
-              href='/orders'
-              className='relative group flex flex-col items-center gap-[1px]'
-              id='ordersUrl'
-              name='orderBtn'
-            >
-              <Image
-                src='/assets/ic_order.png'
-                alt=''
-                width={24}
-                height={24}
-                className={`group-hover:hidden  ${page == "orders" ? "!hidden" : ""}`}
-              />
-              <Image
-                src='/assets/ic_order_active.png'
-                alt=''
-                width={24}
-                height={24}
-                className={`hidden group-hover:block ${page == "orders" ? "!block" : ""}`}
-              />
-              <p
-                className={`text-[12px] md:text-[11px] lg:text-[12px] group-hover:text-[#fc6011] ${
-                  page == "orders" ? "text-[#fc6011]" : "text-[#4A4B4D]"
-                }`}
-              >
-                Đơn hàng
-              </p>
-
-              {order && currentOrders && currentOrders.length > 0 && (
-                <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
-                  <span className='text-[11px] text-white'>{currentOrders.length}</span>
-                </div>
-              )}
-            </Link>
-          </div>
-          <Link
-            href='/home'
-            className='absolute top-[-40px] right-[50%] translate-x-[50%] bg-[#fff] p-[15px] rounded-full md:hidden'
-          >
-            <Image
-              src='/assets/tab_home.png'
-              alt=''
-              width={70}
-              height={70}
-              className={`p-[20px] rounded-full ${page === "home" ? "bg-[#fc6011]" : "bg-[#b6b7b7]"}`}
-            />
-          </Link>
-          <div className='flex items-center gap-[20px]'>
-            <div className='hidden md:block'>
-              <Link
-                href='/notifications'
-                className='relative group flex flex-col items-center gap-[1px]'
-                id='notificationUrl'
-              >
-                <Image
-                  src='/assets/notification.png'
-                  alt=''
-                  width={24}
-                  height={24}
-                  className={`group-hover:hidden  ${page == "notifications" ? "!hidden" : ""}`}
-                />
-                <Image
-                  src='/assets/notification_active.png'
-                  alt=''
-                  width={24}
-                  height={24}
-                  className={`hidden group-hover:block ${page == "notifications" ? "!block" : ""}`}
-                />
-                <p
-                  className={`text-[12px] md:text-[11px] lg:text-[12px] group-hover:text-[#fc6011] ${
-                    page == "notifications" ? "text-[#fc6011]" : "text-[#4A4B4D]"
-                  }`}
-                >
-                  Thông báo
-                </p>
-
-                {notifications.filter((noti) => noti.status === "unread").length > 0 && (
-                  <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
-                    <span className='text-[11px] text-white'>
-                      {notifications.filter((noti) => noti.status === "unread").length}
-                    </span>
-                  </div>
-                )}
-              </Link>
-            </div>
-
-            <div className='block md:hidden lg:block'>
-              <Link href='/favorite' className='relative group flex flex-col items-center gap-[1px]'>
-                <Image
-                  src='/assets/favorite.png'
-                  alt=''
-                  width={24}
-                  height={24}
-                  className={`group-hover:hidden  ${page == "favorite" ? "!hidden" : ""}`}
-                />
-                <Image
-                  src='/assets/favorite-active.png'
-                  alt=''
-                  width={24}
-                  height={24}
-                  className={`hidden group-hover:block ${page == "favorite" ? "!block" : ""}`}
-                />
-                <p
-                  className={`text-[12px] md:text-[11px] lg:text-[12px] group-hover:text-[#fc6011] ${
-                    page == "favorite" ? "text-[#fc6011]" : "text-[#4A4B4D]"
-                  }`}
-                >
-                  Yêu Thích
-                </p>
-
-                {favorite && favorite.stores.length > 0 && (
-                  <div className='absolute top-[-6px] right-[6px] w-[21px] h-[21px] text-center rounded-full bg-[#fc6011] border-solid border-[1px] border-white flex items-center justify-center'>
-                    <span className='text-[11px] text-white'>{favorite.stores.length}</span>
-                  </div>
-                )}
-              </Link>
-            </div>
-
-            <Link
-              href='/account'
-              className='group flex flex-col items-center gap-[1px]'
-              id='accountUrl'
-              name='accountBtn'
-            >
-              <Image
-                src='/assets/account.png'
-                alt=''
-                width={24}
-                height={24}
-                className={`group-hover:hidden  ${page == "account" ? "!hidden" : ""}`}
-              />
-              <Image
-                src='/assets/account_active.png'
-                alt=''
-                width={24}
-                height={24}
-                className={`hidden group-hover:block ${page == "account" ? "!block" : ""}`}
-              />
-              <p
-                className={`text-[12px] md:text-[11px] lg:text-[12px] group-hover:text-[#fc6011] ${
-                  page == "account" ? "text-[#fc6011]" : "text-[#4A4B4D]"
-                }`}
-              >
-                Tài Khoản
-              </p>
-            </Link>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Floating Home Button */}
+      <Link
+        href="/home"
+        className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white p-[15px] rounded-full md:hidden shadow-md"
+      >
+        <Image
+          src="/assets/tab_home.png"
+          alt="Home"
+          width={70}
+          height={70}
+          className={`p-5 rounded-full transition-all ${
+            page === "home" ? "bg-primary" : "bg-gray-300"
+          }`}
+        />
+      </Link>
+    </nav>
   );
 };
 
