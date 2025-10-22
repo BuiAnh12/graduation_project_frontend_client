@@ -2,11 +2,11 @@ import { config, instance } from "@/utils/axiosConfig";
 import { handleApiResponse } from "@/utils/apiHelper";
 
 const getVouchersByStore = async (storeId) => {
-  return handleApiResponse(instance.get(`/voucher/stores/${storeId}/vouchers`, config()));
+  return handleApiResponse(instance.get(`/voucher/customer/${storeId}`, config()));
 };
 
 const getVoucherById = async ({ storeId, id }) => {
-  return handleApiResponse(instance.get(`/voucher/stores/${storeId}/vouchers/${id}`, config()));
+  return handleApiResponse(instance.get(`/voucher/detail/${id}`, config()));
 };
 
 export const voucherService = {
