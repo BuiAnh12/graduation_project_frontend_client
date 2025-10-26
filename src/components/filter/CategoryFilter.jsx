@@ -60,10 +60,10 @@ const CategoryFilter = () => {
       <div className='max-h-[400px] overflow-auto small-scrollbar'>
         {allCategories.map((category) => (
           <div
-            key={category._id}
-            onClick={() => handleCategoryClick(category._id)}
+            key={category?._id}
+            onClick={() => handleCategoryClick(category?._id)}
             className={`flex items-center justify-between p-4 cursor-pointer transition-all hover:bg-[#fff7f2] ${
-              selectedCategories.includes(category._id) ? "bg-[#fff1e7]" : ""
+              selectedCategories.includes(category?._id) ? "bg-[#fff1e7]" : ""
             }`}
             style={{ borderBottom: "1px solid #eaeaea" }}
           >
@@ -71,7 +71,7 @@ const CategoryFilter = () => {
             <div className=''>
               <Image
                 src={`/assets/${
-                  selectedCategories.includes(category._id) ? "check_box_checked" : "check_box_empty"
+                  selectedCategories.includes(category?._id) ? "check_box_checked" : "check_box_empty"
                 }.png`}
                 alt=''
                 width={24}

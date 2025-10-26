@@ -37,7 +37,7 @@ const StoreSlider = ({ reverse = false, stores = [] }) => {
           }}
         >
           {stores.map((store) => (
-            <SwiperSlide key={store._id}>
+            <SwiperSlide key={store._id} className=" py-4">
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}

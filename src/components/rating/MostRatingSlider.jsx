@@ -16,7 +16,7 @@ const MostRatingSlider = ({ allStoreRatingDesc }) => (
         grabCursor
       >
         {allStoreRatingDesc.map((r, i) => (
-          <SwiperSlide key={i}>
+          <SwiperSlide key={i} className=" py-4">
             <MostRatingItem rating={r} />
           </SwiperSlide>
         ))}

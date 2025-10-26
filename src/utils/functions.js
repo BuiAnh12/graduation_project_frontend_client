@@ -34,7 +34,7 @@ export const groupStoresByCategory = (stores) => {
 
   stores.forEach((store) => {
     store.systemCategoryId.forEach((category) => {
-      const categoryId = category._id;
+      const categoryId = category?._id;
 
       if (!groupedStores[categoryId]) {
         groupedStores[categoryId] = {

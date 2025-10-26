@@ -13,7 +13,7 @@ import { useSocket } from "@/context/socketContext";
 import { useAuth } from "@/context/authContext";
 import { uploadService } from "@/api/uploadService";
 import { userService } from "@/api/userService";
-
+import UserReferenceEditor from "@/components/profile/UserReferenceEditor"
 const page = () => {
   const { notifications } = useSocket();
 
@@ -226,6 +226,7 @@ const page = () => {
             Lưu thay đổi
           </button>
         </form>
+        <UserReferenceEditor/>
       </div>
 
       {/* Bottom navbar */}

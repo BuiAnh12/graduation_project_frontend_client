@@ -54,9 +54,9 @@ const StoreBigCard = ({ store }) => {
         {store?.storeCategory?.length > 0 && (
           <p className="text-sm text-gray-500 line-clamp-1">
             {store.storeCategory.map((category, index) => (
-              <span key={category._id || index}>
+              <span key={category?._id || index}>
                 <Link
-                  href={`/search?category=${category._id}`}
+                  href={`/search?category=${category?._id}`}
                   className="hover:text-[#fc2111] transition-colors"
                 >
                   {category.name}

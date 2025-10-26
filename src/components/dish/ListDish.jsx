@@ -3,12 +3,12 @@ import React from "react";
 import { groupDishesByCategory } from "@/utils/functions";
 import DishCard from "./DishCard";
 
-const ListDish = ({ storeInfo, allDish, cartItems }) => {
+const ListDish = ({ storeInfo, allDish, cartItems, onAddToCartShowSimilar }) => {
   const groupedDishes = groupDishesByCategory(allDish);
   return (
     <div className="space-y-10">
       {groupedDishes.map(({ category, dishes }) => (
-        <section key={category._id}>
+        <section key={category?._id}>
           {/* Category Header */}
           <div className="flex items-center gap-3 mb-5">
             <h3 className="text-[24px] md:text-[28px] font-extrabold text-[#b91c1c]">
@@ -26,6 +26,7 @@ const ListDish = ({ storeInfo, allDish, cartItems }) => {
                 dish={dish}
                 storeInfo={storeInfo}
                 cartItems={cartItems}
+                onAddToCartShowSimilar={onAddToCartShowSimilar}
               />
             ))}
           </div>

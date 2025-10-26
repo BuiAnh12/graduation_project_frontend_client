@@ -29,9 +29,9 @@ const StoreCard = ({ store }) => {
         {store.storeCategory?.length > 0 && (
           <div className="mt-1 text-sm text-gray-500 line-clamp-1">
             {store.storeCategory.map((category, index) => (
-              <React.Fragment key={category._id || index}>
+              <React.Fragment key={category?._id || index}>
                 <Link
-                  href={`/search?category=${category._id}`}
+                  href={`/search?category=${category?._id}`}
                   className="hover:text-[#fc2111] transition"
                 >
                   {category.name}

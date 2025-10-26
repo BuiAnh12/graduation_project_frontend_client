@@ -55,8 +55,8 @@ const DetailHero = ({ store }) => {
           <div className="flex flex-wrap items-center gap-1">
             {store.storeCategory.slice(0, 3).map((category) => (
               <Link
-                href={`/search?category=${category._id}`}
-                key={category._id}
+                href={`/search?category=${category?._id}`}
+                key={category?._id}
                 className="bg-white/10 text-gray-200 hover:bg-[#fc2111]/80 hover:text-white transition-colors duration-300 text-xs md:text-sm font-medium px-2 py-1 rounded-full"
               >
                 {category.name}
