@@ -28,6 +28,9 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { ThreeDot } from "react-loading-indicators";
 
+import { recommendService } from "@/api/recommendService"; // Import recommendService
+import SimilarDishesPopup from "@/components/dish/SimilarDishesPopup"; // Import the new popup
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconUrl: markerIcon,
@@ -55,6 +58,9 @@ const page = () => {
     const [paginationRating, setPaginationRating] = useState(null);
     const [allStoreRatingDesc, setAllStoreRatingDesc] = useState(null);
     const [storeLoading, setStoreLoading] = useState(true);
+    const [similarDishes, setSimilarDishes] = useState([]);
+    const [showSimilarPopup, setShowSimilarPopup] = useState(false);
+    const [initialSimilarFetched, setInitialSimilarFetched] = useState(false);
 
     const { notifications } = useSocket();
     const { cart } = useCart();
@@ -113,6 +119,73 @@ const page = () => {
             setAllStoreRatingDesc(response.data);
         } catch (error) {}
     };
+
+    const handleShowSimilar = async (dishId) => {
+        if (!dishId || !storeId || !user) return; // Only fetch if user is logged in
+
+        // Don't close/clear immediately, wait for API response
+        // setShowSimilarPopup(false);
+        // setSimilarDishes([]);
+
+        // Debounce or prevent rapid calls if needed (optional)
+        // Add a simple loading state maybe?
+        console.log(`Fetching similar for dish: ${dishId}`);
+
+        try {
+            const payload = {
+                dish_id: dishId,
+                top_k: 5,
+                sameStore: true,
+            };
+            const response = await recommendService.getSimilarDish(payload);
+            console.log("Similar Dishes Response:", response);
+
+            if (response.success && response.data?.similar_dishes?.length > 0) {
+                 // The backend response wraps data in a 'data' field now
+                const apiResult = response.data;
+                const filteredDishes = apiResult.similar_dishes.filter(d => d.dish_id !== dishId && d.metadata); // Ensure metadata exists
+
+                if (filteredDishes.length > 0) {
+                    setSimilarDishes(filteredDishes);
+                    setShowSimilarPopup(true); // Show popup *after* getting data
+                } else {
+                     setShowSimilarPopup(false); // Hide if no valid results
+                     console.log("No different similar dishes with metadata found.");
+                }
+            } else {
+                setShowSimilarPopup(false); // Hide on API error or no results
+                console.log("No similar dishes found or API error:", response.message);
+            }
+        } catch (error) {
+            setShowSimilarPopup(false); // Hide on fetch error
+            console.error("Error fetching similar dishes:", error);
+            toast.error("Không thể tải gợi ý món ăn.");
+        }
+    };
+
+    useEffect(() => {
+        // Check conditions: cart is loaded, has items for this store,
+        // user is logged in, and we haven't done the initial fetch yet.
+        if (user && storeCart && storeCart.items && storeCart.items.length > 0 && !initialSimilarFetched) {
+            // Get the last item added (assuming order is preserved, might need adjustment if not)
+            // Or simply use the first item: const lastItem = storeCart.items[0];
+            const lastItem = storeCart.items[storeCart.items.length - 1];
+
+            // Ensure lastItem and its dish._id exist
+            if (lastItem?.dish?._id) {
+                console.log("Triggering initial similar dishes fetch based on cart.");
+                handleShowSimilar(lastItem.dish._id);
+                setInitialSimilarFetched(true); // Mark as fetched
+            }
+        }
+         // If cart becomes empty later, hide the popup
+         if (storeCart && (!storeCart.items || storeCart.items.length === 0)) {
+            setShowSimilarPopup(false);
+            setSimilarDishes([]);
+            // Reset fetch flag if you want it to trigger again if items are added later *after* emptying
+            // setInitialSimilarFetched(false);
+         }
+    }, [storeCart, initialSimilarFetched, user]);
 
     useEffect(() => {
         if (storeId) {
@@ -336,13 +409,13 @@ const page = () => {
                                                 (category, index) => (
                                                     <div
                                                         key={
-                                                            category._id ||
+                                                            category?._id ||
                                                             index
                                                         }
                                                         className="inline"
                                                     >
                                                         <Link
-                                                            href={`/search?category=${category._id}`}
+                                                            href={`/search?category=${category?._id}`}
                                                             className="hover:text-[#fc2111] transition"
                                                         >
                                                             {category.name}
@@ -427,6 +500,7 @@ const page = () => {
                                         cartItems={
                                             storeCart ? storeCart?.items : []
                                         }
+                                        onAddToCartShowSimilar={handleShowSimilar}
                                     />
                                 </div>
                             )}
@@ -439,6 +513,7 @@ const page = () => {
                                         cartItems={
                                             storeCart ? storeCart?.items : []
                                         }
+                                        onAddToCartShowSimilar={handleShowSimilar}
                                     />
                                 </div>
                             )}
@@ -591,6 +666,13 @@ const page = () => {
                                 </span>
                             </div>
                         </Link>
+                    )}
+                    {showSimilarPopup && user && ( // Only show if logged in
+                        <SimilarDishesPopup
+                            dishes={similarDishes}
+                            storeId={storeId}
+                            onClose={() => setShowSimilarPopup(false)}
+                        />
                     )}
                 </>
             ) : (

@@ -34,7 +34,7 @@ const StoreBigSlider = ({ allStore = [] }) => {
           }}
         >
           {allStore.map((store) => (
-            <SwiperSlide key={store._id}>
+            <SwiperSlide key={store._id} className=" py-4">
               <StoreBigCard store={store} />
             </SwiperSlide>
           ))}

@@ -10,22 +10,29 @@ const updateUser = async (data) => {
 };
 
 
-const getAllTags = async (data) => {
-  return handleApiResponse(instance.put(`/reference/all`, data, config()));
+
+const getAllTags = async () => {
+  return handleApiResponse(instance.get(`/reference/all`, config()));
 };
 
-const getUserReference = async (data) => {
-  return handleApiResponse(instance.put(`/reference/`, data, config()));
+
+const getUserReference = async () => {
+  return handleApiResponse(instance.get(`/reference`, config()));
 };
 
 const updateUserReference = async (data) => {
-  return handleApiResponse(instance.put(`/reference/`, data, config()));
+  return handleApiResponse(instance.put(`/reference`, data, config()));
 };
 
 const deleteUserReference = async (data) => {
-  return handleApiResponse(instance.put(`/reference/`, data, config()));
+  return handleApiResponse(instance.delete(`/reference`, { data, ...config() }));
 };
+
 export const userService = {
   getCurrentUser,
   updateUser,
+  getAllTags,
+  getUserReference,
+  updateUserReference,
+  deleteUserReference
 };

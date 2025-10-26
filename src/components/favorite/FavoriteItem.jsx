@@ -55,8 +55,8 @@ const FavoriteItem = ({ store }) => {
         <div className='mt-1 text-sm text-gray-500 line-clamp-1'>
           {store.storeCategory &&
             store.storeCategory.map((category, index) => (
-              <div key={category._id || index} className='inline'>
-                <Link href={`/search?category=${category._id}`} className='hover:text-[#fc2111] transition'>
+              <div key={category?._id || index} className='inline'>
+                <Link href={`/search?category=${category?._id}`} className='hover:text-[#fc2111] transition'>
                   {category.name}
                 </Link>
                 {index !== store.storeCategory.length - 1 && (

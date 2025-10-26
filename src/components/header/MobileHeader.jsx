@@ -40,7 +40,7 @@ const MobileHeader = ({ page }) => {
         );
       }
     }
-  }, []);
+  }, [notifications]);
 
   return (
     <div className='px-[20px] flex items-center justify-between md:hidden'>

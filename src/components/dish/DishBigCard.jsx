@@ -8,17 +8,19 @@ import { useCart } from "@/context/cartContext";
 import { cartService } from "@/api/cartService";
 import { useAuth } from "@/context/authContext";
 
-const DishBigCard = ({ dish, storeInfo, cartItems }) => {
+const DishBigCard = ({ dish, storeInfo, cartItems, onAddToCartShowSimilar }) => {
   const router = useRouter();
   const [cartItem, setCartItem] = useState(null);
   const { user } = useAuth();
   const { refreshCart } = useCart();
 
   useEffect(() => {
-    if (cartItems) {
-      setCartItem(cartItems.find((item) => item?.dish?._id === dish?._id));
-    }
-  }, [cartItems, dish]);
+      if (cartItems && Array.isArray(cartItems) && dish?._id) { // Added checks
+        setCartItem(cartItems.find((item) => item?.dishId?._id === dish?._id));
+      } else {
+          setCartItem(null); // Ensure it resets if cartItems is empty/invalid
+      }
+    }, [cartItems, dish])
 
   const handleChangeQuantity = async (amount) => {
     if (storeInfo?.openStatus === "CLOSED") {
@@ -37,11 +39,16 @@ const DishBigCard = ({ dish, storeInfo, cartItems }) => {
           await cartService.updateCart({
             storeId: storeInfo?._id,
             dishId: dish._id,
+            action: "update_item",
             quantity: newQuantity,
           });
 
           refreshCart();
           toast.success("Cập nhật giỏ hàng thành công");
+
+          if (currentQuantity <  newQuantity && newQuantity >= 1 && onAddToCartShowSimilar) {
+            onAddToCartShowSimilar(dish._id);
+          }
         } catch (error) {
           toast.error(error?.data?.message || "Có lỗi xảy ra!");
         }

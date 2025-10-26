@@ -51,7 +51,7 @@ const CategorySlider = () => {
         }}
       >
         {allCategories.map((type) => (
-          <SwiperSlide key={type._id}>
+          <SwiperSlide key={type._id} className=" py-4">
             <div className="flex justify-center">
               <CategoryItem type={type} />
             </div>

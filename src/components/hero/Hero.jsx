@@ -29,7 +29,7 @@ const Hero = ({ allStore }) => {
           className="hero-swiper"
         >
           {allStore?.slice(0, 8).map((store) => (
-            <SwiperSlide key={store._id}>
+            <SwiperSlide key={store._id} className=" py-4">
               <DetailHero store={store} />
             </SwiperSlide>
           ))}

@@ -11,7 +11,7 @@ const ListStore = ({ allStore }) => {
     <div className="space-y-10 sm:space-y-12">
       {groupedStores.map(({ category, stores }) => (
         <div
-          key={category._id}
+          key={category?._id}
           className="mb-[24px] transition-all duration-300 hover:scale-[1.01] shadow-inner p-6 rouneded"
         >
           {/* Header */}
@@ -21,7 +21,7 @@ const ListStore = ({ allStore }) => {
             </h3>
 
             <Link
-              href={`/search?category=${category._id}`}
+              href={`/search?category=${category?._id}`}
               className="whitespace-nowrap text-red-500 hover:text-red-600 text-[15px] sm:text-[16px] font-medium transition-colors duration-200"
             >
               Xem tất cả →
