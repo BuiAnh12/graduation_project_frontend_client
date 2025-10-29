@@ -68,7 +68,11 @@ const DishBigCard = ({
             }
           }
           else {
-            toast.error(response.errorMessage)
+            if (response.errorCode == "NOT_ENOUGH_STOCK") {
+                toast.error("Món đặt đã hết, xin vui lòng chọn món khác");
+            } else {
+                toast.error(response.errorMessage);
+            }
           }
           
         } catch (error) {

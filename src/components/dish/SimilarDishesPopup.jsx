@@ -56,10 +56,15 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
                 onClose(); // Close popup after adding
             } else {
                 // Show backend error message if available
-                toast.error(
-                    response.errorMessage || "Không thể thêm món vào giỏ hàng."
-                );
-                onClose(); // Still close popup on failure
+                if (response.errorCode == "NOT_ENOUGH_STOCK") {
+                    toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
+                }
+                else {
+                    toast.error(
+                        response.errorMessage || "Không thể thêm món vào giỏ hàng."
+                    );
+                }
+                // onClose(); // Still close popup on failure
             }
         } catch (error) {
             console.error("Error adding similar dish to cart:", error);
