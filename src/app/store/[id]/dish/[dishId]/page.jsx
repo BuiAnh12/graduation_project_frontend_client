@@ -298,12 +298,12 @@ const page = () => {
     }, [toppings]);
 
     const handleAddToCart = async () => {
-        if (storeCart?.store?.openStatus === "CLOSED") {
+        if (storeCart?.store?.openStatus === "closed") {
             toast.error("Cửa hàng hiện đang đóng cửa, vui lòng quay lại sau!");
             return;
         }
 
-        if (dishInfo?.stockStatus === "OUT_OF_STOCK") {
+        if (dishInfo?.stockStatus === "out_of_stock") {
             toast.error(
                 "Món ăn này hiện đang hết hàng, vui lòng quay lại sau!"
             );

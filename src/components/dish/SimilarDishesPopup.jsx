@@ -71,7 +71,7 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
     };
 
     return (
-        <div className="fixed bottom-5 right-5 z-[150] bg-white rounded-lg shadow-xl border border-gray-200 w-80 animate-slide-in-left">
+        <div className="fixed bottom-25 right-5 z-[150] bg-white rounded-lg shadow-xl border border-gray-200 w-80 animate-slide-in-left">
             {/* Header */}
             <div className="flex justify-between items-center p-3 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50 rounded-t-lg">
                 <h4 className="font-semibold text-sm text-gray-700">

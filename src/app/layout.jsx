@@ -17,6 +17,7 @@ import { StoreLocationProvider } from "@/context/storeLocationContext";
 import { LocationProvider } from "@/context/locationContext";
 import { VoucherProvider } from "@/context/voucherContext";
 import { CartProvider } from "@/context/cartContext";
+import { ReferenceProvider } from "@/context/referenceContext";
 
 // Optional: theme switcher (multi-site ready)
 function ThemeWrapper({ children }) {
@@ -53,23 +54,33 @@ export default function RootLayout({ children }) {
                                                 <OrderProvider>
                                                     <FavoriteProvider>
                                                         <VoucherProvider>
-                                                            <ThemeWrapper>
-                                                                <AppProviders>
-                                                                    {children}
+                                                            <ReferenceProvider>
+                                                                <ThemeWrapper>
+                                                                    <AppProviders>
+                                                                        {
+                                                                            children
+                                                                        }
 
-                                                                    <ToastContainer
-                                                                        position="top-right"
-                                                                        autoClose={4000}
-                                                                        hideProgressBar={false}
-                                                                        newestOnTop={false}
-                                                                        closeOnClick
-                                                                        pauseOnFocusLoss
-                                                                        draggable
-                                                                        pauseOnHover
-                                                                        theme="light"
-                                                                    />
-                                                                </AppProviders>
-                                                            </ThemeWrapper>
+                                                                        <ToastContainer
+                                                                            position="top-right"
+                                                                            autoClose={
+                                                                                4000
+                                                                            }
+                                                                            hideProgressBar={
+                                                                                false
+                                                                            }
+                                                                            newestOnTop={
+                                                                                false
+                                                                            }
+                                                                            closeOnClick
+                                                                            pauseOnFocusLoss
+                                                                            draggable
+                                                                            pauseOnHover
+                                                                            theme="light"
+                                                                        />
+                                                                    </AppProviders>
+                                                                </ThemeWrapper>
+                                                            </ReferenceProvider>
                                                         </VoucherProvider>
                                                     </FavoriteProvider>
                                                 </OrderProvider>

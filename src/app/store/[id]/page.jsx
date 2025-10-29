@@ -13,7 +13,7 @@ import RatingItem from "@/components/rating/RatingItem";
 import RatingBar from "@/components/rating/RatingBar";
 import MostRatingSlider from "@/components/rating/MostRatingSlider";
 import { useSocket } from "@/context/socketContext";
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, useMemo } from "react";
 import { storeService } from "@/api/storeService";
 import { dishService } from "@/api/dishService";
 import { favoriteService } from "@/api/favoriteService";
@@ -30,6 +30,9 @@ import { ThreeDot } from "react-loading-indicators";
 
 import { recommendService } from "@/api/recommendService"; // Import recommendService
 import SimilarDishesPopup from "@/components/dish/SimilarDishesPopup"; // Import the new popup
+
+import { useReference } from "@/context/referenceContext"; 
+import { sortDishesBySuitability } from "@/utils/sorting";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -66,6 +69,7 @@ const page = () => {
     const { cart } = useCart();
     const { favorite, refreshFavorite } = useFavorite();
     const { user } = useAuth();
+    const { allTags, tagsLoading } = useReference();
 
     const getStoreInfo = async () => {
         try {
@@ -124,8 +128,8 @@ const page = () => {
         if (!dishId || !storeId || !user) return; // Only fetch if user is logged in
 
         // Don't close/clear immediately, wait for API response
-        // setShowSimilarPopup(false);
-        // setSimilarDishes([]);
+        setShowSimilarPopup(false);
+        setSimilarDishes([]);
 
         // Debounce or prevent rapid calls if needed (optional)
         // Add a simple loading state maybe?
@@ -146,6 +150,7 @@ const page = () => {
                 const filteredDishes = apiResult.similar_dishes.filter(d => d.dish_id !== dishId && d.metadata); // Ensure metadata exists
 
                 if (filteredDishes.length > 0) {
+                    console.log("Popup show")
                     setSimilarDishes(filteredDishes);
                     setShowSimilarPopup(true); // Show popup *after* getting data
                 } else {
@@ -164,28 +169,19 @@ const page = () => {
     };
 
     useEffect(() => {
-        // Check conditions: cart is loaded, has items for this store,
-        // user is logged in, and we haven't done the initial fetch yet.
-        if (user && storeCart && storeCart.items && storeCart.items.length > 0 && !initialSimilarFetched) {
-            // Get the last item added (assuming order is preserved, might need adjustment if not)
-            // Or simply use the first item: const lastItem = storeCart.items[0];
-            const lastItem = storeCart.items[storeCart.items.length - 1];
-
-            // Ensure lastItem and its dish._id exist
-            if (lastItem?.dish?._id) {
-                console.log("Triggering initial similar dishes fetch based on cart.");
-                handleShowSimilar(lastItem.dish._id);
-                setInitialSimilarFetched(true); // Mark as fetched
-            }
+        // ONLY hide the popup if the cart for this specific store becomes empty.
+        // We remove the logic that tried to show it automatically based on cart content.
+        console.log("Store cart", storeCart)
+        if (storeCart && (!storeCart.items || storeCart.items.length === 0)) {
+          // console.log("Cart is empty, hiding similar popup."); // Optional debug log
+          setShowSimilarPopup(false);
+          setSimilarDishes([]);
+          console.log("Hiding popup")
+          // Consider if you need to reset initialSimilarFetched here based on your desired flow
+          // setInitialSimilarFetched(false);
         }
-         // If cart becomes empty later, hide the popup
-         if (storeCart && (!storeCart.items || storeCart.items.length === 0)) {
-            setShowSimilarPopup(false);
-            setSimilarDishes([]);
-            // Reset fetch flag if you want it to trigger again if items are added later *after* emptying
-            // setInitialSimilarFetched(false);
-         }
-    }, [storeCart, initialSimilarFetched, user]);
+        // Note: We intentionally removed the block that called handleShowSimilar
+      }, [storeCart]); // <-- Dependency only needs to be storeCart now
 
     useEffect(() => {
         if (storeId) {
@@ -276,6 +272,12 @@ const page = () => {
         }
     }, [favorite]);
 
+    const featuredDishes = useMemo(() => {
+        if (!allDish) return [];
+        // This sorting function now handles the BA logic
+        return sortDishesBySuitability(allDish).slice(0, 3);
+    }, [allDish]);
+
     const handleAddToFavorite = async () => {
         if (storeFavorite) {
             try {
@@ -290,7 +292,7 @@ const page = () => {
         }
     };
 
-    if (storeLoading) {
+    if (storeLoading || tagsLoading) {
         return (
             <div className="w-full h-screen flex items-center justify-center">
                 <ThreeDot color="#fc2111" size="medium" text="" textColor="" />
@@ -491,32 +493,31 @@ const page = () => {
 
                         {/* Content */}
                         <div className="px-5 md:px-6 mt-[20px] pb-6">
-                            {allDish && (
-                                <div className="mb-6">
-                                    {/* <h3 className='text-[#4A4B4D] text-xl font-bold mb-3'>Dành cho bạn</h3> */}
-                                    <ListDishBig
-                                        storeInfo={storeInfo}
-                                        allDish={allDish}
-                                        cartItems={
-                                            storeCart ? storeCart?.items : []
-                                        }
-                                        onAddToCartShowSimilar={handleShowSimilar}
-                                    />
-                                </div>
-                            )}
+                        {featuredDishes && featuredDishes.length > 0 && (
+                            <div className="mb-6">
+                                <ListDishBig
+                                    storeInfo={storeInfo}
+                                    dishes={featuredDishes} 
+                                    cartItems={storeCart ? storeCart?.items : []}
+                                    onAddToCartShowSimilar={handleShowSimilar}
+                                    allTags={allTags} 
+                                />
+                            </div>
+                        )}
 
-                            {allDish && (
-                                <div className="mb-6">
-                                    <ListDish
-                                        storeInfo={storeInfo}
-                                        allDish={allDish}
-                                        cartItems={
-                                            storeCart ? storeCart?.items : []
-                                        }
-                                        onAddToCartShowSimilar={handleShowSimilar}
-                                    />
-                                </div>
-                            )}
+                        {allDish && (
+                            <div className="mb-6">
+                                <ListDish
+                                    storeInfo={storeInfo}
+                                    dishes={allDish} // <-- Pass original list
+                                    cartItems={
+                                        storeCart ? storeCart?.items : []
+                                    }
+                                    onAddToCartShowSimilar={handleShowSimilar}
+                                    allTags={allTags} // <-- Pass allTags
+                                />
+                            </div>
+                        )}
 
                             <div className="flex items-center gap-3 mb-6">
                                 <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">

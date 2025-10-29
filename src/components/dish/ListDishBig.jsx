@@ -2,7 +2,7 @@
 import React from "react";
 import DishBigCard from "./DishBigCard";
 
-const ListDishBig = ({ storeInfo, allDish, cartItems, onAddToCartShowSimilar }) => {
+const ListDishBig = ({ storeInfo, dishes, cartItems, onAddToCartShowSimilar, allTags }) => {
   return (
     <section className="my-10">
       {/* Header */}
@@ -15,13 +15,14 @@ const ListDishBig = ({ storeInfo, allDish, cartItems, onAddToCartShowSimilar }) 
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {allDish?.slice(0, 3).map((dish) => (
+        {dishes?.map((dish) => (
           <DishBigCard
             key={dish._id}
             dish={dish}
             storeInfo={storeInfo}
             cartItems={cartItems}
             onAddToCartShowSimilar={onAddToCartShowSimilar}
+            allTags={allTags} // <-- 3. Pass allTags down
           />
         ))}
       </div>

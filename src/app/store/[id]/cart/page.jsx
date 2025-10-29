@@ -228,7 +228,7 @@ const page = () => {
                 return;
             }
 
-            if (detailCart?.store?.openStatus === "CLOSED") {
+            if (detailCart?.store?.openStatus === "closed") {
                 toast.error(
                     "Cửa hàng đã đóng cửa, không thể đặt hàng. Vui lòng quay lại sau!"
                 );
@@ -237,7 +237,7 @@ const page = () => {
 
             const outOfStockItems =
                 detailCart.items?.filter(
-                    (item) => item?.dishId?.stockStatus === "OUT_OF_STOCK"
+                    (item) => item?.dishId?.stockStatus === "out_of_stock"
                 ) ?? [];
 
             if (outOfStockItems.length > 0) {
