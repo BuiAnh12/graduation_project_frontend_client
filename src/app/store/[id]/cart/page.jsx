@@ -17,6 +17,7 @@ import { useVoucher } from "@/context/voucherContext";
 import { paymentService } from "@/api/paymentService";
 import { shippingFeeService } from "@/api/shippingFeeService";
 import { useSearchParams } from "next/navigation";
+import UpsellSlider from "@/components/dish/UpsellSlider"; // Adjust path
 
 const page = () => {
     const router = useRouter();
@@ -871,6 +872,13 @@ const page = () => {
 
                             <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
 
+                            <UpsellSlider
+                                storeId={storeId}
+                                storeCartItems={detailCart?.items || []} // Pass current items
+                             />
+
+                            <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+
                             {/* --- Summary --- */}
                             <OrderSummary
                                 detailItems={detailCart?.items}
@@ -901,7 +909,7 @@ const page = () => {
                     </div>
 
                     {/* --- Bottom Bar --- */}
-                    <div className="fixed bottom-0 left-0 right-0 bg-[#fff] p-[15px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px] border-t border-red-100">
+                    <div className="fixed bottom-0 left-0 right-0 bg-[#fff] p-[15px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px] border-t border-red-100 z-50">
                         <div className="flex items-center justify-between pb-[8px] lg:w-[60%] md:w-[80%] md:mx-auto">
                             <span className="text-gray-700 text-[18px]">
                                 Tổng cộng
