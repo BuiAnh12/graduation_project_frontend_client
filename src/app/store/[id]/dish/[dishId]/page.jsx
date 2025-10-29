@@ -32,7 +32,7 @@ const page = () => {
     const [loading, setLoading] = useState(true);
     const [similarDishes, setSimilarDishes] = useState([]);
     const [showSimilarPopup, setShowSimilarPopup] = useState(false);
-
+    const [cartDataLoaded, setCartDataLoaded] = useState(false)
     const { cart, refreshCart } = useCart();
     const { user } = useAuth();
 
@@ -93,10 +93,13 @@ const page = () => {
 
     useEffect(() => {
         if (cart) {
-            const store = cart.find((c) => c.storeId === storeId);
+            console.log("Cart", cart);
+            const store = cart.find((c) => c.storeId._id === storeId);
             setStoreCart(store);
 
-            const dish = store?.items.find((item) => item.dishId === dishId);
+            const dish = store?.items.find(
+                (item) => item.dishId._id === dishId
+            );
             setDishCart(dish);
 
             if (dish?.note) {
@@ -141,27 +144,30 @@ const page = () => {
 
     useEffect(() => {
         if (storeCart) {
+            console.log("StoreCart", storeCart)
             const item = storeCart.items.find(
-                (item) => item.dish._id === dishId
+                (item) => item.dishId._id === dishId
             );
-
+            
             setCartItem(item);
             setQuantity(item?.quantity || 0);
 
             if (item?.toppings.length > 0) {
                 item.toppings.forEach((topping) => {
                     setToppings((prev) => {
-                        if (prev.includes(topping.toppingId)) {
+                        console.log("topping display", topping.toppingId._id)
+                        if (prev.includes(topping.toppingId._id)) {
                             return [...prev];
                         } else {
-                            return [...prev, topping.toppingId];
+                            return [...prev, topping.toppingId._id];
                         }
                     });
 
                     setToppingsValue((prev) => {
+                        console.log("prev", prev)
                         if (
                             prev.some(
-                                (tp) => tp.toppingId === topping.toppingId
+                                (tp) => tp.toppingId._id === topping.toppingId._id
                             )
                         ) {
                             return [...prev];
@@ -170,7 +176,7 @@ const page = () => {
                                 ...prev,
                                 {
                                     ...topping,
-                                    _id: topping.toppingId,
+                                    _id: topping.toppingId._id
                                 },
                             ];
                         }
@@ -180,10 +186,78 @@ const page = () => {
         }
     }, [storeCart]);
 
+    // useEffect(() => {
+    //     // Only run initialization once after dishInfo is loaded and cartItem is determined
+    //     if (dishInfo && cartItem !== undefined && !cartDataLoaded) {
+    //         // Check cartItem is determined (could be null)
+    //         if (cartItem) {
+    //             console.log("Initializing state from cartItem:", cartItem);
+    //             setQuantity(cartItem.quantity || 0);
+    //             setNote(cartItem.note || "");
+
+    //             // --- Corrected Topping Initialization ---
+    //             const initialToppingIds =
+    //                 cartItem.toppings
+    //                     ?.map((t) => t.toppingId?._id?.toString())
+    //                     .filter(Boolean) || []; // Get actual Topping IDs as strings
+
+    //             const initialToppingValues =
+    //                 cartItem.toppings
+    //                     ?.map((t) => {
+    //                         // Find the original Topping object within dishInfo based on the ID
+    //                         let originalTopping = null;
+    //                         let foundGroupId = null;
+    //                         dishInfo.toppingGroups?.forEach((group) => {
+    //                             const found = group.toppings.find(
+    //                                 (topInGroup) =>
+    //                                     topInGroup._id === t.toppingId?._id
+    //                             );
+    //                             if (found) {
+    //                                 originalTopping = found;
+    //                                 foundGroupId = group._id.toString();
+    //                             }
+    //                         });
+
+    //                         if (!originalTopping) return null; // Skip if original topping info not found in dishInfo
+
+    //                         // Reconstruct object needed for price calculation and handleChooseTopping
+    //                         return {
+    //                             _id: originalTopping._id, // The actual Topping _id
+    //                             name: originalTopping.name,
+    //                             price: originalTopping.price,
+    //                             groupId: foundGroupId, // Store the group ID it belongs to
+    //                             // toppingId: t.toppingId?._id // Redundant if using _id consistently
+    //                         };
+    //                     })
+    //                     .filter(Boolean) || []; // Remove nulls if original topping wasn't found
+
+    //             console.log("Initialized Topping IDs:", initialToppingIds);
+    //             console.log(
+    //                 "Initialized Topping Values:",
+    //                 initialToppingValues
+    //             );
+
+    //             setToppings(initialToppingIds);
+    //             setToppingsValue(initialToppingValues);
+    //             //-----------------------------------------
+    //         } else {
+    //             console.log(
+    //                 "Initializing state TO DEFAULTS (no cartItem found)."
+    //             );
+    //             // No item in cart, ensure defaults
+    //             setQuantity(0);
+    //             setNote("");
+    //             setToppings([]);
+    //             setToppingsValue([]);
+    //         }
+    //         setCartDataLoaded(true); // Mark as loaded (either from cart or with defaults)
+    //     }
+    // }, [cartItem, dishInfo, cartDataLoaded]);
+
     useEffect(() => {
         if (cartItem) {
             const dishPrice =
-                Number(cartItem.dish?.price || 0) * Number(cartItem.quantity);
+                Number(cartItem.dishId?.price || 0) * Number(cartItem.quantity);
             const toppingsPrice =
                 (Array.isArray(cartItem.toppings)
                     ? cartItem.toppings.reduce(
@@ -224,6 +298,7 @@ const page = () => {
     };
 
     const handleChooseTopping = (topping, toppingPrice, toppingGroup) => {
+        console.log("Choose topping clicked")
         const isRadio = toppingGroup.onlyOnce === true;
 
         if (isRadio) {
@@ -273,19 +348,23 @@ const page = () => {
         } else {
             let priceChange = 0;
             console.log(topping);
-
+            console.log(toppings)
             if (toppings.includes(topping._id)) {
                 priceChange = -toppingPrice * quantity;
                 setToppings((prev) => prev.filter((id) => id !== topping._id));
                 setToppingsValue((prev) =>
-                    prev.filter((tp) => tp.toppingId !== topping._id)
+                    prev.filter((tp) => tp.toppingId._id !== topping._id)
                 );
             } else {
                 priceChange = toppingPrice * quantity;
                 setToppings((prev) => [...prev, topping._id]);
                 setToppingsValue((prev) => [
                     ...prev,
-                    { ...topping, groupId: toppingGroup._id, _id: topping._id },
+                    { 
+                        toppingId: {
+                            _id: topping._id
+                        }
+                    },
                 ]);
             }
 
@@ -294,7 +373,7 @@ const page = () => {
     };
 
     useEffect(() => {
-        console.log(toppings);
+        console.log("Topping uf: ", toppings);
     }, [toppings]);
 
     const handleAddToCart = async () => {

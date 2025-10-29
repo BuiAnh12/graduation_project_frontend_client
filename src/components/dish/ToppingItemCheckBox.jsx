@@ -2,8 +2,10 @@ import Image from "next/image";
 import React from "react";
 
 const ToppingItemCheckBox = ({ topping, toppingGroup, selectedTopping, handleChooseTopping }) => {
-  const isChecked = selectedTopping?.some((tp) => tp._id === topping._id);
-
+  const isChecked = selectedTopping?.some((tp) => tp.toppingId?._id === topping._id);
+  // console.log("Checkbox - Topping Prop:", topping);
+  // console.log("Checkbox - SelectedTopping Prop:", selectedTopping);
+  // console.log("Checkbox - isChecked:", isChecked);
   return (
     <div
       onClick={() => handleChooseTopping(topping, topping.price, toppingGroup)}
