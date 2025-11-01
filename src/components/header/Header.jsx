@@ -77,7 +77,7 @@ const Header = ({ page }) => {
                         {/* Province Selector */}
                         <div className="relative ml-4">
                             <button
-                                className="flex items-center gap-2 p-2 bg-gradient-to-r from-[#fc2111] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition"
+                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#fc2111] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition w-max w-max-full"
                                 onClick={() =>
                                     setOpenSelectProvince(!openSelectProvince)
                                 }

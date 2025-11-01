@@ -44,7 +44,7 @@ const page = () => {
     onSubmit: async (values) => {
       try {
         await locationService.addLocation(values);
-        toast.success("Thêm địa chỉ thành công!");
+        // toast.success("Thêm địa chỉ thành công!");
         router.push("/account/location");
         formik.resetForm();
       } catch (error) {

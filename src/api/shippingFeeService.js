@@ -6,7 +6,8 @@ const calculateShippingFee = async (storeId, { distanceKm }) => {
     instance.get(`/shipping-fee/stores/${storeId}/calculate`, {
       ...config(),
       params: { distanceKm },
-    })
+    }),
+    { showToast: false } // no toast
   );
 };
 

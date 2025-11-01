@@ -35,7 +35,7 @@ export const useStoreSearch = (query) => {
       } catch (err) {
         console.error("Failed to fetch stores:", err);
         setError(err);
-        toast.error("Không thể tải dữ liệu cửa hàng");
+        // toast.error("Không thể tải dữ liệu cửa hàng");
       } finally {
         setLoading(false);
       }

@@ -1,49 +1,66 @@
+import ErrorMessages from "@/constants/ErrorMessages";
 import ErrorCode from "@/constants/ErrorCode";
+import { toast } from "react-toastify";
 
-export const handleApiResponse = async (promise) => {
+export const handleApiResponse = async (promise, options = {}) => {
+  const { showToast = true, successMessage } = options;
+
   try {
     const response = await promise;
+    const data = response.data || {};
+    console.log("data", data)
+    
+    if (data.success) {
+      const message =
+        successMessage ||
+        data.message ||
+        "Thao tác thành công";
 
-    // Success response (backend should set success=true)
-    if (response.data && response.data.success) {
-      return response.data;
+      if (showToast) toast.success(message);
+      return data;
     }
 
-    // Backend returned success=false but still 200
-    return {
+   
+    const errorCode = data.errorCode || ErrorCode.INVALID_REQUEST.code;
+    const localizedMessage =
+      ErrorMessages[errorCode] || data.message || ErrorCode.INVALID_REQUEST.message;
+
+    const errorResponse = {
       success: false,
-      errorCode: response.data?.errorCode || ErrorCode.INVALID_REQUEST.code,
-      errorMessage: response.data?.errorMessage || ErrorCode.INVALID_REQUEST.message,
-      message: response.data?.message || ErrorCode.INVALID_REQUEST.message,
+      errorCode,
+      errorMessage: localizedMessage,
+      message: localizedMessage,
       meta: {
         status: response.status || ErrorCode.INVALID_REQUEST.status,
       },
-      ...response.data,
+      ...data,
     };
-  } catch (error) {
-    if (error.response?.data) {
-      const resData = error.response.data;
-      return {
-        success: false,
-        errorCode: resData.errorCode || ErrorCode.INTERNAL_SERVER_ERROR.code,
-        errorMessage: resData.errorMessage || ErrorCode.INTERNAL_SERVER_ERROR.message,
-        message: resData.message || ErrorCode.INTERNAL_SERVER_ERROR.message,
-        meta: {
-          status: error.response.status || ErrorCode.INTERNAL_SERVER_ERROR.status,
-        },
-        ...resData,
-      };
-    }
 
-    // Network or unexpected error
-    return {
+    if (showToast) toast.error(localizedMessage);
+    return errorResponse;
+  } catch (error) {
+    console.log("error", error)
+    // ❌ Network or server error
+    const resData = error.response?.data || {};
+    const errorCode = resData.errorCode || ErrorCode.INTERNAL_SERVER_ERROR.code;
+    const localizedMessage =
+      ErrorMessages[errorCode] ||
+      resData.message ||
+      error.message ||
+      ErrorCode.INTERNAL_SERVER_ERROR.message;
+
+    const errorResponse = {
       success: false,
-      errorCode: ErrorCode.INTERNAL_SERVER_ERROR.code,
-      errorMessage: error.message || ErrorCode.INTERNAL_SERVER_ERROR.message,
-      message: ErrorCode.INTERNAL_SERVER_ERROR.message,
+      errorCode,
+      errorMessage: localizedMessage,
+      message: localizedMessage,
       meta: {
-        status: 500,
+        status: error.response?.status || ErrorCode.INTERNAL_SERVER_ERROR.status,
       },
+      ...resData,
     };
+
+    if (showToast) toast.error(localizedMessage);
+    return errorResponse;
   }
 };

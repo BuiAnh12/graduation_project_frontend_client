@@ -25,7 +25,7 @@ const page = () => {
 
   const addToLocation = async () => {
     if (!name) {
-      toast.error("Vui lòng nhập tên!");
+      // toast.error("Vui lòng nhập tên!");
     } else {
       try {
         await locationService.addLocation({
@@ -42,7 +42,7 @@ const page = () => {
           type: "familiar",
         });
         setAddSuccess(true);
-        toast.success("Thêm địa chỉ thành công");
+        // toast.success("Thêm địa chỉ thành công");
       } catch (error) {
         setAddSuccess(false);
       }

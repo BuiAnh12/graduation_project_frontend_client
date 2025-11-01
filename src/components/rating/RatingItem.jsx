@@ -23,9 +23,9 @@ const RatingItem = ({
       refetchAllStoreRating();
       refetchPaginationRating();
       refetchAllStoreRatingDesc();
-      toast.success("Xóa đánh giá thành công");
+      // toast.success("Xóa đánh giá thành công");
     } catch (error) {
-      toast.error(error?.data?.message || "Có lỗi xảy ra!");
+      // toast.error(error?.data?.message || "Có lỗi xảy ra!");
     }
   };
 

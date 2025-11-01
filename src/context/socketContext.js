@@ -12,6 +12,10 @@ export const SocketProvider = ({ children }) => {
 
   const { user } = useAuth();
 
+  useEffect(()=>{
+    console.log('Update notification', notifications)
+  }, [notifications])
+
   useEffect(() => {
     if (!user) return;
 

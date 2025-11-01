@@ -63,16 +63,16 @@ const page = () => {
   const handleSubmit = async () => {
     const otpValue = otp.join(""); // Chuyển mảng OTP thành chuỗi
     if (otpValue.length < 6) {
-      toast.error("Vui lòng nhập đủ 6 số OTP!");
+      // toast.error("Vui lòng nhập đủ 6 số OTP!");
       return;
     }
 
     try {
       await authService.checkOTP({ email, otp: otpValue });
-      toast.success("Xác thực OTP thành công!");
+      // toast.success("Xác thực OTP thành công!");
       router.push("/auth/reset-password");
     } catch (error) {
-      toast.error(error?.data?.message || "Có lỗi xảy ra!");
+      // toast.error(error?.data?.message || "Có lỗi xảy ra!");
     }
   };
 
@@ -129,12 +129,12 @@ const page = () => {
                 try {
                   await authService.forgotPassword({ email });
 
-                  toast.success("Gửi thành công!");
+                  // toast.success("Gửi thành công!");
                   router.push("/auth/confirm-otp");
                   setOtp(["", "", "", "", "", ""]);
                   setCountdown(120);
                 } catch (error) {
-                  toast.error(error?.data?.message || "Có lỗi xảy ra!");
+                  // toast.error(error?.data?.message || "Có lỗi xảy ra!");
                 }
               }}
               className='text-[#fc6011] cursor-pointer'

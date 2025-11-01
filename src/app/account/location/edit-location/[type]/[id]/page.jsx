@@ -77,11 +77,11 @@ const page = () => {
     onSubmit: async (values) => {
       try {
         await locationService.updateLocation({ id, data: values });
-        toast.success("Cập nhật địa chỉ thành công!");
+        // toast.success("Cập nhật địa chỉ thành công!");
         router.push("/account/location");
       } catch (error) {
         console.error(error);
-        toast.error("Cập nhật thất bại!");
+        // toast.error("Cập nhật thất bại!");
       }
     },
   });

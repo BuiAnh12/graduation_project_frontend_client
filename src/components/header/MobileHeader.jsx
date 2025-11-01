@@ -50,7 +50,7 @@ const MobileHeader = ({ page }) => {
       <div className='flex items-center gap-[15px]'>
         <div className='relative'>
           <button
-            className='flex items-center gap-2 p-2 bg-gradient-to-r from-[#fc2111] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition'
+            className='flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#fc2111] to-[#ff8533] rounded-full text-white font-medium shadow-md hover:shadow-lg transition w-max'
             onClick={() => setOpenSelectProvince(!openSelectProvince)}
           >
             <Image src='/assets/star_yellow.png' alt='Location' width={18} height={18} className='drop-shadow-md' />

@@ -43,10 +43,10 @@ export default function UserReferenceEditor() {
             await userService.updateUserReference(userRef);
             setOriginal(JSON.parse(JSON.stringify(userRef)));
             setHasChanges(false);
-            toast.success("Cập nhật thành công")
+            // toast.success("Cập nhật thành công")
         } catch (err) {
             console.error("Update failed:", err);
-            toast.error("Cập nhật thất bại")
+            // toast.error("Cập nhật thất bại")
         } finally {
             setLoading(false);
         }

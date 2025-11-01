@@ -1,20 +1,12 @@
 import { config, instance } from "@/utils/axiosConfig";
+import { handleApiResponse } from "@/utils/apiHelper";
 
 const createVNPayOrder = async (orderId, data) => {
-  const response = await instance.post(
-    `/payment/vnpay/qrcode/${orderId}`,
-    data,
-    config()
-  );
-
-  if (response.data) {
-    return response.data;
-  }
-
-  throw new Error("VNPay QR generation failed");
+  return handleApiResponse(
+    instance.post(`/payment/vnpay/qrcode/${orderId}`, data, config()), {successMessage:'Thanh toán bằng VNPay thành công'}
+  ); // show toast
 };
 
 export const paymentService = {
   createVNPayOrder,
-  // ... other methods like createVNPayOrder
 };

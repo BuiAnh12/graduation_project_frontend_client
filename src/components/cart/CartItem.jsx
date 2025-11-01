@@ -19,7 +19,7 @@ const CartItem = ({ cartItem }) => {
     try {
       await cartService.clearCartItem(cartItem.store._id);
       refreshCart();
-      toast.success("🗑️ Xóa khỏi giỏ hàng thành công!");
+      // toast.success("🗑️ Xóa khỏi giỏ hàng thành công!");
     } catch (error) {
       console.error(error);
     }

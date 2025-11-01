@@ -30,7 +30,7 @@ instance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Gọi API refresh
-        const refreshResponse = await axios.get("http://localhost:5000/api/v1/auth/refresh", {
+        const refreshResponse = await axios.post("http://localhost:5000/api/v1/auth/refresh", {
           withCredentials: true,
         });
 
@@ -50,7 +50,7 @@ instance.interceptors.response.use(
           console.error("Logout failed:", e);
         } finally {
           localStorage.clear();
-          window.location.href = "/";
+          // window.location.href = "/";
         }
       }
     }

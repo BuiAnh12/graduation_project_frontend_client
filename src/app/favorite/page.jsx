@@ -19,7 +19,7 @@ const page = () => {
   const handleRemoveAllFavorite = async () => {
     try {
       await favoriteService.removeAllFavorite();
-      toast.success("Xóa hết yêu thích thành công!");
+      // toast.success("Xóa hết yêu thích thành công!");
 
       refreshFavorite();
     } catch (error) {

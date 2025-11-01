@@ -29,10 +29,10 @@ const page = () => {
         await authService.forgotPassword(values);
         setEmail(values.email);
         formik.resetForm();
-        toast.success("Gửi thành công!");
+        // toast.success("Gửi thành công!");
         router.push("/auth/confirm-otp");
       } catch (error) {
-        toast.error(error.response.data.message);
+        // toast.error(error.response.data.message);
       }
     },
   });

@@ -62,7 +62,7 @@ const page = () => {
     onSubmit: async (values) => {
       try {
         await userService.updateUser(values);
-        toast.success("Cập nhật thành công!");
+        // toast.success("Cập nhật thành công!");
         await fetchUser(user?._id);
       } catch (error) {
         console.error(error);

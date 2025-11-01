@@ -25,15 +25,16 @@ const LoginPage = () => {
     onSubmit: async (values) => {
       try {
         const res = await authService.login(values);
+        console.log(res)
         if (!res.success) {
-          toast.error("Đăng nhập thất bại");
+          // // toast.error("Đăng nhập thất bại");
         } else {
-          toast.success("Đăng nhập thành công!");
-          formik.resetForm();
-          router.push("/home");
+          // // toast.success("Đăng nhập thành công!");
+          // formik.resetForm();
+          // router.push("/home");
         }
       } catch (error) {
-        toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+        // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
       }
     },
   });

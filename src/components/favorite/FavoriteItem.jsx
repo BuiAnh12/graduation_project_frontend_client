@@ -12,7 +12,7 @@ const FavoriteItem = ({ store }) => {
   const handleRemoveFavorite = async () => {
     try {
       await favoriteService.removeFavorite(store._id);
-      toast.success("Xóa khỏi yêu thích thành công!");
+      // toast.success("Xóa khỏi yêu thích thành công!");
       refreshFavorite();
     } catch (error) {
       console.error(error);

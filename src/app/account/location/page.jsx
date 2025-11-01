@@ -57,7 +57,7 @@ const page = () => {
     if (result.isConfirmed && deleteLocationId) {
       try {
         await locationService.deleteLocation(deleteLocationId);
-        toast.success("Xóa địa chỉ thành công!");
+        // toast.success("Xóa địa chỉ thành công!");
         getUserLocations();
         setDeleteLocationId("");
       } catch (error) {

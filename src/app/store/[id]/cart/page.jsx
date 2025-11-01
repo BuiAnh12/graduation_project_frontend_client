@@ -72,11 +72,11 @@ const page = () => {
                 `Thanh toán thất bại. Mã lỗi: ${status}`;
 
             if (status === "00") {
-                toast.success(message);
+                // toast.success(message);
             } else if (status === "24") {
                 toast.warning(message);
             } else {
-                toast.error(message);
+                // toast.error(message);
             }
             router.replace(window.location.pathname);
         }
@@ -96,7 +96,7 @@ const page = () => {
                         setDetailCart(response.data);
                     } else {
                         // Cart exists but API confirms it's empty
-                        toast.info(
+                        // toast.info(
                             "Giỏ hàng của bạn tại cửa hàng này đã trống."
                         );
                         router.push(`/store/${storeId}`);
@@ -106,9 +106,9 @@ const page = () => {
                     // API call indicates failure or no data (cart likely deleted)
                     console.log(response);
                     if (response.errorCode === "CART_NOT_FOUND") {
-                        toast.info("Giỏ hàng không còn sản phẩm nào.");
+                        // toast.info("Giỏ hàng không còn sản phẩm nào.");
                     } else {
-                        toast.info(
+                        // toast.info(
                             response.errorMessage ||
                                 "Không tìm thấy hoặc giỏ hàng trống."
                         );
@@ -123,7 +123,7 @@ const page = () => {
                 console.log(
                     "No storeCart found for this store after global cart loaded."
                 );
-                // toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
+                // // toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
                 // No need to setLoading, component will unmount or redirect immediately
             }
             // Condition 3: Global cart is still loading (cart === null), do nothing yet.
@@ -167,7 +167,7 @@ const page = () => {
     const handleUpdateQuantity = async (dishId, newQuantity) => {
         // Keep initial checks
         if (!storeCart) {
-            toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
+            // toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
             router.push(`/store/${storeId}`);
             return;
         }
@@ -191,7 +191,7 @@ const page = () => {
         // --- Check updateCart Response ---
         if (!update_res.success) {
             console.error("API Error updating cart:", update_res.errorMessage);
-            toast.error(
+            // toast.error(
                 update_res.errorMessage || "Lỗi khi cập nhật giỏ hàng."
             );
             setLoadingDetailCart(false); // Stop loading on error
@@ -213,7 +213,7 @@ const page = () => {
                 update_res.message === "Cart deleted because it's empty"
             ) {
                 // Check error code OR the message from the initial update if the backend deletes immediately
-                toast.info("Bạn đã loại bỏ hết các món trong giỏ hàng!");
+                // toast.info("Bạn đã loại bỏ hết các món trong giỏ hàng!");
                 router.push(`/store/${storeId}`);
                 // No need to setLoadingDetailCart(false) here, as we are navigating away
                 return;
@@ -222,7 +222,7 @@ const page = () => {
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                toast.error(
+                // toast.error(
                     cart_refresh_result.errorMessage ||
                         "Lỗi khi làm mới giỏ hàng."
                 );
@@ -234,7 +234,7 @@ const page = () => {
         }
 
         // --- If refresh was successful ---
-        toast.success("Cập nhật số lượng thành công!");
+        // toast.success("Cập nhật số lượng thành công!");
 
         // No need to manually call getDetailCart here.
         // The useEffect watching the updated 'cart' context value will trigger
@@ -294,7 +294,7 @@ const page = () => {
                     "API Error updating toppings:",
                     update_res.errorMessage
                 );
-                toast.error(
+                // toast.error(
                     update_res.errorMessage || "Lỗi khi cập nhật topping."
                 );
                 setLoadingDetailCart(false); // Stop loading on error
@@ -311,7 +311,7 @@ const page = () => {
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                toast.error(
+                // toast.error(
                     cart_refresh_result.errorMessage ||
                         "Lỗi khi làm mới giỏ hàng."
                 );
@@ -319,11 +319,11 @@ const page = () => {
                 return; // Stop processing if refresh failed
             }
 
-            toast.success("Đã cập nhật topping.");
+            // toast.success("Đã cập nhật topping.");
             // Loading state will be reset by the fetchDetails effect
         } catch (error) {
             console.error("Error updating toppings:", error);
-            toast.error(error?.data?.message || "Lỗi khi cập nhật topping.");
+            // toast.error(error?.data?.message || "Lỗi khi cập nhật topping.");
             setLoadingDetailCart(false); // Stop loading on catch
         }
     };
@@ -439,12 +439,12 @@ const page = () => {
                 !Array.isArray(detailCart.items) ||
                 detailCart.items.length === 0
             ) {
-                toast.error("Giỏ hàng trống hoặc không thể truy vấn.");
+                // toast.error("Giỏ hàng trống hoặc không thể truy vấn.");
                 return;
             }
 
             if (detailCart?.store?.openStatus === "closed") {
-                toast.error(
+                // toast.error(
                     "Cửa hàng đã đóng cửa, không thể đặt hàng. Vui lòng quay lại sau!"
                 );
                 return;
@@ -456,7 +456,7 @@ const page = () => {
                 ) ?? [];
 
             if (outOfStockItems.length > 0) {
-                toast.error(
+                // toast.error(
                     "Có món ăn hiện đang hết hàng, không thể đặt hàng. Vui lòng quay lại sau!"
                 );
                 return;
@@ -468,15 +468,15 @@ const page = () => {
                 storeLocation?.lat == null ||
                 storeLocation?.lon == null
             ) {
-                toast.error("Vui lòng chọn địa chỉ giao hàng");
+                // toast.error("Vui lòng chọn địa chỉ giao hàng");
                 return;
             }
             if (!storeLocation?.contactName?.trim()) {
-                toast.error("Vui lòng nhập tên người nhận");
+                // toast.error("Vui lòng nhập tên người nhận");
                 return;
             }
             if (!storeLocation?.contactPhonenumber?.trim()) {
-                toast.error("Vui lòng nhập số điện thoại người nhận");
+                // toast.error("Vui lòng nhập số điện thoại người nhận");
                 return;
             }
 
@@ -494,7 +494,7 @@ const page = () => {
             // --- Payment flows ---
             if (paymentMethod === "VNPay") {
                 if (!detailCart.cartId) {
-                    toast.error("CartId không thể truy vấn");
+                    // toast.error("CartId không thể truy vấn");
                     return;
                 }
 
@@ -510,7 +510,7 @@ const page = () => {
                     // refreshCart?.();
                     return;
                 } else {
-                    toast.error("Lỗi phương thức thanh toán online");
+                    // toast.error("Lỗi phương thức thanh toán online");
                     return;
                 }
             }
@@ -523,16 +523,16 @@ const page = () => {
             });
 
             if (response?.data?.orderId) {
-                toast.success("Đặt thành công");
+                // toast.success("Đặt thành công");
                 refreshOrder?.();
                 refreshCart?.();
                 router.push(`/orders/detail-order/${response?.data?.orderId}`);
             } else {
-                toast.error("Lỗi phương thức thanh toán tiền mặt");
+                // toast.error("Lỗi phương thức thanh toán tiền mặt");
             }
         } catch (error) {
             console.error(error);
-            toast.error("Thanh toán thất bại");
+            // toast.error("Thanh toán thất bại");
         }
     };
 

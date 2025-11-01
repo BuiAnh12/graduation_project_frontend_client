@@ -25,11 +25,11 @@ const DishRecommendSlider = () => {
         if (res.success && Array.isArray(res.data.recommendations)) {
           setDishes(res.data.recommendations);
         } else {
-          toast.info("Không có món đề xuất phù hợp");
+          // toast.info("Không có món đề xuất phù hợp");
         }
       } catch (err) {
         console.error("Failed to fetch recommended dishes:", err);
-        toast.error("Lỗi khi tải món đề xuất");
+        // toast.error("Lỗi khi tải món đề xuất");
       }
     };
 

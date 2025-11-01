@@ -28,7 +28,7 @@ const Page = () => {
       setOrderDetail(response);
     } catch (error) {
       console.error(error);
-      toast.error("Không thể tải thông tin đơn hàng!");
+      // toast.error("Không thể tải thông tin đơn hàng!");
     }
   };
 
@@ -51,11 +51,11 @@ const Page = () => {
 
   const handleAddRating = async () => {
     if (ratingValue === 0) {
-      toast.error("Vui lòng chọn số sao để tiếp tục đánh giá!");
+      // toast.error("Vui lòng chọn số sao để tiếp tục đánh giá!");
       return;
     }
     if (!comment.trim()) {
-      toast.error("Vui lòng nhập đánh giá của bạn!");
+      // toast.error("Vui lòng nhập đánh giá của bạn!");
       return;
     }
 
@@ -63,11 +63,11 @@ const Page = () => {
       const images = uploadedFile.length > 0 ? await handleUploadImage(uploadedFile) : [];
       const data = { storeId, orderId, ratingValue, comment, images };
       await ratingService.addStoreRating(data);
-      toast.success("Đánh giá thành công!");
+      // toast.success("Đánh giá thành công!");
       router.push(`/store/${storeId}`);
     } catch (error) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi gửi đánh giá.");
+      // toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi gửi đánh giá.");
       router.push(`/store/${storeId}`);
     }
   };

@@ -57,21 +57,21 @@ const EditRatingPage = () => {
 
   const handleEditRating = async () => {
     if (ratingValue === 0) {
-      toast.error("Vui lòng chọn số sao để tiếp tục!");
+      // toast.error("Vui lòng chọn số sao để tiếp tục!");
       return;
     }
     if (!comment.trim()) {
-      toast.error("Vui lòng nhập đánh giá của bạn!");
+      // toast.error("Vui lòng nhập đánh giá của bạn!");
       return;
     }
 
     try {
       const data = { ratingValue, comment, images };
       await ratingService.editStoreRating({ ratingId, data });
-      toast.success("Chỉnh sửa đánh giá thành công!");
+      // toast.success("Chỉnh sửa đánh giá thành công!");
       router.push(`/store/${storeId}`);
     } catch (error) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.data.message);
       router.push(`/store/${storeId}`);
     }
   };

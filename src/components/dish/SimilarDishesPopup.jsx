@@ -18,7 +18,7 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
     const handleAddToCart = async (dish) => {
         // 1. Check if user is logged in
         if (!user) {
-            toast.error("Vui lòng đăng nhập để thêm món vào giỏ hàng!");
+            // toast.error("Vui lòng đăng nhập để thêm món vào giỏ hàng!");
             onClose(); // Close popup
             return;
         }
@@ -27,9 +27,9 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
         //    For simplicity, we assume dishes recommended here don't *require* toppings.
         //    If they might, you'd need to navigate to the dish page instead.
         if (dish.metadata?.toppingGroups?.some((group) => group.isRequired)) {
-            toast.info(
-                `Món "${dish.name}" cần chọn topping. Vui lòng xem chi tiết.`
-            );
+            // toast.info(
+            //     `Món "${dish.name}" cần chọn topping. Vui lòng xem chi tiết.`
+            // );
             // Optionally navigate: router.push(`/store/${storeId}/dish/${dish._id || dish.dish_id}`);
             onClose();
             return;
@@ -51,26 +51,26 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
             const response = await cartService.updateCart(payload);
 
             if (response.success) {
-                toast.success(`Đã thêm "${dish.name}" vào giỏ hàng!`);
+                // toast.success(`Đã thêm "${dish.name}" vào giỏ hàng!`);
                 refreshCart(); // Refresh cart state from context
                 onClose(); // Close popup after adding
             } else {
                 // Show backend error message if available
                 if (response.errorCode == "NOT_ENOUGH_STOCK") {
-                    toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
+                    // toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
                 }
                 else {
-                    toast.error(
-                        response.errorMessage || "Không thể thêm món vào giỏ hàng."
-                    );
+                    // toast.error(
+                    //     response.errorMessage || "Không thể thêm món vào giỏ hàng."
+                    // );
                 }
                 // onClose(); // Still close popup on failure
             }
         } catch (error) {
             console.error("Error adding similar dish to cart:", error);
-            toast.error(
-                error?.data?.message || "Lỗi khi thêm món vào giỏ hàng!"
-            );
+            // toast.error(
+            //     error?.data?.message || "Lỗi khi thêm món vào giỏ hàng!"
+            // );
             onClose(); // Close popup on error
         }
     };

@@ -164,7 +164,7 @@ const page = () => {
         } catch (error) {
             setShowSimilarPopup(false); // Hide on fetch error
             console.error("Error fetching similar dishes:", error);
-            toast.error("Không thể tải gợi ý món ăn.");
+            // toast.error("Không thể tải gợi ý món ăn.");
         }
     };
 

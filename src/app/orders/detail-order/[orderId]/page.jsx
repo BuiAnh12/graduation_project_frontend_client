@@ -55,7 +55,7 @@ const Page = () => {
 
   useEffect(() => {
     if (paymentStatus === "success") {
-      toast.success("Thanh toán thành công");
+      // toast.success("Thanh toán thành công");
       // Remove `payment` param from URL without reload
       const url = new URL(window.location.href);
       url.searchParams.delete("status");
@@ -100,7 +100,7 @@ const Page = () => {
     if (result.isConfirmed) {
       try {
         await orderService.cancelOrder(orderId);
-        toast.success("Hủy đơn hàng thành công!");
+        // toast.success("Hủy đơn hàng thành công!");
         refreshOrder();
         router.push("/orders");
       } catch (error) { }
@@ -120,7 +120,7 @@ const Page = () => {
     if (result.isConfirmed) {
       try {
         await orderService.reOrder(orderId);
-        toast.success("Đặt lại đơn hàng thành công!");
+        // toast.success("Đặt lại đơn hàng thành công!");
         refreshCart();
         router.push(`/store/${orderDetail.storeId}/cart/`);
       } catch (error) { }
@@ -140,7 +140,7 @@ const Page = () => {
     if (result.isConfirmed) {
       try {
         await orderService.updateOrderStatus({ orderId, data: { status: "done" } });
-        toast.success("Xác nhận đơn hàng thành công!");
+        // toast.success("Xác nhận đơn hàng thành công!");
         getOrderDetail();
       } catch (error) { }
     }

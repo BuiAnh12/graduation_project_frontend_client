@@ -64,10 +64,10 @@ const ChangePasswordPage = () => {
     onSubmit: async (values) => {
       try {
         await authService.changePassword(values);
-        toast.success("Cập nhật thành công!");
+        // // toast.success("Cập nhật thành công!");
         formik.resetForm();
       } catch (error) {
-        toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+        // // toast.error(error.response?.data?.message || "Cập nhật thất bại!");
         console.error(error);
       }
     },

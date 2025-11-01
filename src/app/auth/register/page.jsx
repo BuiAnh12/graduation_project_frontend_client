@@ -39,11 +39,11 @@ const RegisterPage = () => {
     onSubmit: async (values) => {
       try {
         await authService.register(values);
-        toast.success("Đăng ký thành công!");
+        // toast.success("Đăng ký thành công!");
         formik.resetForm();
         router.push("/auth/login");
       } catch (error) {
-        toast.error(error.response?.data?.message || "Đăng ký thất bại!");
+        // toast.error(error.response?.data?.message || "Đăng ký thất bại!");
       }
     },
   });

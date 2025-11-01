@@ -28,11 +28,11 @@ const UpsellDishCard = ({ dish, storeId }) => {
     e.stopPropagation();
 
     if (!user) {
-      toast.error("Vui lòng đăng nhập để thêm món!");
+      // toast.error("Vui lòng đăng nhập để thêm món!");
       return;
     }
     if (!storeId || !dishId) {
-        toast.error("Thiếu thông tin món ăn hoặc cửa hàng.");
+        // toast.error("Thiếu thông tin món ăn hoặc cửa hàng.");
         return;
     }
 
@@ -52,16 +52,16 @@ const UpsellDishCard = ({ dish, storeId }) => {
       });
 
       if (!update_res.success) {
-        toast.error(update_res.errorMessage || "Lỗi khi thêm vào giỏ.");
+        // toast.error(update_res.errorMessage || "Lỗi khi thêm vào giỏ.");
         return;
       }
 
       await refreshCart();
-      toast.success(`Đã thêm "${name}" vào giỏ hàng!`);
+      // toast.success(`Đã thêm "${name}" vào giỏ hàng!`);
 
     } catch (error) {
       console.error("Error adding upsell item:", error);
-      toast.error(error?.data?.message || "Lỗi khi thêm món.");
+      // toast.error(error?.data?.message || "Lỗi khi thêm món.");
     }
   };
 

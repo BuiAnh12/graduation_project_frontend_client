@@ -24,7 +24,7 @@ const page = () => {
     try {
       await cartService.clearCart();
       refreshCart();
-      toast.success("Xóa hết giỏ hàng thành công!");
+      // toast.success("Xóa hết giỏ hàng thành công!");
     } catch (error) {
       console.error(error);
     }

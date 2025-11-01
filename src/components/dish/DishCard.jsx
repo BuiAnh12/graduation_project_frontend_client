@@ -51,7 +51,7 @@ const DishCard = ({
                     });
                     if (response.success) {
                         refreshCart();
-                        toast.success("Cập nhật giỏ hàng thành công");
+                        // toast.success("Cập nhật giỏ hàng thành công");
                         if (
                             currentQuantity < newQuantity &&
                             newQuantity >= 1 &&
@@ -61,18 +61,18 @@ const DishCard = ({
                         }
                     } else {
                         if (response.errorCode == "NOT_ENOUGH_STOCK") {
-                            toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
+                            // toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
                         }
                         else {
-                            toast.error(response.errorMessage);
+                            // toast.error(response.errorMessage);
                         }
                     }
                 } catch (error) {
-                    toast.error(error?.data?.message || "Có lỗi xảy ra!");
+                    // toast.error(error?.data?.message || "Có lỗi xảy ra!");
                 }
             }
         } else {
-            toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
+            // toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
         }
     };
 
