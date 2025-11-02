@@ -30,8 +30,8 @@ const LoginPage = () => {
           // // toast.error("Đăng nhập thất bại");
         } else {
           // // toast.success("Đăng nhập thành công!");
-          // formik.resetForm();
-          // router.push("/home");
+          formik.resetForm();
+          router.push("/home");
         }
       } catch (error) {
         // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");

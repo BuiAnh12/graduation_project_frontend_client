@@ -97,8 +97,8 @@ const page = () => {
                     } else {
                         // Cart exists but API confirms it's empty
                         // toast.info(
-                            "Giỏ hàng của bạn tại cửa hàng này đã trống."
-                        );
+                        //     "Giỏ hàng của bạn tại cửa hàng này đã trống."
+                        // );
                         router.push(`/store/${storeId}`);
                         setDetailCart(null); // Clear state
                     }
@@ -109,9 +109,9 @@ const page = () => {
                         // toast.info("Giỏ hàng không còn sản phẩm nào.");
                     } else {
                         // toast.info(
-                            response.errorMessage ||
-                                "Không tìm thấy hoặc giỏ hàng trống."
-                        );
+                        //     response.errorMessage ||
+                        //         "Không tìm thấy hoặc giỏ hàng trống."
+                        // );
                     }
                     router.push(`/store/${storeId}`);
                     setDetailCart(null); // Clear state
@@ -192,8 +192,8 @@ const page = () => {
         if (!update_res.success) {
             console.error("API Error updating cart:", update_res.errorMessage);
             // toast.error(
-                update_res.errorMessage || "Lỗi khi cập nhật giỏ hàng."
-            );
+            //     update_res.errorMessage || "Lỗi khi cập nhật giỏ hàng."
+            // );
             setLoadingDetailCart(false); // Stop loading on error
             return;
         }
@@ -223,9 +223,9 @@ const page = () => {
                     cart_refresh_result.errorMessage
                 );
                 // toast.error(
-                    cart_refresh_result.errorMessage ||
-                        "Lỗi khi làm mới giỏ hàng."
-                );
+                //     cart_refresh_result.errorMessage ||
+                //         "Lỗi khi làm mới giỏ hàng."
+                // );
                 // We might still proceed to fetch details, or stop here.
                 // Let's stop here for now. The cart might be stale.
                 setLoadingDetailCart(false);
@@ -295,8 +295,8 @@ const page = () => {
                     update_res.errorMessage
                 );
                 // toast.error(
-                    update_res.errorMessage || "Lỗi khi cập nhật topping."
-                );
+                //     update_res.errorMessage || "Lỗi khi cập nhật topping."
+                // );
                 setLoadingDetailCart(false); // Stop loading on error
                 return;
             }
@@ -312,9 +312,9 @@ const page = () => {
                     cart_refresh_result.errorMessage
                 );
                 // toast.error(
-                    cart_refresh_result.errorMessage ||
-                        "Lỗi khi làm mới giỏ hàng."
-                );
+                //     cart_refresh_result.errorMessage ||
+                //         "Lỗi khi làm mới giỏ hàng."
+                // );
                 setLoadingDetailCart(false);
                 return; // Stop processing if refresh failed
             }
@@ -445,8 +445,8 @@ const page = () => {
 
             if (detailCart?.store?.openStatus === "closed") {
                 // toast.error(
-                    "Cửa hàng đã đóng cửa, không thể đặt hàng. Vui lòng quay lại sau!"
-                );
+                //     "Cửa hàng đã đóng cửa, không thể đặt hàng. Vui lòng quay lại sau!"
+                // );
                 return;
             }
 
@@ -457,8 +457,8 @@ const page = () => {
 
             if (outOfStockItems.length > 0) {
                 // toast.error(
-                    "Có món ăn hiện đang hết hàng, không thể đặt hàng. Vui lòng quay lại sau!"
-                );
+                //     "Có món ăn hiện đang hết hàng, không thể đặt hàng. Vui lòng quay lại sau!"
+                // );
                 return;
             }
 
