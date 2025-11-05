@@ -32,9 +32,9 @@ const page = () => {
     const [loading, setLoading] = useState(true);
     const [similarDishes, setSimilarDishes] = useState([]);
     const [showSimilarPopup, setShowSimilarPopup] = useState(false);
-    const [cartDataLoaded, setCartDataLoaded] = useState(false)
+    const [cartDataLoaded, setCartDataLoaded] = useState(false);
     const { cart, refreshCart } = useCart();
-    const { user } = useAuth();
+    const { user, userId } = useAuth();
 
     const getDishInfo = async () => {
         try {
@@ -98,7 +98,8 @@ const page = () => {
             setStoreCart(store);
 
             const dish = store?.items.find(
-                (item) => item.dishId._id === dishId
+                (item) => item.dishId._id === dishId &&
+                item?.participantId?.userId?._id === userId
             );
             setDishCart(dish);
 
@@ -144,18 +145,19 @@ const page = () => {
 
     useEffect(() => {
         if (storeCart) {
-            console.log("StoreCart", storeCart)
+            console.log("StoreCart", storeCart);
             const item = storeCart.items.find(
-                (item) => item.dishId._id === dishId
+                (item) => item.dishId._id === dishId &&
+                item?.participantId?.userId?._id === userId
             );
-            
+
             setCartItem(item);
             setQuantity(item?.quantity || 0);
 
             if (item?.toppings.length > 0) {
                 item.toppings.forEach((topping) => {
                     setToppings((prev) => {
-                        console.log("topping display", topping.toppingId._id)
+                        console.log("topping display", topping.toppingId._id);
                         if (prev.includes(topping.toppingId._id)) {
                             return [...prev];
                         } else {
@@ -164,10 +166,11 @@ const page = () => {
                     });
 
                     setToppingsValue((prev) => {
-                        console.log("prev", prev)
+                        console.log("prev", prev);
                         if (
                             prev.some(
-                                (tp) => tp.toppingId._id === topping.toppingId._id
+                                (tp) =>
+                                    tp.toppingId._id === topping.toppingId._id
                             )
                         ) {
                             return [...prev];
@@ -176,7 +179,7 @@ const page = () => {
                                 ...prev,
                                 {
                                     ...topping,
-                                    _id: topping.toppingId._id
+                                    _id: topping.toppingId._id,
                                 },
                             ];
                         }
@@ -185,74 +188,6 @@ const page = () => {
             }
         }
     }, [storeCart]);
-
-    // useEffect(() => {
-    //     // Only run initialization once after dishInfo is loaded and cartItem is determined
-    //     if (dishInfo && cartItem !== undefined && !cartDataLoaded) {
-    //         // Check cartItem is determined (could be null)
-    //         if (cartItem) {
-    //             console.log("Initializing state from cartItem:", cartItem);
-    //             setQuantity(cartItem.quantity || 0);
-    //             setNote(cartItem.note || "");
-
-    //             // --- Corrected Topping Initialization ---
-    //             const initialToppingIds =
-    //                 cartItem.toppings
-    //                     ?.map((t) => t.toppingId?._id?.toString())
-    //                     .filter(Boolean) || []; // Get actual Topping IDs as strings
-
-    //             const initialToppingValues =
-    //                 cartItem.toppings
-    //                     ?.map((t) => {
-    //                         // Find the original Topping object within dishInfo based on the ID
-    //                         let originalTopping = null;
-    //                         let foundGroupId = null;
-    //                         dishInfo.toppingGroups?.forEach((group) => {
-    //                             const found = group.toppings.find(
-    //                                 (topInGroup) =>
-    //                                     topInGroup._id === t.toppingId?._id
-    //                             );
-    //                             if (found) {
-    //                                 originalTopping = found;
-    //                                 foundGroupId = group._id.toString();
-    //                             }
-    //                         });
-
-    //                         if (!originalTopping) return null; // Skip if original topping info not found in dishInfo
-
-    //                         // Reconstruct object needed for price calculation and handleChooseTopping
-    //                         return {
-    //                             _id: originalTopping._id, // The actual Topping _id
-    //                             name: originalTopping.name,
-    //                             price: originalTopping.price,
-    //                             groupId: foundGroupId, // Store the group ID it belongs to
-    //                             // toppingId: t.toppingId?._id // Redundant if using _id consistently
-    //                         };
-    //                     })
-    //                     .filter(Boolean) || []; // Remove nulls if original topping wasn't found
-
-    //             console.log("Initialized Topping IDs:", initialToppingIds);
-    //             console.log(
-    //                 "Initialized Topping Values:",
-    //                 initialToppingValues
-    //             );
-
-    //             setToppings(initialToppingIds);
-    //             setToppingsValue(initialToppingValues);
-    //             //-----------------------------------------
-    //         } else {
-    //             console.log(
-    //                 "Initializing state TO DEFAULTS (no cartItem found)."
-    //             );
-    //             // No item in cart, ensure defaults
-    //             setQuantity(0);
-    //             setNote("");
-    //             setToppings([]);
-    //             setToppingsValue([]);
-    //         }
-    //         setCartDataLoaded(true); // Mark as loaded (either from cart or with defaults)
-    //     }
-    // }, [cartItem, dishInfo, cartDataLoaded]);
 
     useEffect(() => {
         if (cartItem) {
@@ -298,7 +233,7 @@ const page = () => {
     };
 
     const handleChooseTopping = (topping, toppingPrice, toppingGroup) => {
-        console.log("Choose topping clicked")
+        console.log("Choose topping clicked");
         const isRadio = toppingGroup.onlyOnce === true;
 
         if (isRadio) {
@@ -348,7 +283,7 @@ const page = () => {
         } else {
             let priceChange = 0;
             console.log(topping);
-            console.log(toppings)
+            console.log(toppings);
             if (toppings.includes(topping._id)) {
                 priceChange = -toppingPrice * quantity;
                 setToppings((prev) => prev.filter((id) => id !== topping._id));
@@ -360,10 +295,10 @@ const page = () => {
                 setToppings((prev) => [...prev, topping._id]);
                 setToppingsValue((prev) => [
                     ...prev,
-                    { 
+                    {
                         toppingId: {
-                            _id: topping._id
-                        }
+                            _id: topping._id,
+                        },
                     },
                 ]);
             }
@@ -383,22 +318,33 @@ const page = () => {
         }
 
         if (dishInfo?.stockStatus === "out_of_stock") {
-            // toast.error(
+            toast.error(
                 "Món ăn này hiện đang hết hàng, vui lòng quay lại sau!"
-            // );
+            );
             return;
         }
-
+        const isGroup = storeCart && storeCart?.mode === "group";
         if (user) {
-            const res = await cartService.updateCart({
-                storeId,
-                action: "update_item",
-                dishId,
-                quantity,
-                toppings,
-                note,
-            });
+            let res;
 
+            if (isGroup) {
+                res = await cartService.upsertGroupCartItem({
+                    cartId: storeCart._id,
+                    dishId: dish._id,
+                    quantity: newQuantity,
+                    toppings: [],
+                    action: "add_item",
+                });
+            } else {
+                res = await cartService.updateCart({
+                    storeId,
+                    action: "update_item",
+                    dishId,
+                    quantity,
+                    toppings,
+                    note,
+                });
+            }
             if (res.success) {
                 Swal.fire({
                     title: "Cập nhật giỏ hàng thành công",
@@ -421,15 +367,28 @@ const page = () => {
     };
 
     const handleRemoveFromCart = async () => {
+        const isGroup = storeCart && storeCart?.mode === "group";
         if (user) {
             try {
-                await cartService.updateCart({
+                let res;
+
+            if (isGroup) {
+                res = await cartService.upsertGroupCartItem({
+                    cartId: storeCart._id,
+                    dishId: dishId,
+                    quantity: 0,
+                    toppings: [],
+                    action: "remove_item",
+                });
+            } else {
+                res = await cartService.updateCart({
                     storeId,
                     dishId,
                     action: "remove_item",
                     quantity: 0,
                     toppings: [],
                 });
+            }
                 // toast.success("Cập nhật giỏ hàng thành công");
                 refreshCart();
                 setShowSimilarPopup(false);

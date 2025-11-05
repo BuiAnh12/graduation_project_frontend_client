@@ -58,7 +58,7 @@ const page = () => {
             <Image
               src={
                 user?.avatarImage?.url ||
-                "https://res.cloudinary.com/datnguyen240/image/upload/v1722168751/avatars/avatar_pnncdk.png"
+                "/assets/avatar_default.png"
               }
               alt="Avatar"
               fill

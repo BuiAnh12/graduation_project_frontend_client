@@ -2,7 +2,7 @@
 import React from "react";
 import DishBigCard from "./DishBigCard";
 
-const ListDishBig = ({ storeInfo, dishes, cartItems, onAddToCartShowSimilar, allTags }) => {
+const ListDishBig = ({ storeInfo, dishes, cartItems, onAddToCartShowSimilar, allTags, storeCart, }) => {
   return (
     <section className="my-10">
       {/* Header */}
@@ -23,6 +23,7 @@ const ListDishBig = ({ storeInfo, dishes, cartItems, onAddToCartShowSimilar, all
             cartItems={cartItems}
             onAddToCartShowSimilar={onAddToCartShowSimilar}
             allTags={allTags} // <-- 3. Pass allTags down
+            storeCart={storeCart}
           />
         ))}
       </div>
