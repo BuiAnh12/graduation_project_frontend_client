@@ -9,7 +9,8 @@ const OrderSummary = ({
   shippingFee,
   totalDiscount,
   onUpdateQuantity, 
-  onRemoveTopping, 
+  onRemoveTopping,
+  isReadOnly = false, 
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-md p-5 md:p-6 border border-red-100 hover:shadow-lg transition">
@@ -39,17 +40,19 @@ const OrderSummary = ({
                     onClick={() => onUpdateQuantity(dishId, (item.quantity || 0) + 1)}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-red-500 text-red-500 hover:bg-red-50 transition active:scale-95"
                     aria-label="Increase quantity"
+                    hidden={isReadOnly}
                   >
                     +
                   </button>
                   <span className="text-gray-800 font-semibold text-lg" name="quantity">
-                    {item.quantity}
+                    x{item.quantity}
                   </span>
                   <button
                     // When quantity hits 0, backend handles removal
                     onClick={() => onUpdateQuantity(dishId, Math.max(0, (item.quantity || 0) - 1))}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 transition active:scale-95"
                     aria-label="Decrease quantity"
+                    hidden={isReadOnly}
                   >
                     -
                   </button>
@@ -71,6 +74,7 @@ const OrderSummary = ({
                           onClick={() => onRemoveTopping(itemId, topping.toppingId._id)}
                           className="mr-1 text-red-500 hover:text-red-700 font-bold leading-none text-xl w-4 h-4 flex items-center justify-center rounded-full transition" // Added size, centering, hover bg
                           aria-label={`Remove ${topping.toppingName}`}
+                          hidden={isReadOnly}
                         >
                           &times; {/* The 'x' character */}
                         </button>

@@ -17,7 +17,9 @@ import { useVoucher } from "@/context/voucherContext";
 import { paymentService } from "@/api/paymentService";
 import { shippingFeeService } from "@/api/shippingFeeService";
 import { useSearchParams } from "next/navigation";
-import UpsellSlider from "@/components/dish/UpsellSlider"; // Adjust path
+import UpsellSlider from "@/components/dish/UpsellSlider";
+import EnableGroupCart from "@/components/cart/EnableGroupCart";
+import GroupCartView from "@/components/cart/GroupCartView";
 
 const page = () => {
     const router = useRouter();
@@ -30,21 +32,28 @@ const page = () => {
         setStoreId,
     } = useStoreLocation();
 
-    const [detailCart, setDetailCart] = useState(null);
+    const [detailCart, setDetailCart] = useState(null); // Private
+    const [groupCartData, setGroupCartData] = useState(null); // Group
+
     const [storeCart, setStoreCart] = useState(null);
     const [subtotalPrice, setSubtotalPrice] = useState(0);
     const [shippingFee, setShippingFee] = useState(0);
     const [totalDiscount, setTotalDiscount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("cash");
 
-    const { user } = useAuth();
+    const { user, userId } = useAuth();
     const { refreshCart, cart } = useCart();
     const { refreshOrder } = useOrder();
     const { storeVouchers } = useVoucher();
 
     const selectedVouchers = storeVouchers[storeId] || [];
 
-    const [loadingDetailCart, setLoadingDetailCart] = useState(true); // Add this line
+    const [isCartLoading, setIsCartLoading] = useState(true); // Add this line
+
+    const isGroupOwner =
+        groupCartData?.cart?.userId && user?._id
+            ? groupCartData.cart.userId === user._id
+            : false;
 
     useEffect(() => {
         const status = searchParams.get("status");
@@ -83,76 +92,106 @@ const page = () => {
     }, [searchParams, router]);
 
     useEffect(() => {
-        const fetchDetails = async () => {
-            // Condition 1: We have a valid storeCart ID to fetch details for
-            if (storeCart && storeCart._id) {
-                setLoadingDetailCart(true); // Start loading
-                const response = await cartService.getDetailCart(storeCart._id);
-                console.log("getDetailCart response:", response);
+        console.log("Main Cart Effect Triggered: cart context changed");
+        const cartIdFromQuery = searchParams.get("id");
 
-                if (response.success && response.data) {
-                    // Check if items array exists and is not empty
-                    if (response.data.items && response.data.items.length > 0) {
-                        setDetailCart(response.data);
-                    } else {
-                        // Cart exists but API confirms it's empty
-                        // toast.info(
-                        //     "Giỏ hàng của bạn tại cửa hàng này đã trống."
-                        // );
-                        router.push(`/store/${storeId}`);
-                        setDetailCart(null); // Clear state
-                    }
-                } else {
-                    // API call indicates failure or no data (cart likely deleted)
-                    console.log(response);
-                    if (response.errorCode === "CART_NOT_FOUND") {
-                        // toast.info("Giỏ hàng không còn sản phẩm nào.");
-                    } else {
-                        // toast.info(
-                        //     response.errorMessage ||
-                        //         "Không tìm thấy hoặc giỏ hàng trống."
-                        // );
-                    }
-                    router.push(`/store/${storeId}`);
-                    setDetailCart(null); // Clear state
-                }
-                setLoadingDetailCart(false); // Stop loading after fetch/redirect attempt
-            }
-            // Condition 2: Global cart has loaded (cart !== null), but no cart was found for this store
-            else if (cart !== null && !storeCart) {
-                console.log(
-                    "No storeCart found for this store after global cart loaded."
-                );
-                // // toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
-                // No need to setLoading, component will unmount or redirect immediately
-            }
-            // Condition 3: Global cart is still loading (cart === null), do nothing yet.
-            else {
-                // console.log("Waiting for global cart context to load..."); // Optional debug
-                setLoadingDetailCart(true); // Keep showing loading while waiting for context
-            }
-        };
-
-        fetchDetails();
-        // Depend on storeCart._id AND the global cart loading status (indirectly via cart !== null)
-    }, [storeCart?._id, cart, router, storeId]);
-
-    useEffect(() => {
-        console.log("Effect 1 Triggered: cart context changed"); // Debug log
-        if (cart === null && cart === undefined) {
-            console.log("Setting storeCart to null (cart context is null)");
+        let foundCart = null;
+        if (cart === null || cart === undefined) {
+            console.log(
+                "Setting storeCart to null (cart context is null or undefined)"
+            );
             setStoreCart(null);
         } else {
             try {
-                const foundCart = cart.find((c) => c.store._id === storeId);
-                console.log("Setting storeCart:", foundCart || null);
-                setStoreCart(foundCart || null);
+                if (cartIdFromQuery) {
+                    foundCart = cart.find((c) => c._id === cartIdFromQuery);
+                } else {
+                    foundCart = cart.find(
+                        (c) => c.store._id === storeId && c.mode === "group"
+                    );
+                    if (!foundCart) {
+                        foundCart = cart.find(
+                            (c) =>
+                                c.store._id === storeId && c.mode === "private"
+                        );
+                    }
+                }
+                console.log("Found storeCart:", foundCart || null);
+                setStoreCart(foundCart || null); // Still set state for other components
             } catch (error) {
                 console.log(error);
             }
         }
-        // setLoadingDetailCart(true); // Let Effect 2 handle precise loading state
-    }, [cart, storeId]);
+
+        // This fetch logic now runs immediately with the 'foundCart' we just got
+        const fetchCartData = async () => {
+            console.log("Fetch Detail");
+            // Condition 1: We have a valid storeCart ID to fetch details for
+            if (foundCart && foundCart._id) {
+                setIsCartLoading(true); // Start loading
+
+                // Check the mode from the cart we just found
+                if (foundCart.mode === "group") {
+                    console.log("Fetching GROUP cart data...");
+                    const response = await cartService.getGroupCart(
+                        foundCart._id
+                    );
+                    if (response.success && response.data) {
+                        setGroupCartData(response.data);
+                        setDetailCart(null); // Ensure private cart is null
+                    } else {
+                        // Handle error (e.g., user was removed, cart expired)
+                        toast.error(
+                            response.errorMessage ||
+                                "Không thể tải giỏ hàng nhóm."
+                        );
+                        router.push(`/store/${storeId}`);
+                        setGroupCartData(null);
+                    }
+                } else {
+                    // --- EXISTING LOGIC ---
+                    console.log("Fetching PRIVATE cart data...");
+                    const response = await cartService.getDetailCart(
+                        foundCart._id
+                    );
+                    if (
+                        response.success &&
+                        response.data &&
+                        response.data.items &&
+                        response.data.items.length > 0
+                    ) {
+                        setDetailCart(response.data);
+                        setGroupCartData(null); // Ensure group cart is null
+                    } else {
+                        // Cart is empty or not found, redirect
+                        router.push(`/store/${storeId}`);
+                        setDetailCart(null);
+                    }
+                }
+                // setIsCartLoading(false);
+            }
+            // Condition 2: Global cart has loaded (cart !== null), but no cart was found for this store
+            else if (cart !== null && !foundCart) {
+                // Global cart loaded, but no cart for this store
+                console.log("No storeCart found for this store.");
+                router.push(`/store/${storeId}`);
+                setIsCartLoading(false);
+            }
+            // Condition 3: Global cart is still loading (cart === null)
+            else if (cart === null) {
+                // console.log("Waiting for global cart context to load..."); // Optional debug
+                setIsCartLoading(true); // Keep showing loading while waiting for context
+            }
+        };
+
+        fetchCartData(); // Call the fetch logic
+    }, [cart, storeId, router]);
+
+    useEffect(() => {
+        if (detailCart || groupCartData || (cart !== null && !storeCart)) {
+            setIsCartLoading(false);
+        }
+    }, [detailCart, groupCartData, cart, storeCart]);
 
     useEffect(() => {
         setStoreId(storeId);
@@ -165,9 +204,7 @@ const page = () => {
     }, [detailCart]);
 
     const handleUpdateQuantity = async (dishId, newQuantity) => {
-        // Keep initial checks
         if (!storeCart) {
-            // toast.info("Bạn không có giỏ hàng nào tại cửa hàng này.");
             router.push(`/store/${storeId}`);
             return;
         }
@@ -178,9 +215,8 @@ const page = () => {
         newQuantity = Math.max(0, newQuantity);
 
         console.log(`Updating dish ${dishId} to quantity ${newQuantity}`);
-        setLoadingDetailCart(true); // Indicate loading
+        setIsCartLoading(true); // Indicate loading
 
-        // --- Call updateCart Service ---
         const update_res = await cartService.updateCart({
             storeId: storeId,
             dishId: dishId,
@@ -188,62 +224,34 @@ const page = () => {
             action: "update_item",
         });
 
-        // --- Check updateCart Response ---
         if (!update_res.success) {
             console.error("API Error updating cart:", update_res.errorMessage);
-            // toast.error(
-            //     update_res.errorMessage || "Lỗi khi cập nhật giỏ hàng."
-            // );
-            setLoadingDetailCart(false); // Stop loading on error
+            setIsCartLoading(false);
             return;
         }
 
-        // --- Call refreshCart from Context ---
-        // Assuming refreshCart itself uses handleApiResponse or similar
-        // and might return an object indicating success/failure
         const cart_refresh_result = await refreshCart();
 
-        // --- Check refreshCart Response ---
-        // NOTE: The structure of cart_refresh_result depends entirely on how your
-        // refreshCart function is implemented in useCart.
-        // Assuming it returns { success: true } or { success: false, errorCode: ..., errorMessage: ... }
         if (cart_refresh_result && !cart_refresh_result.success) {
             if (
                 cart_refresh_result.errorCode === "CART_EMPTY" ||
                 update_res.message === "Cart deleted because it's empty"
             ) {
-                // Check error code OR the message from the initial update if the backend deletes immediately
-                // toast.info("Bạn đã loại bỏ hết các món trong giỏ hàng!");
                 router.push(`/store/${storeId}`);
-                // No need to setLoadingDetailCart(false) here, as we are navigating away
                 return;
             } else {
                 console.error(
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                // toast.error(
-                //     cart_refresh_result.errorMessage ||
-                //         "Lỗi khi làm mới giỏ hàng."
-                // );
-                // We might still proceed to fetch details, or stop here.
-                // Let's stop here for now. The cart might be stale.
-                setLoadingDetailCart(false);
+                setIsCartLoading(false);
                 return;
             }
         }
-
-        // --- If refresh was successful ---
-        // toast.success("Cập nhật số lượng thành công!");
-
-        // No need to manually call getDetailCart here.
-        // The useEffect watching the updated 'cart' context value will trigger
-        // the fetchDetails function automatically.
-        // The loading state will be managed by that useEffect.
+        // Loading state will be managed by the main data fetching useEffect
     };
 
     const handleRemoveTopping = async (cartItemId, toppingIdToRemove) => {
-        // 1. Find the specific cart item in the current detailCart state
         const currentItem = detailCart?.items?.find(
             (item) => item._id === cartItemId
         );
@@ -255,7 +263,6 @@ const page = () => {
             return;
         }
 
-        // Ensure we have the necessary IDs
         const dishId = currentItem.dishId?._id || currentItem.dishId;
         if (!storeId || !dishId) {
             toast.warn("Thiếu thông tin món ăn hoặc cửa hàng.");
@@ -263,68 +270,47 @@ const page = () => {
         }
 
         const currentToppingIdStrings =
-        currentItem.toppings?.map((t) => t.toppingId._id.toString()) || []; // <<< Convert to string immediately
+            currentItem.toppings?.map((t) => t.toppingId._id.toString()) || [];
 
-          const newToppingIdStrings = currentToppingIdStrings.filter(
-              (id) => id !== toppingIdToRemove.toString() // <<< Ensure comparison ID is also string
-          );
-
-        console.log(
-            `Updating toppings for dish ${dishId} on item ${cartItemId}. Old: [${currentToppingIdStrings.join(
-                ", "
-            )}], New: [${newToppingIdStrings.join(", ")}]`
+        const newToppingIdStrings = currentToppingIdStrings.filter(
+            (id) => id !== toppingIdToRemove.toString()
         );
-        setLoadingDetailCart(true); // Indicate loading
+
+        setIsCartLoading(true); // Indicate loading
 
         try {
-            // 3. Call the general updateCart service function
-            //    Send the original quantity and the *new* list of topping IDs
             const update_res = await cartService.updateCart({
                 storeId: storeId,
                 dishId: dishId,
-                quantity: currentItem.quantity, // Keep the current quantity
-                action: "update_item", // Use 'update_item' action
-                toppings: newToppingIdStrings, // Send the modified list of toppings
-                note: currentItem.note || "", // Include the note if it exists
+                quantity: currentItem.quantity,
+                action: "update_item",
+                toppings: newToppingIdStrings,
+                note: currentItem.note || "",
             });
 
-            // --- Check updateCart Response ---
             if (!update_res.success) {
                 console.error(
                     "API Error updating toppings:",
                     update_res.errorMessage
                 );
-                // toast.error(
-                //     update_res.errorMessage || "Lỗi khi cập nhật topping."
-                // );
-                setLoadingDetailCart(false); // Stop loading on error
+                setIsCartLoading(false);
                 return;
             }
 
-            // --- Call refreshCart from Context ---
             const cart_refresh_result = await refreshCart();
 
-            // --- Check refreshCart Response ---
             if (cart_refresh_result && !cart_refresh_result.success) {
-                // Handle potential errors during refresh (like cart becoming empty, though less likely here)
                 console.error(
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                // toast.error(
-                //     cart_refresh_result.errorMessage ||
-                //         "Lỗi khi làm mới giỏ hàng."
-                // );
-                setLoadingDetailCart(false);
-                return; // Stop processing if refresh failed
+                setIsCartLoading(false);
+                return;
             }
-
-            // toast.success("Đã cập nhật topping.");
             // Loading state will be reset by the fetchDetails effect
         } catch (error) {
             console.error("Error updating toppings:", error);
-            // toast.error(error?.data?.message || "Lỗi khi cập nhật topping.");
-            setLoadingDetailCart(false); // Stop loading on catch
+            setIsCartLoading(false); // Stop loading on catch
         }
     };
 
@@ -377,11 +363,12 @@ const page = () => {
 
     useEffect(() => {
         const fetchShippingFee = async () => {
+            const currentCartStore = detailCart?.store || groupCartData?.store;
             if (
                 storeLocation &&
                 storeLocation.lat !== 200 &&
-                detailCart?.store?.location?.lat &&
-                detailCart?.store?.location?.lon
+                currentCartStore?.location?.lat &&
+                currentCartStore?.location?.lon
             ) {
                 try {
                     const res = await shippingFeeService.calculateShippingFee(
@@ -390,8 +377,8 @@ const page = () => {
                             distanceKm: haversineDistance(
                                 [storeLocation.lat, storeLocation.lon],
                                 [
-                                    detailCart?.store?.location?.lat,
-                                    detailCart?.store?.location?.lon,
+                                    currentCartStore.location.lat,
+                                    currentCartStore.location.lon,
                                 ]
                             ).toFixed(2),
                         }
@@ -406,7 +393,7 @@ const page = () => {
         };
 
         fetchShippingFee();
-    }, [storeLocation, detailCart, subtotalPrice]);
+    }, [storeLocation, detailCart, groupCartData]);
 
     const calculateCartPrice = () => {
         const { subtotalPrice } = detailCart?.items.reduce(
@@ -432,107 +419,121 @@ const page = () => {
     };
 
     const handleCompleteCart = async () => {
+        // --- 1. Common validation for both modes ---
+        const currentCartData = detailCart || groupCartData?.cart;
+        if (!currentCartData) {
+            toast.error("Giỏ hàng không tồn tại.");
+            return;
+        }
+
+        if (currentCartData?.store?.openStatus === "closed") {
+            toast.error("Cửa hàng đã đóng cửa, không thể đặt hàng.");
+            return;
+        }
+
+        if (
+            storeLocation?.lat === 200 ||
+            storeLocation?.lat == null ||
+            storeLocation?.lon == null
+        ) {
+            toast.error("Vui lòng chọn địa chỉ giao hàng");
+            return;
+        }
+        if (!storeLocation?.contactName?.trim()) {
+            toast.error("Vui lòng nhập tên người nhận");
+            return;
+        }
+        if (!storeLocation?.contactPhonenumber?.trim()) {
+            toast.error("Vui lòng nhập số điện thoại người nhận");
+            return;
+        }
+
+        // --- 2. Build common payload ---
+        const commonPayload = {
+            deliveryAddress: storeLocation.address,
+            customerName: storeLocation.contactName,
+            customerPhonenumber: storeLocation.contactPhonenumber,
+            detailAddress: storeLocation.detailAddress,
+            note: storeLocation.note,
+            location: [storeLocation.lon, storeLocation.lat],
+            vouchers: selectedVouchers, // Assumes vouchers apply to both
+        };
+
         try {
-            // --- Basic cart checks ---
-            if (
-                !detailCart ||
-                !Array.isArray(detailCart.items) ||
-                detailCart.items.length === 0
-            ) {
-                // toast.error("Giỏ hàng trống hoặc không thể truy vấn.");
-                return;
-            }
+            // --- 3. Fork logic based on cart mode ---
 
-            if (detailCart?.store?.openStatus === "closed") {
-                // toast.error(
-                //     "Cửa hàng đã đóng cửa, không thể đặt hàng. Vui lòng quay lại sau!"
-                // );
-                return;
-            }
-
-            const outOfStockItems =
-                detailCart.items?.filter(
-                    (item) => item?.dishId?.stockStatus === "out_of_stock"
-                ) ?? [];
-
-            if (outOfStockItems.length > 0) {
-                // toast.error(
-                //     "Có món ăn hiện đang hết hàng, không thể đặt hàng. Vui lòng quay lại sau!"
-                // );
-                return;
-            }
-
-            // --- Address / contact checks ---
-            if (
-                storeLocation?.lat === 200 ||
-                storeLocation?.lat == null ||
-                storeLocation?.lon == null
-            ) {
-                // toast.error("Vui lòng chọn địa chỉ giao hàng");
-                return;
-            }
-            if (!storeLocation?.contactName?.trim()) {
-                // toast.error("Vui lòng nhập tên người nhận");
-                return;
-            }
-            if (!storeLocation?.contactPhonenumber?.trim()) {
-                // toast.error("Vui lòng nhập số điện thoại người nhận");
-                return;
-            }
-
-            // Common payload
-            const commonPayload = {
-                deliveryAddress: storeLocation.address,
-                customerName: storeLocation.contactName,
-                customerPhonenumber: storeLocation.contactPhonenumber,
-                detailAddress: storeLocation.detailAddress,
-                note: storeLocation.note,
-                location: [storeLocation.lon, storeLocation.lat],
-                vouchers: selectedVouchers,
-            };
-
-            // --- Payment flows ---
-            if (paymentMethod === "VNPay") {
-                if (!detailCart.cartId) {
-                    // toast.error("CartId không thể truy vấn");
+            // --- GROUP CART LOGIC ---
+            if (groupCartData) {
+                if (groupCartData.cart.status !== "locking") {
+                    toast.warn("Vui lòng khóa giỏ hàng trước khi thanh toán.");
                     return;
                 }
 
-                const redirectUrlResponse =
-                    await paymentService.createVNPayOrder(detailCart.cartId, {
-                        paymentMethod: "vnpay",
+                // Group cart only supports cash for now
+                if (paymentMethod === "VNPay") {
+                    toast.error(
+                        "Thanh toán online chưa được hỗ trợ cho giỏ hàng nhóm."
+                    );
+                    return;
+                }
+
+                const response = await cartService.completeGroupCart(
+                    groupCartData.cart._id,
+                    {
                         ...commonPayload,
-                    });
+                        paymentMethod: "cash",
+                    }
+                );
 
-                if (redirectUrlResponse?.paymentUrl) {
-                    router.push(redirectUrlResponse.paymentUrl);
-                    // refreshOrder?.();
-                    // refreshCart?.();
-                    return;
-                } else {
-                    // toast.error("Lỗi phương thức thanh toán online");
-                    return;
+                if (response?.data?.orderId) {
+                    toast.success("Đặt hàng nhóm thành công!");
+                    refreshOrder?.();
+                    refreshCart?.();
+                    router.push(
+                        `/orders/detail-order/${response.data.orderId}`
+                    );
                 }
-            }
+                // Error is handled by apiHelper
 
-            // Cash (default) flow
-            const response = await cartService.completeCart({
-                storeId,
-                paymentMethod: "cash",
-                ...commonPayload,
-            });
+                // --- PRIVATE CART LOGIC (Your existing logic) ---
+            } else if (detailCart) {
+                if (paymentMethod === "VNPay") {
+                    const redirectUrlResponse =
+                        await paymentService.createVNPayOrder(
+                            detailCart.cartId,
+                            {
+                                paymentMethod: "vnpay",
+                                ...commonPayload,
+                            }
+                        );
+                    if (redirectUrlResponse?.paymentUrl) {
+                        router.push(redirectUrlResponse.paymentUrl);
+                        return;
+                    } else {
+                        toast.error("Lỗi phương thức thanh toán online");
+                        return;
+                    }
+                }
 
-            if (response?.data?.orderId) {
-                // toast.success("Đặt thành công");
-                refreshOrder?.();
-                refreshCart?.();
-                router.push(`/orders/detail-order/${response?.data?.orderId}`);
-            } else {
-                // toast.error("Lỗi phương thức thanh toán tiền mặt");
+                // Cash (default) flow
+                const response = await cartService.completeCart({
+                    storeId,
+                    paymentMethod: "cash",
+                    ...commonPayload,
+                });
+
+                if (response?.data?.orderId) {
+                    toast.success("Đặt thành công");
+                    refreshOrder?.();
+                    refreshCart?.();
+                    router.push(
+                        `/orders/detail-order/${response?.data?.orderId}`
+                    );
+                }
             }
         } catch (error) {
             console.error(error);
-            // toast.error("Thanh toán thất bại");
+            toast.error("Thanh toán thất bại, vui lòng thử lại.");
         }
     };
 
@@ -543,15 +544,19 @@ const page = () => {
             !warningShownRef.current &&
             storeLocation &&
             storeLocation.lat !== 200 &&
-            detailCart?.store?.location?.lat &&
-            detailCart?.store?.location?.lon
+            (detailCart?.store?.location?.lat ||
+                groupCartData?.cart?.store?.location?.lat)
         ) {
+            const storeLat =
+                detailCart?.store?.location?.lat ||
+                groupCartData?.cart?.store?.location?.lat;
+            const storeLon =
+                detailCart?.store?.location?.lon ||
+                groupCartData?.cart?.store?.location?.lon;
+
             const distance = haversineDistance(
                 [storeLocation.lat, storeLocation.lon],
-                [
-                    detailCart?.store?.location?.lat,
-                    detailCart?.store?.location?.lon,
-                ]
+                [storeLat, storeLon]
             );
 
             if (distance > 20) {
@@ -561,18 +566,32 @@ const page = () => {
                 warningShownRef.current = true;
             }
         }
-    }, [storeLocation, detailCart]);
+    }, [storeLocation, detailCart, groupCartData]);
 
     useEffect(() => {
-        setTotalDiscount(calculateTotalDiscount());
-    }, [selectedVouchers, subtotalPrice, detailCart]);
+        if (groupCartData) {
+            // For group cart, totals come from API
+            setSubtotalPrice(groupCartData.totals.subtotal);
+            setTotalDiscount(groupCartData.totals.discount);
+            // Note: We don't need calculateTotalDiscount here
+            // We trust the backend's calculation
+        } else if (detailCart) {
+            // For private cart, we calculate locally
+            setTotalDiscount(calculateTotalDiscount(subtotalPrice));
+        }
+    }, [selectedVouchers, subtotalPrice, detailCart, groupCartData]);
 
-    const calculateTotalDiscount = () => {
-        if (!detailCart || !selectedVouchers || selectedVouchers.length === 0)
+    const calculateTotalDiscount = (currentSubtotal) => {
+        // Use the subtotal passed to it
+        if (
+            !currentSubtotal ||
+            !selectedVouchers ||
+            selectedVouchers.length === 0
+        )
             return 0;
 
         let totalDiscount = 0;
-        const orderPrice = subtotalPrice;
+        const orderPrice = currentSubtotal;
 
         selectedVouchers.forEach((voucher) => {
             if (voucher.minOrderAmount && orderPrice < voucher.minOrderAmount)
@@ -594,30 +613,38 @@ const page = () => {
         return Math.min(totalDiscount, orderPrice);
     };
 
-    // if (loadingDetailCart) {
-    //     return (
-    //         <div className="w-full h-screen flex items-center justify-center">
-    //             {/* Use your ThreeDot or another loader */}
-    //             <p>Đang tải giỏ hàng...</p>
-    //         </div>
-    //     );
-    // }
+    if (isCartLoading) {
+        return (
+            <div className="w-full h-screen flex items-center justify-center">
+                <p>Đang tải giỏ hàng...</p>
+            </div>
+        );
+    }
 
-    // if (!detailCart) {
-    //     // You might not even need this if redirects are reliable
-    //     return (
-    //         <div className="w-full h-screen flex items-center justify-center">
-    //             <p>Không thể tải giỏ hàng hoặc giỏ hàng trống.</p>
-    //             <Link href={`/store/${storeId}`} className="text-blue-500 ml-2">
-    //                 Quay lại cửa hàng
-    //             </Link>
-    //         </div>
-    //     );
-    // }
+    const store =
+        detailCart?.store || groupCartData?.cart?.store || storeCart?.store;
+    let finalTotal = 0;
+    if (groupCartData) {
+        finalTotal = groupCartData.totals.finalTotal + shippingFee;
+    } else if (detailCart) {
+        finalTotal = subtotalPrice - totalDiscount + shippingFee;
+    }
+
+    if (!store) {
+        console.log("BOck - No store found after loading.");
+        return (
+            <div className="w-full h-screen flex items-center justify-center">
+                <p>Không thể tải giỏ hàng hoặc giỏ hàng trống.</p>
+                <Link href={`/store/${storeId}`} className="text-blue-500 ml-2">
+                    Quay lại cửa hàng
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <>
-            {detailCart && (
+            {store && (
                 <div className="pt-[20px] pb-[140px] bg-[#fff] md:pt-[110px]">
                     <Heading title="Giỏ hàng" description="" keywords="" />
                     <div className="hidden md:block">
@@ -646,8 +673,7 @@ const page = () => {
                                 >
                                     <Image
                                         src={
-                                            detailCart?.store?.avatarImage
-                                                ?.url ||
+                                            store?.avatarImage?.url ||
                                             "/assets/store_default.png"
                                         }
                                         alt=""
@@ -661,7 +687,7 @@ const page = () => {
                                         href={`/store/${storeId}`}
                                         className="text-red-600 text-[24px] font-bold line-clamp-1 hover:text-red-700 transition"
                                     >
-                                        {detailCart?.store.name}
+                                        {store.name}
                                     </Link>
 
                                     {storeLocation &&
@@ -676,9 +702,19 @@ const page = () => {
                                                         ],
                                                         [
                                                             detailCart?.store
-                                                                ?.location?.lat,
+                                                                ?.location
+                                                                ?.lat ||
+                                                                groupCartData
+                                                                    ?.store
+                                                                    ?.location
+                                                                    ?.lat,
                                                             detailCart?.store
-                                                                ?.location?.lon,
+                                                                ?.location
+                                                                ?.lon ||
+                                                                groupCartData
+                                                                    ?.store
+                                                                    ?.location
+                                                                    ?.lon,
                                                         ]
                                                     ).toFixed(2)}
                                                     km
@@ -688,58 +724,66 @@ const page = () => {
                                 </div>
                             </div>
 
-                            <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+                            
 
                             {/* --- Shipping Info --- */}
-                            <div className="mt-[25px] md:mt-0 bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
-                                <p className="text-red-600 text-[18px] font-bold pb-[15px]">
-                                    Giao tới
-                                </p>
+                            {isGroupOwner ? (<>
+                                <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+                                <div className="mt-[25px] md:mt-0 bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
+                                    <p className="text-red-600 text-[18px] font-bold pb-[15px]">
+                                        Giao tới
+                                    </p>
 
-                                <div className="flex flex-col gap-[15px]">
-                                    <Link
-                                        href={`/account/location`}
-                                        className="flex gap-[15px] items-center"
-                                    >
-                                        <Image
-                                            src="/assets/location_active.png"
-                                            alt=""
-                                            width={20}
-                                            height={20}
-                                        />
-                                        <div className="flex flex-1 items-center justify-between">
-                                            <div>
-                                                <h3 className="text-[#4A4B4D] text-[18px] font-bold">
-                                                    {storeLocation.name}
-                                                </h3>
-                                                <p className="text-gray-500 line-clamp-1">
-                                                    {storeLocation.address ||
-                                                        "Nhấn chọn để thêm địa chỉ giao hàng"}
-                                                </p>
-                                            </div>
+                                    <div className="flex flex-col gap-[15px]">
+                                        <Link
+                                            href={`/account/location`}
+                                            className="flex gap-[15px] items-center"
+                                        >
                                             <Image
-                                                src="/assets/arrow_right.png"
+                                                src="/assets/location_active.png"
                                                 alt=""
                                                 width={20}
                                                 height={20}
                                             />
-                                        </div>
-                                    </Link>
+                                            <div className="flex flex-1 items-center justify-between">
+                                                <div>
+                                                    <h3 className="text-[#4A4B4D] text-[18px] font-bold">
+                                                        {storeLocation.name}
+                                                    </h3>
+                                                    <p className="text-gray-500 line-clamp-1">
+                                                        {storeLocation.address ||
+                                                            "Nhấn chọn để thêm địa chỉ giao hàng"}
+                                                    </p>
+                                                </div>
+                                                <Image
+                                                    src="/assets/arrow_right.png"
+                                                    alt=""
+                                                    width={20}
+                                                    height={20}
+                                                />
+                                            </div>
+                                        </Link>
 
-                                    <Link
-                                        href={`/store/${storeId}/cart/edit-current-location`}
-                                        className="p-[10px] rounded-[6px] flex items-center justify-between bg-[#fff5f5] border border-red-100 hover:bg-red-50 transition"
-                                    >
-                                        <span className="text-gray-700">
-                                            Thêm chi tiết địa chỉ và hướng dẫn
-                                            giao hàng
-                                        </span>
-                                        <span className="text-red-600 font-semibold">
-                                            Thêm
-                                        </span>
-                                    </Link>
+                                        <Link
+                                            href={`/store/${storeId}/cart/edit-current-location`}
+                                            className="p-[10px] rounded-[6px] flex items-center justify-between bg-[#fff5f5] border border-red-100 hover:bg-red-50 transition"
+                                        >
+                                            <span className="text-gray-700">
+                                                Thêm chi tiết địa chỉ và hướng
+                                                dẫn giao hàng
+                                            </span>
+                                            <span className="text-red-600 font-semibold">
+                                                Thêm
+                                            </span>
+                                        </Link>
+                                    </div>
                                 </div>
-                            </div>
+                                </>
+                            ) : (
+                                <>
+                                
+                                </>
+                            )}
 
                             <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
 
@@ -872,22 +916,29 @@ const page = () => {
 
                             <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
 
-                            <UpsellSlider
-                                storeId={storeId}
-                                storeCartItems={detailCart?.items || []} // Pass current items
-                             />
-
-                            <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
-
-                            {/* --- Summary --- */}
-                            <OrderSummary
-                                detailItems={detailCart?.items}
-                                subtotalPrice={subtotalPrice}
-                                shippingFee={shippingFee}
-                                totalDiscount={totalDiscount}
-                                onUpdateQuantity={handleUpdateQuantity}
-                                onRemoveTopping={handleRemoveTopping}
-                            />
+                            {groupCartData ? (
+                                // --- RENDER GROUP CART ---
+                                <GroupCartView data={groupCartData} />
+                            ) : (
+                                // --- RENDER PRIVATE CART ---
+                                <>
+                                    <EnableGroupCart storeId={storeId} />
+                                    <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+                                    <UpsellSlider
+                                        storeId={storeId}
+                                        storeCartItems={detailCart?.items || []}
+                                    />
+                                    <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
+                                    <OrderSummary
+                                        detailItems={detailCart?.items}
+                                        subtotalPrice={subtotalPrice}
+                                        shippingFee={shippingFee}
+                                        totalDiscount={totalDiscount}
+                                        onUpdateQuantity={handleUpdateQuantity}
+                                        onRemoveTopping={handleRemoveTopping}
+                                    />
+                                </>
+                            )}
 
                             <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
 
@@ -909,6 +960,7 @@ const page = () => {
                     </div>
 
                     {/* --- Bottom Bar --- */}
+
                     <div className="fixed bottom-0 left-0 right-0 bg-[#fff] p-[15px] shadow-[rgba(0,0,0,0.24)_0px_3px_8px] border-t border-red-100 z-50">
                         <div className="flex items-center justify-between pb-[8px] lg:w-[60%] md:w-[80%] md:mx-auto">
                             <span className="text-gray-700 text-[18px]">
@@ -916,23 +968,76 @@ const page = () => {
                             </span>
                             <span className="text-red-600 text-[24px] font-bold">
                                 {Number(
-                                    (
-                                        subtotalPrice -
-                                        totalDiscount +
-                                        shippingFee
-                                    ).toFixed(0)
+                                    finalTotal
+                                        // Sử dụng finalTotal đã tính toán ở trên
+                                        .toFixed(0)
                                 ).toLocaleString("vi-VN")}
                                 đ
                             </span>
                         </div>
-                        <div
-                            onClick={handleCompleteCart}
-                            className="flex items-center justify-center rounded-lg bg-[#fc2111] text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-pointer shadow-md hover:shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            <span className="text-[20px] font-semibold md:text-[18px]">
-                                Đặt đơn
-                            </span>
-                        </div>
+
+                        {/* --- Logic Nút Đặt Hàng Động --- */}
+
+                        {/* Case 1: Giỏ hàng nhóm (groupCartData tồn tại) */}
+                        {groupCartData ? (
+                            (() => {
+                                // Kiểm tra vai trò và trạng thái
+                                const isOwner =
+                                    groupCartData.cart.userId === user?._id;
+                                const isLocking =
+                                    groupCartData.cart.status === "locking";
+
+                                if (isOwner && isLocking) {
+                                    // 1a: Chủ nhóm VÀ giỏ hàng đã khóa -> Được phép đặt
+                                    return (
+                                        <div
+                                            onClick={handleCompleteCart}
+                                            className="flex items-center justify-center rounded-lg bg-[#fc2111] text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-pointer shadow-md hover:shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                        >
+                                            <span className="text-[20px] font-semibold md:text-[18px]">
+                                                Đặt đơn cho nhóm
+                                            </span>
+                                        </div>
+                                    );
+                                } else if (isOwner && !isLocking) {
+                                    // 1b: Chủ nhóm NHƯNG giỏ hàng chưa khóa -> Báo phải khóa
+                                    return (
+                                        <div className="flex items-center justify-center rounded-lg bg-gray-400 text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-not-allowed">
+                                            <span className="text-[18px] font-semibold md:text-[16px]">
+                                                Vui lòng khóa giỏ hàng trước khi
+                                                đặt hàng
+                                            </span>
+                                        </div>
+                                    );
+                                } else {
+                                    // 1c: Là người tham gia (participant) -> Báo chờ
+                                    return (
+                                        <div className="flex items-center justify-center rounded-lg bg-gray-400 text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-not-allowed">
+                                            <span className="text-[18px] font-semibold md:text-[16px]">
+                                                Chờ chủ nhóm đặt hàng...
+                                            </span>
+                                        </div>
+                                    );
+                                }
+                            })()
+                        ) : detailCart ? (
+                            // Case 2: Giỏ hàng cá nhân (detailCart tồn tại) -> Nút đặt đơn bình thường
+                            <div
+                                onClick={handleCompleteCart}
+                                className="flex items-center justify-center rounded-lg bg-[#fc2111] text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-pointer shadow-md hover:shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                <span className="text-[20px] font-semibold md:text-[18px]">
+                                    Đặt đơn
+                                </span>
+                            </div>
+                        ) : (
+                            // Case 3: Fallback (không có giỏ hàng nào) -> Vô hiệu hóa
+                            <div className="flex items-center justify-center rounded-lg bg-gray-400 text-white px-[20px] py-[12px] md:px-[10px] lg:w-[60%] md:w-[80%] md:mx-auto cursor-not-allowed">
+                                <span className="text-[18px] font-semibold md:text-[16px]">
+                                    Không thể đặt đơn
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

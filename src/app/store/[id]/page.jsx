@@ -49,7 +49,7 @@ const homeIcon = new L.Icon({
 const page = () => {
     const { id: storeId } = useParams();
     const searchParams = useSearchParams();
-
+    const [isGroupCart, setIsGroupCart] = useState(false);
     const [storeInfo, setStoreInfo] = useState(null);
     const [allDish, setAllDish] = useState(null);
     const [storeCart, setStoreCart] = useState(null);
@@ -244,13 +244,39 @@ const page = () => {
         setCartQuantity(totalQuantity);
     };
 
+    const [cartLink, setCartLink] = useState(`/store/${storeId}/cart`);
+
     useEffect(() => {
         if (cart) {
-            setStoreCart(cart.find((cart) => cart.store._id === storeId));
+            // Priority 1: Find an active GROUP cart for this store
+            let foundCart = cart.find((c) => 
+                c.store._id === storeId && c.mode === 'group'
+            );
+
+            if (!foundCart) {
+                // Priority 2: Find a PRIVATE cart for this store
+                foundCart = cart.find((c) => 
+                    c.store._id === storeId && c.mode === 'private'
+                );
+            }
+
+            setStoreCart(foundCart || null);
+
+            // --- ALSO UPDATE THE LINK ---
+            if (foundCart?.mode === 'group') {
+                setCartLink(`/store/${storeId}/cart?id=${foundCart._id}`);
+                setIsGroupCart(true);
+            } else {
+                setCartLink(`/store/${storeId}/cart`);
+                setIsGroupCart(false);
+            }
+
         } else {
             setStoreCart(null);
+            setCartLink(`/store/${storeId}/cart`);
+            setIsGroupCart(false);
         }
-    }, [cart]);
+    }, [cart, storeId]);
 
     useEffect(() => {
         if (storeId) {
@@ -500,7 +526,8 @@ const page = () => {
                                     dishes={featuredDishes} 
                                     cartItems={storeCart ? storeCart?.items : []}
                                     onAddToCartShowSimilar={handleShowSimilar}
-                                    allTags={allTags} 
+                                    allTags={allTags}
+                                    storeCart={storeCart}
                                 />
                             </div>
                         )}
@@ -515,6 +542,7 @@ const page = () => {
                                     }
                                     onAddToCartShowSimilar={handleShowSimilar}
                                     allTags={allTags} // <-- Pass allTags
+                                    storeCart={storeCart}
                                 />
                             </div>
                         )}
@@ -638,7 +666,7 @@ const page = () => {
                     {cartQuantity > 0 && storeCart && (
                         <Link
                             name="cartDetailBtn"
-                            href={`/store/${storeId}/cart`}
+                            href={cartLink}
                             className="fixed bottom-0 left-0 right-0 bg-[#fff] px-[20px] py-[15px] z-[100] flex items-center justify-center"
                         >
                             <div
@@ -652,7 +680,7 @@ const page = () => {
                             >
                                 <div className="flex items-center gap-2">
                                     <span className="text-lg md:text-xl font-semibold">
-                                        Giỏ hàng
+                                        {isGroupCart ? "Xem giỏ hàng nhóm" : "Giỏ hàng"}
                                     </span>
                                     <div className="w-[5px] h-[5px] rounded-full bg-white"></div>
                                     <span className="text-lg md:text-xl font-semibold">

@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { useCart } from "@/context/cartContext";
 import { cartService } from "@/api/cartService";
 import { useAuth } from "@/context/authContext";
-import PreferenceTags from "@/components/dish/PreferenceTags"
-
+import PreferenceTags from "@/components/dish/PreferenceTags";
 
 const DishCard = ({
     dish,
@@ -16,9 +15,10 @@ const DishCard = ({
     cartItems,
     onAddToCartShowSimilar,
     allTags,
+    storeCart,
 }) => {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, userId } = useAuth(); 
     const { refreshCart } = useCart();
 
     const cartItem = useMemo(() => {
@@ -27,7 +27,11 @@ const DishCard = ({
             return null;
         }
         // Find the item matching the current dish's ID
-        return cartItems.find((item) => item?.dishId?._id === dish?._id);
+        return cartItems.find(
+            (item) =>
+                item?.dishId?._id === dish?._id &&
+                item?.participantId?.userId?._id === userId
+        );
     }, [cartItems, dish]);
 
     const handleChangeQuantity = async (amount) => {
@@ -35,20 +39,33 @@ const DishCard = ({
             toast.warn("Món ăn đã hết hàng. Vui lòng chọn món khác.");
             return;
         }
-
         if (user) {
-            if (dish?.toppingGroups?.length > 0) {
-                router.push(`/store/${storeInfo?._id}/dish/${dish._id}`);
-            } else {
-                try {
+            try {
+                if (dish?.toppingGroups?.length > 0) {
+                    router.push(`/store/${storeInfo?._id}/dish/${dish._id}`);
+                } else {
                     const currentQuantity = cartItem?.quantity || 0;
                     const newQuantity = Math.max(currentQuantity + amount, 0);
-                    const response = await cartService.updateCart({
-                        storeId: storeInfo?._id,
-                        dishId: dish._id,
-                        action: "update_item",
-                        quantity: newQuantity,
-                    });
+                    let response;
+                    const isGroup = storeCart && storeCart?.mode === "group";
+                    console.log(storeCart);
+                    console.log(isGroup);
+                    if (isGroup) {
+                        response = await cartService.upsertGroupCartItem({
+                            cartId: storeCart._id,
+                            dishId: dish._id,
+                            quantity: newQuantity,
+                            toppings: [],
+                            action: "add_item",
+                        });
+                    } else {
+                        response = await cartService.updateCart({
+                            storeId: storeInfo?._id,
+                            dishId: dish._id,
+                            action: "update_item",
+                            quantity: newQuantity,
+                        });
+                    }
                     if (response.success) {
                         refreshCart();
                         // toast.success("Cập nhật giỏ hàng thành công");
@@ -62,17 +79,16 @@ const DishCard = ({
                     } else {
                         if (response.errorCode == "NOT_ENOUGH_STOCK") {
                             // toast.error("Món đặt đã hết, xin vui lòng chọn món khác")
-                        }
-                        else {
+                        } else {
                             // toast.error(response.errorMessage);
                         }
                     }
-                } catch (error) {
-                    // toast.error(error?.data?.message || "Có lỗi xảy ra!");
                 }
+            } catch (e) {
+                console.error(error);
             }
         } else {
-            // toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
+            toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
         }
     };
 

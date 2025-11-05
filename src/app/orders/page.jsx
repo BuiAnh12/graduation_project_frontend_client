@@ -15,10 +15,11 @@ const Page = () => {
   const [currentOrders, setCurrentOrders] = useState([]);
   const [doneOrders, setDoneOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("current");
-  const { order, loading } = useOrder();
+  const { order, loading, refreshOrder } = useOrder();
   const router = useRouter();
 
   useEffect(() => {
+    console.log(order)
     setCurrentOrders(order?.filter((o) => o.status !== "done"));
     setDoneOrders(order?.filter((o) => o.status === "done"));
   }, [order]);

@@ -11,6 +11,7 @@ const ListDish = ({
     cartItems,
     onAddToCartShowSimilar,
     allTags,
+    storeCart,
 }) => {
     const groupedDishes = groupDishesByCategory(dishes);
     console.log("cartItems", cartItems)
@@ -41,6 +42,7 @@ const ListDish = ({
                             cartItems={cartItems}
                             onAddToCartShowSimilar={onAddToCartShowSimilar}
                             allTags={allTags} // <-- 4. Pass allTags down
+                            storeCart={storeCart}
                           />
                         ))}
                         </div>
