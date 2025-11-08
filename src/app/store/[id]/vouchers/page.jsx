@@ -16,6 +16,7 @@ const Page = () => {
   const router = useRouter();
 
   const [storeVouchersList, setStoreVouchersList] = useState([]);
+  const [groupCartData, setGroupCartData] = useState(null); // <-- THÊM MỚI
   const [detailCart, setDetailCart] = useState(null);
   const [storeCart, setStoreCart] = useState(null);
   const [cartPrice, setCartPrice] = useState(0);
@@ -38,57 +39,94 @@ const Page = () => {
     }
   };
 
-
-  const getDetailCart = async () => {
-    try {
-      const response = await cartService.getDetailCart(storeCart._id);
-      setDetailCart(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    console.log("Cart context:", cart);
+    // 1. Tìm giỏ hàng đang hoạt động
+    let foundCart = null;
     if (cart && cart.length > 0) {
-      const foundCart = cart.find((c) => c.store._id === storeId);
-      console.log("Found storeCart:", foundCart);
-      setStoreCart(foundCart || null);
-    } else {
-      setStoreCart(null);
+        // Ưu tiên giỏ hàng nhóm, sau đó mới đến giỏ hàng cá nhân
+        foundCart =
+            cart.find((c) => c.store._id === storeId && c.mode === "group") ||
+            cart.find((c) => c.store._id === storeId && c.mode === "private");
     }
-  }, [cart, storeId]);
+    setStoreCart(foundCart);
 
-  useEffect(() => {
-    console.log("StoreCart changed:", storeCart);
-    if (storeCart) getDetailCart();
-  }, [storeCart]);
+    // 2. Fetch dữ liệu chi tiết dựa trên loại giỏ hàng
+    const fetchCartData = async () => {
+        if (foundCart) {
+            setLoading(true);
+            if (foundCart.mode === "group") {
+                // --- LOGIC CHO GIỎ HÀNG NHÓM ---
+                try {
+                    const response = await cartService.getGroupCart(foundCart._id);
+                    if (response.success && response.data) {
+                        setGroupCartData(response.data);
+                        setDetailCart(null);
+                        // Lấy subtotal từ API giỏ hàng nhóm
+                        setCartPrice(response.data.totals.subtotal);
+                        await getStoreVouchers(); // Lấy voucher sau khi có giá
+                    } else {
+                        router.push(`/store/${storeId}/cart`);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setLoading(false);
+                }
+            } else {
+                // --- LOGIC CHO GIỎ HÀNG CÁ NHÂN (Như cũ) ---
+                try {
+                    const response = await cartService.getDetailCart(foundCart._id);
+                    if (response.success && response.data) {
+                        setDetailCart(response.data);
+                        setGroupCartData(null);
+                        // Tính toán subtotal từ giỏ hàng cá nhân
+                        calculateCartPrice(response.data); 
+                        await getStoreVouchers(); // Lấy voucher sau khi có giá
+                    } else {
+                        router.push(`/store/${storeId}/cart`);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setLoading(false);
+                }
+            }
+        } else if (cart !== null) {
+            // Cart đã load xong nhưng không tìm thấy giỏ hàng nào cho store này
+            toast.warn("Bạn cần thêm món vào giỏ hàng trước khi xem ưu đãi.");
+            router.push(`/store/${storeId}`);
+        }
+        // Nếu cart === null, chúng ta chỉ cần đợi nó load ở lần trigger sau
+    };
 
-  useEffect(() => {
-    console.log("DetailCart changed:", detailCart);
-    if (detailCart) {
-      calculateCartPrice();
-      getStoreVouchers();
+    fetchCartData();
+}, [cart, storeId, router]);
+
+  const calculateCartPrice = (cartData) => {
+    const dataToUse = cartData || detailCart;
+    if (!dataToUse || !dataToUse.items) {
+         setCartPrice(0);
+         return;
     }
-  }, [detailCart]);
-  const calculateCartPrice = () => {
-    const { totalPrice, totalQuantity } = detailCart?.items.reduce(
-      (acc, item) => {
-        const dishPrice = (item.dish?.price || 0) * item.quantity;
-        const toppingsPrice =
-          (Array.isArray(item.toppings) ? item.toppings.reduce((sum, topping) => sum + (topping.price || 0), 0) : 0) *
-          item.quantity;
 
-        acc.totalPrice += dishPrice + toppingsPrice;
-        acc.totalQuantity += item.quantity;
+    const { totalPrice } = dataToUse.items.reduce(
+        (acc, item) => {
+            // Sửa lỗi: Dữ liệu từ getDetailCart có item.price, không phải item.dish.price
+            const dishPrice = (item.price || 0) * item.quantity;
+            const toppingsPrice =
+                (Array.isArray(item.toppings)
+                    ? item.toppings.reduce(
+                          (sum, topping) => sum + (topping.price || 0),
+                          0
+                      )
+                    : 0) * item.quantity;
 
-        return acc;
-      },
-      { totalPrice: 0, totalQuantity: 0 }
+            acc.totalPrice += dishPrice + toppingsPrice;
+            return acc;
+        },
+        { totalPrice: 0 }
     );
 
     setCartPrice(totalPrice);
-  };
+};
 
   const handleApply = () => {
     if (selectedVouchers.length === 0) return;
@@ -103,9 +141,11 @@ const Page = () => {
     if (voucher.endDate && new Date(voucher.endDate) < now) return false;
 
     if (voucher.usageLimit && voucher.usedCount >= voucher.usageLimit) return false;
-    if (voucher.minOrderAmount && detailCart && cartPrice && cartPrice < voucher.minOrderAmount) return false;
+    
+    if (voucher.minOrderAmount && cartPrice < voucher.minOrderAmount) return false;
+    
     return true;
-  };
+};
 
   return (
     <div className="min-h-screen py-[85px] md:bg-[#f9f9f9] md:pt-[110px]">

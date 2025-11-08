@@ -31,12 +31,12 @@ html, body {
 }
 
 a {
-  color: var(--brand);
+  /* color: var(--brand); */
   text-decoration: none;
   transition: color 0.2s ease;
 }
 a:hover {
-  color: var(--brand-dark);
+  /* color: var(--brand-dark); */
 }
 
 button, a, input, textarea {

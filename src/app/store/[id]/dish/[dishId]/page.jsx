@@ -307,9 +307,6 @@ const page = () => {
         }
     };
 
-    useEffect(() => {
-        console.log("Topping uf: ", toppings);
-    }, [toppings]);
 
     const handleAddToCart = async () => {
         if (storeCart?.store?.openStatus === "closed") {
@@ -330,9 +327,9 @@ const page = () => {
             if (isGroup) {
                 res = await cartService.upsertGroupCartItem({
                     cartId: storeCart._id,
-                    dishId: dish._id,
-                    quantity: newQuantity,
-                    toppings: [],
+                    dishId: dishId,
+                    quantity: quantity,
+                    toppings,
                     action: "add_item",
                 });
             } else {

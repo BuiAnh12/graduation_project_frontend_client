@@ -52,22 +52,29 @@ export const groupStoresByCategory = (stores) => {
 
 
 export const groupDishesByCategory = (dishes) => {
+    const groupedDishes = {};
   
-  const groupedDishes = {};
-
-  dishes.forEach((dish) => {
-    const category = dish.category;
-    const categoryId = category?._id;
-
-    if (!groupedDishes[categoryId]) {
-      groupedDishes[categoryId] = {
-        category: category,
-        dishes: [],
-      };
-    }
-
-    groupedDishes[categoryId].dishes.push(dish);
-  });
-
-  return Object.values(groupedDishes);
-};
+    dishes.forEach((dish) => {
+      // --- FIX 1 ---
+      // Lấy toàn bộ đối tượng category.
+      // Nếu category là null, gán nó vào một nhóm "Chưa phân loại"
+      const category = dish.categories || { _id: "uncategorized", name: "Chưa phân loại" };
+  
+      // --- FIX 2 ---
+      // Lấy ID từ đối tượng category
+      const categoryId = category._id;
+  
+      if (!groupedDishes[categoryId]) {
+        groupedDishes[categoryId] = {
+          // --- FIX 3 ---
+          // Lưu trữ toàn bộ đối tượng để component có thể sử dụng cả _id và name
+          category: category,
+          dishes: [],
+        };
+      }
+  
+      groupedDishes[categoryId].dishes.push(dish);
+    });
+  
+    return Object.values(groupedDishes);
+  };

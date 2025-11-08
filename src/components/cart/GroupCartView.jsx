@@ -234,7 +234,7 @@ const ParticipantSection = ({
 };
 
 // --- Main Group Cart Component ---
-const GroupCartView = ({ data }) => {
+const GroupCartView = ({ data, voucher }) => {
     const { cart, participants, totals } = data;
     const { user } = useAuth();
     const { refreshCart } = useCart();
@@ -250,21 +250,6 @@ const GroupCartView = ({ data }) => {
         const link = `${window.location.origin}/join-cart/${cart.privateToken}`;
         navigator.clipboard.writeText(link);
         toast.success("Đã sao chép link mời!");
-    };
-
-    const handleUpdateQuantity = (itemId, newQuantity) => {
-        cartService.upsertGroupCartItem({
-            itemId,
-            quantity: newQuantity,
-            action: "update_item",
-        });
-    };
-
-    const handleRemoveItem = (itemId) => {
-        cartService.upsertGroupCartItem({
-            itemId,
-            action: "remove_item",
-        });
     };
 
     // --- UPDATED: Added 'updateItemToppings' case ---
@@ -345,6 +330,58 @@ const GroupCartView = ({ data }) => {
             setIsLoading(false);
         }
     };
+
+    const calculateDiscount = (subtotal, vouchers = []) => {
+        if (!subtotal || !vouchers || vouchers.length === 0) return 0;
+        let totalDiscount = 0;
+        vouchers.forEach((v) => {
+            if (v.minOrderAmount && subtotal < v.minOrderAmount) return;
+            let discount = 0;
+            if (v.discountType === "PERCENTAGE") {
+                discount = (subtotal * v.discountValue) / 100;
+                if (v.maxDiscount) {
+                    discount = Math.min(discount, v.maxDiscount);
+                }
+            } else if (v.discountType === "FIXED") {
+                discount = v.discountValue;
+            }
+            totalDiscount += discount;
+        });
+        return Math.min(totalDiscount, subtotal);
+    };
+
+    const apiSubtotal = totals.subtotal;
+
+    // 3. Tính toán giảm giá từ voucher (client-side)
+    const clientDiscount = calculateDiscount(apiSubtotal, voucher);
+
+    // 4. Tính toán tổng cuối cùng (client-side)
+    // (Lưu ý: Phí ship sẽ được cộng ở component cha, ở đây chỉ tính subtotal - discount)
+    const clientFinalTotal = apiSubtotal - clientDiscount;
+
+    // 5. Tính toán lại số tiền phải trả của mỗi người
+    const participantBreakdown = participants.map(p => {
+        // Tính subtotal của từng người
+        const pSubtotal = p.items.reduce((acc, item) => {
+            const dishPrice = (item.price || 0) * item.quantity;
+            const toppingsTotal = (item.toppings || []).reduce((tAcc, t) => tAcc + (t.price || 0), 0) * item.quantity;
+            return acc + dishPrice + toppingsTotal;
+        }, 0);
+
+        // Tính % đóng góp
+        const contributionPercent = apiSubtotal > 0 ? (pSubtotal / apiSubtotal) : 0;
+        
+        // Chia sẻ giảm giá (từ client)
+        const discountShare = clientDiscount * contributionPercent;
+
+        // Số tiền cuối cùng phải trả (chưa tính ship)
+        const finalOwes = pSubtotal - discountShare;
+
+        return {
+            ...p, // Giữ lại toàn bộ thông tin gốc (như name, _id, items)
+            finalOwes: finalOwes // Ghi đè số tiền phải trả bằng giá trị mới
+        };
+    });
 
     const confirmRemoveParticipant = (participantId, name) => {
         Swal.fire({
@@ -470,7 +507,7 @@ const GroupCartView = ({ data }) => {
                 <div className="flex flex-col gap-4 mt-4">
                     {" "}
                     {/* Added mt-4 */}
-                    {participants.map((p) => (
+                    {participantBreakdown.map((p) => (
                         <ParticipantSection
                             key={p._id}
                             participant={p}
@@ -505,7 +542,7 @@ const GroupCartView = ({ data }) => {
                 <div className="space-y-2 mt-4">
                     {" "}
                     {/* Added mt-4 and space-y-2 */}
-                    {participants.map((p) => (
+                    {participantBreakdown.map((p) => (
                         <div
                             key={p._id}
                             className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"
@@ -515,7 +552,7 @@ const GroupCartView = ({ data }) => {
                                 {isOwner && p.isOwner && "(Bạn)"}
                             </span>
                             <span className="font-semibold text-gray-900">
-                                {p.finalOwes.toLocaleString("vi-VN")}đ
+                                {Math.round(p.finalOwes).toLocaleString("vi-VN")}đ
                             </span>
                         </div>
                     ))}
@@ -525,13 +562,13 @@ const GroupCartView = ({ data }) => {
                 <div className="mt-5 pt-4 border-t border-gray-200 space-y-2">
                     <div className="flex items-center justify-between text-gray-700">
                         <span>Tổng tạm tính</span>
-                        <span>{totals.subtotal.toLocaleString("vi-VN")}đ</span>
+                        <span>{apiSubtotal.toLocaleString("vi-VN")}đ</span>
                     </div>
-                    {totals.discount > 0 && (
+                    {clientDiscount > 0 && (
                         <div className="flex items-center justify-between text-gray-700">
                             <span>Giảm giá</span>
                             <span className="text-[#fc2111]">
-                                -{totals.discount.toLocaleString("vi-VN")}đ
+                            -{clientDiscount.toLocaleString("vi-VN")}đ
                             </span>
                         </div>
                     )}
@@ -547,7 +584,7 @@ const GroupCartView = ({ data }) => {
                             Tổng cộng
                         </span>
                         <span className="text-[#fc2111] text-lg font-bold">
-                            {totals.finalTotal.toLocaleString("vi-VN")}đ
+                        {clientFinalTotal.toLocaleString("vi-VN")}đ
                         </span>
                     </div>
                 </div>

@@ -93,13 +93,25 @@ const Page = () => {
                 // 1. Calculate each participant's subtotal
                 const participantSubtotals = {};
                 for (const item of orderDetail.items) {
-                    // Use participantId as the key
                     const pid = item.participantId.toString();
 
-                    // Use lineTotal which should be (price*qty + toppingsTotal)
-                    const itemTotal =
-                        item.lineTotal ||
-                        item.price * item.quantity + (item.toppingsTotal || 0);
+                    // --- SỬA LỖI LOGIC TÍNH TOÁN Ở ĐÂY ---
+
+                    // Tính toán lại một cách thủ công vì không tin tưởng dữ liệu
+                    const dishPrice = (item.price || 0) * item.quantity;
+
+                    // `item.toppings` ở đây là mảng đã được populate với giá của từng topping
+                    // (Giả sử `orderService.getOrderDetail` đã populate `items.toppings`)
+                    const toppingsPrice =
+                        (item.toppings?.reduce(
+                            (sum, t) => sum + (t.price || 0),
+                            0
+                        ) || 0) * item.quantity;
+
+                    // Tổng tiền chính xác cho món này (bao gồm topping)
+                    const itemTotal = dishPrice + toppingsPrice;
+
+                    // --- KẾT THÚC SỬA LỖI ---
 
                     if (!participantSubtotals[pid]) {
                         participantSubtotals[pid] = 0;
@@ -260,7 +272,9 @@ const Page = () => {
                     );
                     let myBill = null;
                     if (!isCreator && isParticipant && participantBreakdown) {
-                        myBill = participantBreakdown.find(p => p.userId === user._id);
+                        myBill = participantBreakdown.find(
+                            (p) => p.userId === user._id
+                        );
                     }
                     // The `users` virtual on OrderSchema should be populated with the creator's info
                     const ownerName = orderDetail.users?.name || "chủ nhóm";
@@ -477,7 +491,7 @@ const Page = () => {
 
                             {/* ===== DELIVERY INFO ===== */}
                             <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                <h3 className="text-[#333] text-lg font-bold mb-4">
+                                <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                     Giao tới
                                 </h3>
                                 {[
@@ -519,7 +533,7 @@ const Page = () => {
 
                             {/* ===== PAYMENT INFO ===== */}
                             <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                <h3 className="text-[#333] text-lg font-bold mb-4">
+                                <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                     Thông tin thanh toán
                                 </h3>
                                 {(() => {
@@ -554,7 +568,7 @@ const Page = () => {
 
                             {/* ===== VOUCHERS ===== */}
                             <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                <h3 className="text-[#4A4B4D] text-lg font-bold mb-3">
+                                <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                     Ưu đãi
                                 </h3>
                                 {orderDetail.vouchers.length > 0 ? (
@@ -595,7 +609,7 @@ const Page = () => {
                             />
                             {orderDetail.isGroupOrder && (
                                 <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                    <h3 className="text-[#333] text-lg font-bold mb-4">
+                                    <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                         Chi tiết món ăn theo người đặt
                                     </h3>
                                     <div className="space-y-6">
@@ -724,18 +738,23 @@ const Page = () => {
                                 !isCreator &&
                                 myBill && (
                                     <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                        <h3 className="text-[#333] text-lg font-bold mb-4">
+                                        <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                             Thanh toán của bạn
                                         </h3>
                                         <p className="text-gray-700 text-base md:text-lg">
                                             Bạn phải trả{" "}
-                                            <span className="text-xl md:text-2xl font-bold text-[#fc2111]">
+                                            <span className="text-xl md:text-xl font-bold text-[#fc2111]">
                                                 {Math.round(
                                                     myBill.finalOwes
                                                 ).toLocaleString("vi-VN")}
                                                 đ
                                             </span>{" "}
-                                            cho {ownerName}.
+                                            cho
+                                            <span className="font-bold">
+                                                {" "}
+                                                {ownerName}
+                                            </span>
+                                            .
                                         </p>
                                     </div>
                                 )}
@@ -745,7 +764,7 @@ const Page = () => {
                                 isCreator &&
                                 participantBreakdown && (
                                     <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
-                                        <h3 className="text-[#333] text-lg font-bold mb-4">
+                                        <h3 className="text-[#fc2111] text-xl font-bold mb-4">
                                             Chi tiết thanh toán (Chủ nhóm)
                                         </h3>
                                         <div className="space-y-2">
@@ -804,13 +823,13 @@ const Page = () => {
                                         <>
                                             <Link
                                                 href={`/store/${orderDetail.storeId}/rating/add-rating/${orderId}`}
-                                                className="flex items-center justify-center w-full px-6 py-3 rounded-lg bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-white font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                                                className="flex items-center justify-center w-full px-6 py-3 rounded-lg bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-white font-semibold shadow-md hover:shadow-lg hover:scale-101 transition-all"
                                             >
                                                 Đánh giá đơn hàng
                                             </Link>
                                             <button
                                                 onClick={confirmReOrder}
-                                                className="w-full px-6 py-3 rounded-lg border border-[#fc2111] text-[#fc2111] font-semibold bg-white shadow-md hover:bg-[#fff4ef] hover:scale-105 transition-all"
+                                                className="w-full px-6 py-3 rounded-lg border border-[#fc2111] text-[#fc2111] font-semibold bg-white shadow-md hover:bg-[#fff4ef] hover:scale-101 transition-all"
                                             >
                                                 Đặt lại đơn hàng
                                             </button>

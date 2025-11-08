@@ -37,7 +37,7 @@ const OrderSummary = ({
                 {/* --- Quantity Controls --- */}
                 <div className="flex flex-col items-center gap-1 w-10 flex-shrink-0 pt-1">
                   <button
-                    onClick={() => onUpdateQuantity(dishId, (item.quantity || 0) + 1)}
+                    onClick={() => onUpdateQuantity(dishId, (item.quantity || 0) + 1, item.toppings, item.note)}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-red-500 text-red-500 hover:bg-red-50 transition active:scale-95"
                     aria-label="Increase quantity"
                     hidden={isReadOnly}
@@ -49,7 +49,7 @@ const OrderSummary = ({
                   </span>
                   <button
                     // When quantity hits 0, backend handles removal
-                    onClick={() => onUpdateQuantity(dishId, Math.max(0, (item.quantity || 0) - 1))}
+                    onClick={() => onUpdateQuantity(dishId, Math.max(0, (item.quantity || 0) - 1), item.toppings, item.note)}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:bg-gray-100 transition active:scale-95"
                     aria-label="Decrease quantity"
                     hidden={isReadOnly}

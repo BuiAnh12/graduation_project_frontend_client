@@ -27,7 +27,7 @@ const ListDish = ({
                         {/* Category Header */}
                         <div className="flex items-center gap-3 mb-5">
                             <h3 className="text-[24px] md:text-[28px] font-extrabold text-[#b91c1c]">
-                                {category}
+                                {category.name}
                             </h3>
                             <div className="flex-1 h-[2px] bg-gradient-to-r from-[#b91c1c]/70 to-transparent rounded-full"></div>
                         </div>
