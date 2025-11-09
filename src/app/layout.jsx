@@ -46,15 +46,15 @@ export default function RootLayout({ children }) {
                 <HelmetProvider>
                     <ForgotPassEmailProvider>
                         <AuthProvider>
-                            <SocketProvider>
-                                <StoreLocationProvider>
-                                    <LocationProvider>
-                                        <ProvinceProvider>
-                                            <CartProvider>
-                                                <OrderProvider>
-                                                    <FavoriteProvider>
-                                                        <VoucherProvider>
-                                                            <ReferenceProvider>
+                            <StoreLocationProvider>
+                                <LocationProvider>
+                                    <ProvinceProvider>
+                                        <CartProvider>
+                                            <OrderProvider>
+                                                <FavoriteProvider>
+                                                    <VoucherProvider>
+                                                        <ReferenceProvider>
+                                                            <SocketProvider>
                                                                 <ThemeWrapper>
                                                                     <AppProviders>
                                                                         {
@@ -80,15 +80,15 @@ export default function RootLayout({ children }) {
                                                                         />
                                                                     </AppProviders>
                                                                 </ThemeWrapper>
-                                                            </ReferenceProvider>
-                                                        </VoucherProvider>
-                                                    </FavoriteProvider>
-                                                </OrderProvider>
-                                            </CartProvider>
-                                        </ProvinceProvider>
-                                    </LocationProvider>
-                                </StoreLocationProvider>
-                            </SocketProvider>
+                                                            </SocketProvider>
+                                                        </ReferenceProvider>
+                                                    </VoucherProvider>
+                                                </FavoriteProvider>
+                                            </OrderProvider>
+                                        </CartProvider>
+                                    </ProvinceProvider>
+                                </LocationProvider>
+                            </StoreLocationProvider>
                         </AuthProvider>
                     </ForgotPassEmailProvider>
                 </HelmetProvider>
