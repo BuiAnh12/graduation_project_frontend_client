@@ -130,17 +130,15 @@ const DishCard = ({
                 `}
             >
                 {/* Hình ảnh món ăn */}
-                {dish?.image?.url && (
-                    <div className="relative w-[100px] h-[100px] flex-shrink-0 rounded-xl overflow-hidden">
+                <div className="relative w-[100px] h-[100px] flex-shrink-0 rounded-xl overflow-hidden">
                         <Image
-                            src={dish.image.url}
+                            src={dish?.image?.url ||  "/assets/default-dish.png"}
                             alt={dish?.name || "Dish"}
                             layout="fill"
                             objectFit="cover"
                             className="transition-transform duration-300 group-hover:scale-105"
                         />
                     </div>
-                )}
 
                 {/* Nội dung món ăn */}
                 <div className="flex flex-col flex-1">

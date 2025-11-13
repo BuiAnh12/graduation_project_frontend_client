@@ -394,7 +394,7 @@ const page = () => {
                             <Image
                                 src={
                                     storeInfo?.coverImage?.url ||
-                                    "/assets/logo_app.png"
+                                    "/assets/logo_app.jpg"
                                 }
                                 alt="Store Cover"
                                 layout="fill"
@@ -411,7 +411,7 @@ const page = () => {
                                 <Image
                                     src={
                                         storeInfo?.avatarImage?.url ||
-                                        "/assets/logo_app.png"
+                                        "/assets/logo_app.jpg"
                                     }
                                     alt="Store Avatar"
                                     layout="fill"

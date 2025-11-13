@@ -57,7 +57,7 @@ const Header = ({ page }) => {
                             className="relative w-[60px] h-[60px] flex-shrink-0"
                         >
                             <Image
-                                src="/assets/logo_app.png"
+                                src="/assets/logo_app.jpg"
                                 layout="fill"
                                 objectFit="contain"
                                 alt="Logo"

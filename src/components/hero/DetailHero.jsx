@@ -10,7 +10,7 @@ const DetailHero = ({ store }) => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src={store?.avatarImage?.url || "/assets/logo_app.png"}
+          src={store?.avatarImage?.url || "/assets/logo_app.jpg"}
           alt={store.name}
           fill
           className="object-cover opacity-0 animate-fadeIn group-hover:scale-105 transition-transform duration-700 ease-out"

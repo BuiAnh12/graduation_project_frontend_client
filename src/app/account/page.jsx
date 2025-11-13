@@ -65,17 +65,17 @@ const page = () => {
               className="rounded-md object-cover"
             />
           </div>
-          <div className="flex flex-1 justify-between items-center">
+          <div className="flex flex-1 justify-between items-center px-2">
             <div>
               <p className="text-[20px] font-semibold text-gray-800">{user?.name}</p>
               <p className="text-[15px] text-gray-500">{user?.phonenumber}</p>
             </div>
             <Image
-              src="/assets/pencil.png"
-              alt="Edit"
-              width={24}
-              height={24}
-              className="opacity-80"
+              src="/assets/arrow_right.png"
+              alt="arrow"
+              width={18}
+              height={18}
+              className="opacity-70"
             />
           </div>
         </Link>

@@ -85,7 +85,7 @@ const page = () => {
       <div className='bg-[#fff] lg:w-[60%] md:w-[90%] md:mx-auto md:border md:border-[#a3a3a3a3] md:border-solid md:rounded-[10px] md:shadow-[rgba(0,0,0,0.24)_0px_3px_8px] md:overflow-hidden'>
         <div className='flex flex-col items-center py-[30px] h-screen'>
           <h3 className='text-[#4A4B4D] text-[30px] font-bold pb-[20px]'>Nhập mã OTP</h3>
-          <Image src='/assets/logo_app.png' alt='' height={150} width={150} className='mb-[10px]' />
+          <Image src='/assets/logo_app.jpg' alt='' height={150} width={150} className='mb-[10px]' />
 
           <span className='text-[#4A4B4D] text-[30px] font-bold cursor-not-allowed'>{formatTime(countdown)}</span>
 

@@ -45,7 +45,7 @@ const MobileHeader = ({ page }) => {
   return (
     <div className='px-[20px] flex items-center justify-between md:hidden'>
       <Link href='/home' className='relative w-[60px] pt-[60px] h-[60px]'>
-        <Image src='/assets/logo_app.png' layout='fill' objectFit='contain' alt='' />
+        <Image src='/assets/logo_app.jpg' layout='fill' objectFit='contain' alt='' />
       </Link>
       <div className='flex items-center gap-[15px]'>
         <div className='relative'>

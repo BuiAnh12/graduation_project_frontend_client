@@ -9,11 +9,12 @@ import { toast } from "react-toastify";
 import Header from "@/components/header/Header";
 import Heading from "@/components/Heading";
 import { authService } from "@/api/authService";
+import { useAuth } from "@/context/authContext";
 
 const LoginPage = () => {
   const router = useRouter();
   const [showPass, setShowPass] = useState(false);
-
+  const { fetchUser } = useAuth();
   const schema = yup.object().shape({
     email: yup.string().email("Email không hợp lệ!").required("Vui lòng nhập Email!"),
     password: yup.string().required("Vui lòng nhập mật khẩu!"),
@@ -27,11 +28,14 @@ const LoginPage = () => {
         const res = await authService.login(values);
         console.log(res)
         if (!res.success) {
-          // // toast.error("Đăng nhập thất bại");
+
         } else {
           // // toast.success("Đăng nhập thành công!");
+          // localStorage.setItem("userId", JSON.stringify(res.data._id));
+          await fetchUser(res.data._id);
           formik.resetForm();
           router.push("/home");
+          
         }
       } catch (error) {
         // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
@@ -52,7 +56,7 @@ const LoginPage = () => {
       {/* Login Card */}
       <div className="bg-white w-full max-w-md md:w-[500px] mt-8 md:mt-12 rounded-xl shadow-lg p-6 md:p-10">
         <div className="flex flex-col items-center mb-6">
-          <Image src="/assets/logo_app.png" alt="Logo" width={120} height={120} className="mb-4" />
+          <Image src="/assets/logo_app.jpg" alt="Logo" width={120} height={120} className="mb-4" />
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Đăng nhập</h2>
         </div>
 

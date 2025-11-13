@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { userService } from "@/api/userService";
 
 const AuthContext = createContext();
@@ -10,13 +10,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // Bắt đầu ở trạng thái loading
 
   const fetchUser = async (id) => {
+    const idToFetch = id !== undefined ? id : userId;
+
+    if (!idToFetch) {
+        console.warn("fetchUser: Không có ID để fetch, hủy bỏ.");
+        return; 
+    }
+
     setLoading(true);
     try {
-      const res = await userService.getCurrentUser(id);
-      setUser(res.data);
-      setUserId(id); 
+      // 3. Sử dụng 'idToFetch' đã được xác định
+      const res = await userService.getCurrentUser(idToFetch); 
+      console.log("login authContext", res)
+      if (res.success) {
+        setUser(res.data);
+        setUserId(idToFetch);
+        if (id !== undefined && id !== userId) {
+             localStorage.setItem("userId", JSON.stringify(idToFetch));
+        }
+
+      }
+      else {
+        console.error("Lỗi lấy thông tin user (API success: false):", res.errorMessage);
+        setUser(null);
+        setUserId(null); 
+        localStorage.removeItem("userId"); 
+      }
     } catch (error) {
-      console.error("Lỗi lấy thông tin user:", error);
+      console.error("Lỗi lấy thông tin user (catch):", error);
       setUser(null);
       setUserId(null); 
       localStorage.removeItem("userId"); 
@@ -25,15 +46,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(()=>{
+    console.log("AuthContex Debug")
+    console.log(userId)
+    console.log(user)
+    console.log(loading)
+  },[userId, user, loading])
+
 
   useEffect(() => {
     const savedId = localStorage.getItem("userId");
     if (savedId) {
       try {
         const parsedId = JSON.parse(savedId);
-        fetchUser(parsedId); // Chỉ cần gọi fetchUser
+        fetchUser(parsedId); 
       } catch (e) {
-        // Xử lý nếu localStorage bị hỏng
         console.error("Lỗi parse userId từ localStorage:", e);
         localStorage.removeItem("userId");
         setUser(null);
@@ -46,7 +73,7 @@ export const AuthProvider = ({ children }) => {
       setUserId(null);
       setLoading(false);
     }
-  }, []);
+  }, []); // Chỉ chạy một lần khi khởi động
 
   // --- NEW: Tính toán isAuthenticated dựa trên state ---
   const isAuthenticated = !loading && !!user && !!userId;
@@ -55,12 +82,12 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider 
       value={{ 
         userId, 
-        setUserId, 
+        setUserId, // Dùng cho đăng xuất
         user, 
-        setUser, 
+        setUser, // Dùng cho đăng xuất
         loading, 
         isAuthenticated,
-        fetchUser 
+        fetchUser // Dùng cho đăng nhập và refresh
       }}
     >
       {children}

@@ -122,7 +122,7 @@ const SimilarDishesPopup = ({ dishes, storeId, onClose }) => {
                                     <Image
                                         src={
                                             dish.metadata?.image?.url ||
-                                            "/assets/logo_app.png"
+                                            "/assets/default-dish.png"
                                         }
                                         alt={dish.name}
                                         layout="fill"

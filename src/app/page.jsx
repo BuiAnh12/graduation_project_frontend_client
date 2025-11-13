@@ -53,7 +53,7 @@ export default function Home() {
         <div className='relative h-screen w-full'>
           <Image src='/assets/splash_bg.png' alt='' layout='fill' objectFit='cover' />
           <Image
-            src='/assets/logo_app.png'
+            src='/assets/logo_app.jpg'
             alt=''
             height={200}
             width={200}
@@ -65,7 +65,7 @@ export default function Home() {
           <div className='relative h-[50vh] w-[100%]'>
             <Image src='/assets/welcome_top_shape.png' alt='' layout='fill' objectFit='cover' />
             <Image
-              src='/assets/logo_app.png'
+              src='/assets/logo_app.jpg'
               alt=''
               height={200}
               width={200}

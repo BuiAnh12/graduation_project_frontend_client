@@ -137,7 +137,7 @@ const DishBigCard = ({
                 <div className="relative flex flex-col gap-2 pt-[75%] w-full rounded-t-2xl overflow-hidden">
                     {/* --- 3. IMAGE TAG RE-ADDED --- */}
                     <Image
-                        src={dish?.image?.url}
+                        src={dish?.image?.url || "/assets/default-dish.png"}
                         alt={dish?.name || "Dish"}
                         layout="fill"
                         objectFit="cover"

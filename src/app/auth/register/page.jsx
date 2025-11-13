@@ -61,7 +61,7 @@ const RegisterPage = () => {
       {/* Card Container */}
       <div className="bg-white w-full max-w-lg md:w-[500px] md:mt-12 rounded-xl shadow-lg p-6 md:p-10 mt-40">
         <div className="flex flex-col items-center">
-          <Image src="/assets/logo_app.png" alt="Logo" width={120} height={120} className="mb-4" />
+          <Image src="/assets/logo_app.jpg" alt="Logo" width={120} height={120} className="mb-4" />
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tạo tài khoản mới</h2>
         </div>
 

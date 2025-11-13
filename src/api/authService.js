@@ -7,7 +7,6 @@ const register = async (userData) => {
 
 const login = async (userData) => {
   const result = await handleApiResponse(instance.post(`/auth/login`, userData, config()), {successMessage:'Đăng nhập thành công'});
-
   if (result.success && result.data) {
     const data = result.data;
     localStorage.setItem("userId", JSON.stringify(data._id));
@@ -35,7 +34,7 @@ const logout = async () => {
 
   localStorage.removeItem("userId");
   localStorage.removeItem("token");
-
+  localStorage.removeItem("refreshToken")
   return { success: true, message: "Đăng suất thành công" };
 };
 

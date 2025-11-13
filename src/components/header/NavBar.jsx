@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 const NavBar = ({ page }) => {
-  const { user } = useAuth();
+  const { userId, user } = useAuth();
   const { notifications } = useSocket();
   const { favorite } = useFavorite();
   const { cart } = useCart();
@@ -60,18 +60,18 @@ const NavBar = ({ page }) => {
     },
   ];
 
-  if (!user)
+  if (!userId)
     return (
       <div className="fixed bottom-0 z-[99] flex items-center justify-center gap-4 w-full h-[75px] bg-white shadow-[0_-5px_25px_rgba(0,0,0,0.1)] md:bg-transparent md:shadow-none md:relative">
         <Link
           href="/auth/login"
-          className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all"
+          className="px-6 py-3 bg-primary text-red-500 font-semibold rounded-lg hover:opacity-90 transition-all"
         >
           Đăng nhập
         </Link>
         <Link
           href="/auth/register"
-          className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all"
+          className="px-6 py-3 bg-primary text-red-500 font-semibold rounded-lg hover:opacity-90 transition-all"
         >
           Đăng ký
         </Link>
@@ -102,14 +102,14 @@ const NavBar = ({ page }) => {
               />
               <p
                 className={`text-xs ${
-                  isActive ? "text-primary font-medium" : "text-gray-600"
-                } group-hover:text-primary`}
+                  isActive ? "text-red-500 font-medium" : "text-gray-600"
+                } group-hover:text-red-600`}
               >
                 {item.label}
               </p>
 
               {badgeCount > 0 && (
-                <div className="absolute -top-1 left-8 w-[24px] h-[24px] text-center rounded-full bg-primary text-red text-[12px] flex items-center justify-center border border-red">
+                <div className="absolute -top-2 left-8 w-[24px] h-[24px] text-center rounded-full bg-transparent text-red-500 text-[12px] font-semibold flex items-center justify-center border border-red">
                   {badgeCount}
                 </div>
               )}

@@ -34,7 +34,7 @@ const OrderCard = ({ order }) => {
                 {order.items.slice(0, 4).map((item, index) => {
                     const total = order.items.length;
                     const imageUrl =
-                        item.dishId?.image?.url || "/assets/logo_app.png";
+                        item.dishId?.image?.url || "/assets/default-dish.png.jpg";
 
                     let className = "absolute w-full h-full";
                     if (total === 2) {

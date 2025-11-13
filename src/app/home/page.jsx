@@ -21,7 +21,7 @@ const Page = () => {
         standoutStore,
         loading: storeLoading,
     } = useStoreSearch();
-    const { setUserId } = useAuth();
+    const { setUserId, userId } = useAuth();
 
     useEffect(() => {
         const userId = JSON.parse(localStorage.getItem("userId"));
@@ -44,7 +44,6 @@ const Page = () => {
             <Heading title="Trang chủ" description="" keywords="" />
             <Header />
 
-            {/* 🏙️ Hero Section */}
             {ratingStore && ratingStore?.data?.length > 0 && (
                 <section className="mb-12">
                     <Hero allStore={ratingStore.data} />
@@ -142,22 +141,23 @@ const Page = () => {
                         </Link>
                     </section>
                 )}
+                {userId && (
+                    <section className="px-[20px] md:px-0">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">
+                                Món giới thiệu
+                            </h3>
+                            <Link
+                                href="/search?sort=recommend"
+                                className="text-[#fc2111] hover:text-[#e4510d] transition-colors text-sm sm:text-base font-medium"
+                            >
+                                Xem tất cả →
+                            </Link>
+                        </div>
 
-                <section className="px-[20px] md:px-0">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-[26px] md:text-[30px] font-extrabold text-[#b91c1c]">
-                            Món giới thiệu
-                        </h3>
-                        <Link
-                            href="/search?sort=recommend"
-                            className="text-[#fc2111] hover:text-[#e4510d] transition-colors text-sm sm:text-base font-medium"
-                        >
-                            Xem tất cả →
-                        </Link>
-                    </div>
-
-                    <DishRecommendSlider/>
-                </section>
+                        <DishRecommendSlider />
+                    </section>
+                )}
 
                 {/* 🔥 Popular Stores */}
                 {ratingStore && ratingStore?.length > 0 && (

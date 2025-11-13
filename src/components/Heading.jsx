@@ -8,7 +8,7 @@ const Heading = ({ title, description, keywords }) => {
       <meta name='viewport' content='width=device-width, initial-scale=1' />
       <meta name='description' content={description} />
       <meta name='keywords' content={keywords} />
-      <link rel='icon' type='image/png' href='/assets/logo_app.png' />
+      <link rel='icon' type='image/png' href='/assets/logo_app.jpg' />
     </Helmet>
   );
 };
