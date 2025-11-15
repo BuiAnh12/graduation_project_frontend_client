@@ -185,27 +185,9 @@ const DishCard = ({
                                 {cartItem?.quantity > 0 ? (
                                     <div className="flex items-center bg-white border border-red-500 rounded-full px-2 py-1 shadow-md gap-2">
                                         <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleChangeQuantity(-1);
-                                                e.stopPropagation();
-                                            }}
-                                            className="text-red-600 text-lg font-bold hover:scale-110 transition"
+                                            className="text-red-600 text-sm font-bold"
                                         >
-                                            −
-                                        </button>
-                                        <span className="text-gray-800 text-lg font-semibold w-[30px] text-center">
-                                            {cartItem?.quantity}
-                                        </span>
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleChangeQuantity(1);
-                                                e.stopPropagation();
-                                            }}
-                                            className="text-red-600 text-lg font-bold hover:scale-110 transition"
-                                        >
-                                            +
+                                            ✓
                                         </button>
                                     </div>
                                 ) : (

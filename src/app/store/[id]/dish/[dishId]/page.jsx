@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Header from "@/components/header/Header";
@@ -22,20 +22,20 @@ const page = () => {
 
     const [dishInfo, setDishInfo] = useState(null);
     const [storeCart, setStoreCart] = useState(null);
-    const [dishCart, setDishCart] = useState(null);
+
     const [note, setNote] = useState("");
-    const [quantity, setQuantity] = useState(0);
-    const [cartItem, setCartItem] = useState(null);
+    const [quantity, setQuantity] = useState(1);
     const [toppings, setToppings] = useState([]);
-    const [toppingsValue, setToppingsValue] = useState([]);
+
     const [price, setPrice] = useState(0);
     const [loading, setLoading] = useState(true);
     const [similarDishes, setSimilarDishes] = useState([]);
     const [showSimilarPopup, setShowSimilarPopup] = useState(false);
-    const [cartDataLoaded, setCartDataLoaded] = useState(false);
+
     const { cart, refreshCart } = useCart();
     const { user, userId } = useAuth();
 
+    const router = useRouter();
     const getDishInfo = async () => {
         try {
             const response = await dishService.getDish(dishId);
@@ -86,126 +86,84 @@ const page = () => {
     };
 
     useEffect(() => {
+        // Khi dishInfo load, set giá và số lượng ban đầu
+        if (dishInfo) {
+            setPrice(dishInfo.price || 0);
+            setQuantity(1);
+        }
+    }, [dishInfo]);
+
+    useEffect(() => {
         if (dishId) {
             getDishInfo();
         }
     }, [dishId]);
 
     useEffect(() => {
+        if (!dishInfo) return; // Đợi dishInfo load
+
+        let newToppingsPrice = 0;
+
+        // 1. Tìm các object topping đầy đủ từ dishInfo
+        if (dishInfo.toppingGroups && toppings.length > 0) {
+            const allToppingsMap = new Map();
+            dishInfo.toppingGroups.forEach((group) => {
+                group.toppings.forEach((topping) => {
+                    allToppingsMap.set(topping._id, topping);
+                });
+            });
+
+            // 2. Tính tổng giá topping
+            toppings.forEach((toppingId) => {
+                const topping = allToppingsMap.get(toppingId);
+                if (topping) {
+                    newToppingsPrice += topping.price || 0;
+                }
+            });
+        }
+
+        // 3. Tính tổng giá
+        const dishPrice = Number(dishInfo.price || 0);
+        const totalPrice = (dishPrice + newToppingsPrice) * quantity;
+
+        setPrice(totalPrice);
+    }, [quantity, toppings, dishInfo]);
+
+    useEffect(() => {
         if (cart) {
-            console.log("Cart", cart);
+            // 1. Chỉ tìm store cart
             const store = cart.find((c) => c.storeId._id === storeId);
             setStoreCart(store);
-
-            const dish = store?.items.find(
-                (item) => item.dishId._id === dishId &&
-                item?.participantId?.userId?._id === userId
-            );
-            setDishCart(dish);
-
-            if (dish?.note) {
-                setNote(dish.note);
-            } else {
-                setNote("");
-            }
         }
-    }, [cart, storeId, dishId]);
+
+        // 2. Reset note (vì đây là trang thêm mới)
+        setNote("");
+
+        // 3. Không setQuantity hay setToppings ở đây nữa
+        // useEffect[dishInfo] đã xử lý việc đó
+    }, [cart, storeId]);
 
     const handleQuantityInputChange = (e) => {
         let inputValue = parseInt(e.target.value, 10);
 
         if (isNaN(inputValue)) {
-            setQuantity(0);
+            setQuantity(1); // Set to min
             return;
         }
 
-        // Correct logic
         if (inputValue > 50) {
             toast.info("Số lượng tối đa là 50. Đã tự động điều chỉnh.");
             inputValue = 50;
         }
 
-        // Negative Testing
-        if (inputValue < 0) {
-            toast.info("Số lượng tối thiểu là 0. Đã tự động điều chỉnh.");
-            inputValue = 0;
+        if (inputValue < 1) {
+            toast.info("Số lượng tối thiểu là 1. Đã tự động điều chỉnh.");
+            inputValue = 1;
         }
 
+        // Chỉ cần set state, useEffect sẽ tính giá
         setQuantity(inputValue);
-
-        const dishPrice = Number(dishInfo?.price || 0) * inputValue;
-        const toppingsPrice =
-            toppingsValue.reduce(
-                (sum, topping) => sum + Number(topping.price || 0),
-                0
-            ) * inputValue;
-
-        setPrice(dishPrice + toppingsPrice);
     };
-
-    useEffect(() => {
-        if (storeCart) {
-            console.log("StoreCart", storeCart);
-            const item = storeCart.items.find(
-                (item) => item.dishId._id === dishId &&
-                item?.participantId?.userId?._id === userId
-            );
-
-            setCartItem(item);
-            setQuantity(item?.quantity || 0);
-
-            if (item?.toppings.length > 0) {
-                item.toppings.forEach((topping) => {
-                    setToppings((prev) => {
-                        console.log("topping display", topping.toppingId._id);
-                        if (prev.includes(topping.toppingId._id)) {
-                            return [...prev];
-                        } else {
-                            return [...prev, topping.toppingId._id];
-                        }
-                    });
-
-                    setToppingsValue((prev) => {
-                        console.log("prev", prev);
-                        if (
-                            prev.some(
-                                (tp) =>
-                                    tp.toppingId._id === topping.toppingId._id
-                            )
-                        ) {
-                            return [...prev];
-                        } else {
-                            return [
-                                ...prev,
-                                {
-                                    ...topping,
-                                    _id: topping.toppingId._id,
-                                },
-                            ];
-                        }
-                    });
-                });
-            }
-        }
-    }, [storeCart]);
-
-    useEffect(() => {
-        if (cartItem) {
-            const dishPrice =
-                Number(cartItem.dishId?.price || 0) * Number(cartItem.quantity);
-            const toppingsPrice =
-                (Array.isArray(cartItem.toppings)
-                    ? cartItem.toppings.reduce(
-                          (sum, topping) => sum + Number(topping.price || 0),
-                          0
-                      )
-                    : 0) * Number(cartItem.quantity);
-
-            const totalPrice = dishPrice + toppingsPrice;
-
-            setPrice(totalPrice);
-        }
-    }, [cartItem]);
 
     const handleChangeQuantity = (qnt) => {
         let newQuantity = quantity + qnt;
@@ -215,98 +173,56 @@ const page = () => {
             newQuantity = 50;
         }
 
-        if (newQuantity < 0) {
-            toast.info("Số lượng tối thiểu là 0. Đã tự động điều chỉnh.");
-            newQuantity = 0;
+        if (newQuantity < 1) {
+            toast.info("Số lượng tối thiểu là 1.");
+            newQuantity = 1;
         }
 
+        if (newQuantity === quantity) return;
+
+        // Chỉ cần set state, useEffect sẽ tính giá
         setQuantity(newQuantity);
-
-        const dishPrice = Number(dishInfo?.price || 0) * newQuantity;
-        const toppingsPrice =
-            toppingsValue.reduce(
-                (sum, topping) => sum + Number(topping.price || 0),
-                0
-            ) * newQuantity;
-
-        setPrice(dishPrice + toppingsPrice);
     };
 
     const handleChooseTopping = (topping, toppingPrice, toppingGroup) => {
-        console.log("Choose topping clicked");
         const isRadio = toppingGroup.onlyOnce === true;
+        const clickedToppingId = topping._id;
 
-        if (isRadio) {
-            const prevTopping = toppingsValue.find(
-                (item) => item.groupId === toppingGroup._id
-            );
+        setToppings((prevToppingIds) => {
+            let newIds = [...prevToppingIds];
 
-            if (prevTopping) {
-                if (prevTopping._id === topping._id) {
-                    const priceChange = -prevTopping.price * quantity;
-                    setPrice((prev) => prev + priceChange);
+            if (isRadio) {
+                // --- LOGIC CHO RADIO ---
+                // 1. Tìm và xóa tất cả topping khác trong cùng group
+                const otherToppingIdsInGroup = toppingGroup.toppings
+                    .map((t) => t._id)
+                    .filter((id) => id !== clickedToppingId);
 
-                    setToppings((prev) =>
-                        prev.filter((id) => id !== topping._id)
-                    );
-                    setToppingsValue((prev) =>
-                        prev.filter((tp) => tp.toppingId !== topping._id)
-                    );
-                    return;
+                newIds = newIds.filter(
+                    (id) => !otherToppingIdsInGroup.includes(id)
+                );
+
+                // 2. Xử lý click (thêm hoặc xóa)
+                if (newIds.includes(clickedToppingId)) {
+                    // Đã chọn -> Bỏ chọn
+                    newIds = newIds.filter((id) => id !== clickedToppingId);
                 } else {
-                    const priceChange = -prevTopping.price * quantity;
-                    setPrice((prev) => prev + priceChange);
-
-                    setToppings((prev) =>
-                        prev.filter((id) => id !== prevTopping._id)
-                    );
-                    setToppingsValue((prev) =>
-                        prev.filter((tp) => tp.toppingId !== prevTopping._id)
-                    );
+                    // Chưa chọn -> Thêm
+                    newIds.push(clickedToppingId);
+                }
+            } else {
+                // --- LOGIC CHO CHECKBOX ---
+                if (newIds.includes(clickedToppingId)) {
+                    // Đã chọn -> Bỏ chọn
+                    newIds = newIds.filter((id) => id !== clickedToppingId);
+                } else {
+                    // Chưa chọn -> Thêm
+                    newIds.push(clickedToppingId);
                 }
             }
-
-            setToppingsValue((prev) => {
-                const updated = prev.filter(
-                    (item) => item.groupId !== toppingGroup._id
-                );
-                return [
-                    ...updated,
-                    { ...topping, groupId: toppingGroup._id, _id: topping._id },
-                ];
-            });
-
-            setToppings((prev) => [...prev, topping._id]);
-
-            const priceChange = toppingPrice * quantity;
-            setPrice((prev) => prev + priceChange);
-        } else {
-            let priceChange = 0;
-            console.log(topping);
-            console.log(toppings);
-            if (toppings.includes(topping._id)) {
-                priceChange = -toppingPrice * quantity;
-                setToppings((prev) => prev.filter((id) => id !== topping._id));
-                setToppingsValue((prev) =>
-                    prev.filter((tp) => tp.toppingId._id !== topping._id)
-                );
-            } else {
-                priceChange = toppingPrice * quantity;
-                setToppings((prev) => [...prev, topping._id]);
-                setToppingsValue((prev) => [
-                    ...prev,
-                    {
-                        toppingId: {
-                            _id: topping._id,
-                        },
-                    },
-                ]);
-            }
-
-            setPrice((prev) => prev + priceChange);
-        }
+            return newIds;
+        });
     };
-
 
     const handleAddToCart = async () => {
         if (storeCart?.store?.openStatus === "closed") {
@@ -331,11 +247,12 @@ const page = () => {
                     quantity: quantity,
                     toppings,
                     action: "add_item",
+                    note,
                 });
             } else {
                 res = await cartService.updateCart({
                     storeId,
-                    action: "update_item",
+                    action: "add_item",
                     dishId,
                     quantity,
                     toppings,
@@ -354,43 +271,10 @@ const page = () => {
                     setShowSimilarPopup(false);
                 }
                 refreshCart();
+                router.push(`/store/${storeId}`);
             } else {
                 // Show backend error
                 // toast.error(res.errorMessage || "Không thể cập nhật giỏ hàng!");
-            }
-        } else {
-            // toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
-        }
-    };
-
-    const handleRemoveFromCart = async () => {
-        const isGroup = storeCart && storeCart?.mode === "group";
-        if (user) {
-            try {
-                let res;
-
-            if (isGroup) {
-                res = await cartService.upsertGroupCartItem({
-                    cartId: storeCart._id,
-                    dishId: dishId,
-                    quantity: 0,
-                    toppings: [],
-                    action: "remove_item",
-                });
-            } else {
-                res = await cartService.updateCart({
-                    storeId,
-                    dishId,
-                    action: "remove_item",
-                    quantity: 0,
-                    toppings: [],
-                });
-            }
-                // toast.success("Cập nhật giỏ hàng thành công");
-                refreshCart();
-                setShowSimilarPopup(false);
-            } catch (error) {
-                console.error(error);
             }
         } else {
             // toast.error("Vui lòng đăng nhập để tiếp tục đặt hàng!");
@@ -492,13 +376,13 @@ const page = () => {
                                                                               key={`${toppingGroup._id}-${topping._id}`}
                                                                               topping={
                                                                                   topping
-                                                                              }
+                                                                              } // <-- SỬA: Không phải "toppings"
                                                                               toppingGroup={
                                                                                   toppingGroup
                                                                               }
                                                                               selectedTopping={
-                                                                                  toppingsValue
-                                                                              }
+                                                                                  toppings
+                                                                              } // <-- SỬA: Dùng "toppings" (ID list)
                                                                               handleChooseTopping={
                                                                                   handleChooseTopping
                                                                               }
@@ -516,8 +400,8 @@ const page = () => {
                                                                                   topping
                                                                               }
                                                                               selectedTopping={
-                                                                                  toppingsValue
-                                                                              }
+                                                                                  toppings
+                                                                              } // <-- SỬA: Dùng "toppings" (ID list)
                                                                               toppingGroup={
                                                                                   toppingGroup
                                                                               }
@@ -628,52 +512,25 @@ const page = () => {
             )}
 
             <div className="fixed bottom-0 left-0 right-0 bg-white px-5 md:px-0 py-4 z-[100] flex items-center justify-center shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
-                {quantity > 0 ? (
-                    <div
-                        name="addCartBtn"
-                        className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#fc2111] to-[#ff7a33] text-white py-4 px-6 
-                 lg:w-[60%] md:w-[80%] w-full md:mx-auto cursor-pointer shadow-md hover:shadow-lg 
-                 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                        onClick={handleAddToCart}
+                {/* Vì quantity giờ min = 1, chúng ta không cần khối "else" nữa */}
+                <div
+                    name="addCartBtn"
+                    className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#fc2111] to-[#ff7a33] text-white py-4 px-6 
+                    lg:w-[60%] md:w-[80%] w-full md:mx-auto cursor-pointer shadow-md hover:shadow-lg 
+                    transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                    onClick={handleAddToCart}
+                >
+                    <span className="text-white text-xl font-semibold">
+                        Thêm vào giỏ hàng
+                    </span>
+                    <span className="text-white text-xl font-semibold">•</span>
+                    <span
+                        className="text-white text-xl font-semibold"
+                        name="totalPrice"
                     >
-                        <span className="text-white text-xl font-semibold">
-                            Thêm vào giỏ hàng
-                        </span>
-                        <span className="text-white text-xl font-semibold">
-                            •
-                        </span>
-                        <span
-                            className="text-white text-xl font-semibold"
-                            name="totalPrice"
-                        >
-                            {Number(price.toFixed(0)).toLocaleString("vi-VN")}đ
-                        </span>
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-4 lg:w-[60%] md:w-[80%] w-full md:mx-auto">
-                        <Link
-                            href={`/store/${storeId}`}
-                            className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#fc2111] to-[#ff7a33] text-white py-4 px-4 sm:px-6 
-                   cursor-pointer w-[65%] md:w-[80%] shadow-md hover:shadow-lg 
-                   transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            <span className="text-white text-xl font-semibold">
-                                Quay lại cửa hàng
-                            </span>
-                        </Link>
-
-                        <div
-                            className="flex items-center justify-center gap-2 rounded-2xl bg-gray-300 text-gray-700 py-4 px-4 sm:px-6 
-                   cursor-pointer w-[35%] md:w-[20%] shadow-md hover:shadow-lg 
-                   transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                            onClick={handleRemoveFromCart}
-                        >
-                            <span className="text-gray-700 text-xl font-semibold whitespace-nowrap">
-                                Bỏ chọn
-                            </span>
-                        </div>
-                    </div>
-                )}
+                        {Number(price.toFixed(0)).toLocaleString("vi-VN")}đ
+                    </span>
+                </div>
             </div>
         </>
     );

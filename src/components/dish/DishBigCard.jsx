@@ -150,25 +150,9 @@ const DishBigCard = ({
                             {cartItem?.quantity > 0 ? (
                                 <div className="absolute bottom-3 right-3 flex items-center bg-white gap-2 border border-red-500 rounded-full px-3 py-1 shadow-lg z-10">
                                     <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleChangeQuantity(-1);
-                                        }}
-                                        className="text-red-600 text-xl font-bold hover:scale-110 transition"
+                                        className="text-red-600 text-sm font-bold"
                                     >
-                                        −
-                                    </button>
-                                    <span className="text-gray-800 text-lg font-semibold w-[30px] text-center">
-                                        {cartItem?.quantity}
-                                    </span>
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleChangeQuantity(1);
-                                        }}
-                                        className="text-red-600 text-xl font-bold hover:scale-110 transition"
-                                    >
-                                        +
+                                        ✓
                                     </button>
                                 </div>
                             ) : (

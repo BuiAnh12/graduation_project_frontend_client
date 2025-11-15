@@ -95,9 +95,9 @@ const UpsellSlider = ({ storeId, storeCartItems = [] }) => {
   }, [user?._id, userReference, storeCartItems]); // Re-fetch if user or cart changes
 
   // Render null if loading or no suitable recommendations found
-  if (loading || !recommendations || recommendations.length === 0) {
-    return null; // Or a subtle loading indicator if preferred
-  }
+  // if (loading || !recommendations || recommendations.length === 0) {
+  //   return null; // Or a subtle loading indicator if preferred
+  // }
 
   return (
     // <div className="bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">

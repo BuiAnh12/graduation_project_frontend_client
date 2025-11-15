@@ -2,8 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 const ToppingItemRadio = ({ topping, toppingGroup, selectedTopping, handleChooseTopping }) => {
-  const isSelected = selectedTopping?.some((tp) => tp._id === topping._id);
-
+  const isChecked = selectedTopping?.includes(topping._id);
   return (
     <div
       onClick={() => handleChooseTopping(topping, topping.price, toppingGroup)}

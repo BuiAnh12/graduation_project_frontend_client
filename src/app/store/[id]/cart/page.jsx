@@ -220,7 +220,6 @@ const page = () => {
         newQuantity = Math.max(0, newQuantity);
 
         console.log(`Updating dish ${dishId} to quantity ${newQuantity}`);
-        setIsCartLoading(true); // Indicate loading
 
         const toppingIds = Array.isArray(toppings)
             ? toppings.map((topping) => topping.toppingId?._id).filter(Boolean)
@@ -237,7 +236,6 @@ const page = () => {
 
         if (!update_res.success) {
             console.error("API Error updating cart:", update_res.errorMessage);
-            setIsCartLoading(false);
             return;
         }
 
@@ -255,7 +253,6 @@ const page = () => {
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                setIsCartLoading(false);
                 return;
             }
         }
@@ -287,7 +284,7 @@ const page = () => {
             (id) => id !== toppingIdToRemove.toString()
         );
 
-        setIsCartLoading(true); // Indicate loading
+        // setIsCartLoading(true); // Indicate loading
 
         try {
             const update_res = await cartService.updateCart({
@@ -304,7 +301,7 @@ const page = () => {
                     "API Error updating toppings:",
                     update_res.errorMessage
                 );
-                setIsCartLoading(false);
+                // setIsCartLoading(false);
                 return;
             }
 
@@ -315,13 +312,13 @@ const page = () => {
                     "Error refreshing cart context:",
                     cart_refresh_result.errorMessage
                 );
-                setIsCartLoading(false);
+                // setIsCartLoading(false);
                 return;
             }
             // Loading state will be reset by the fetchDetails effect
         } catch (error) {
             console.error("Error updating toppings:", error);
-            setIsCartLoading(false); // Stop loading on catch
+            // setIsCartLoading(false); // Stop loading on catch
         }
     };
 
@@ -943,7 +940,13 @@ const page = () => {
                             )}
                             {groupCartData ? (
                                 // --- RENDER GROUP CART ---
+                                <>
+                                <UpsellSlider
+                                        storeId={storeId}
+                                        storeCartItems={detailCart?.items || []}
+                                    />
                                 <GroupCartView data={groupCartData} voucher={selectedVouchers} />
+                                </>
                             ) : (
                                 // --- RENDER PRIVATE CART ---
                                 <>
