@@ -5,10 +5,12 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { cartService } from "@/api/cartService";
 import { useCart } from "@/context/cartContext";
+import { useAuth } from "@/context/authContext";
 
 const CartItem = ({ cartItem }) => {
   const [quantity, setQuantity] = useState(0);
   const { refreshCart } = useCart();
+  const { user } = useAuth();
 
   useEffect(() => {
     const totalQuantity = cartItem.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -98,7 +100,8 @@ const CartItem = ({ cartItem }) => {
       </div>
 
       {/* --- Delete Button --- */}
-      <div
+      {cartItem?.userId?._id != user._id ? <></> :
+        <div
         className="absolute top-3 right-3 z-10 p-2 bg-gray-300 bg-[#ffe8e6] hover:bg-[#fc2111] hover:text-white rounded-full cursor-pointer transition-colors duration-200"
         onClick={(e) => {
           e.preventDefault();
@@ -114,6 +117,8 @@ const CartItem = ({ cartItem }) => {
           />
         </div>
       </div>
+      }
+      
     </Link>
   );
 };

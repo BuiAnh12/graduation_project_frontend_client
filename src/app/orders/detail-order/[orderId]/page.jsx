@@ -10,10 +10,10 @@ import { orderService } from "@/api/orderService";
 import { useAuth } from "@/context/authContext";
 import { ThreeDot } from "react-loading-indicators";
 import Swal from "sweetalert2";
-import { toast } from "react-toastify";
 import { useOrder } from "@/context/orderContext";
 import { useCart } from "@/context/cartContext";
 import { useSearchParams } from "next/navigation";
+import { shippingFeeService } from "@/api/shippingFeeService";
 
 const Page = () => {
     const router = useRouter();
@@ -819,7 +819,7 @@ const Page = () => {
                                         </button>
                                     )}
 
-                                    {orderDetail?.status === "done" && (
+                                    {orderDetail?.status === "store_delivering" && (
                                         <>
                                             <Link
                                                 href={`/store/${orderDetail.storeId}/rating/add-rating/${orderId}`}

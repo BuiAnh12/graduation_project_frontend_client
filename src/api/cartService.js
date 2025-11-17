@@ -14,7 +14,7 @@ const updateCart = async (data) => {
 };
 
 const completeCart = async (data) => {
-  return handleApiResponse(instance.post(`/cart/complete`, data, config()), {successMessage:'Chuyển đơn hàng thành công'}); // show toast
+  return handleApiResponse(instance.post(`/cart/complete`, data, config()), {successMessage:'Đặt đơn hàng thành công'}); // show toast
 };
 
 const clearCartItem = async (storeId) => {

@@ -10,12 +10,11 @@ import NavBar from "@/components/header/NavBar";
 import CartItem from "@/components/cart/CartItem";
 import { cartService } from "@/api/cartService";
 import { useCart } from "@/context/cartContext";
-import { Atom } from "react-loading-indicators";
+import { ThreeDot } from "react-loading-indicators";
 import Link from "next/link";
 
 const page = () => {
     const { cart, loading, refreshCart } = useCart();
-
     useEffect(() => {
         refreshCart();
     }, []);
@@ -111,7 +110,7 @@ const page = () => {
                     </>
                 ) : (
                     <div className="w-full h-screen flex items-center justify-center">
-                        <Atom
+                        <ThreeDot
                             color="#fc2111"
                             size="medium"
                             text=""

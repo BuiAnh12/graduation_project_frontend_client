@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const instance = axios.create({
   withCredentials: true,
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
 });
 
 // Hàm config header với token hiện tại

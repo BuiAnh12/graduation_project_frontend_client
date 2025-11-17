@@ -380,7 +380,6 @@ const page = () => {
             ) {
                 try {
                     const res = await shippingFeeService.calculateShippingFee(
-                        storeId,
                         {
                             distanceKm: haversineDistance(
                                 [storeLocation.lat, storeLocation.lon],
@@ -391,8 +390,8 @@ const page = () => {
                             ).toFixed(2),
                         }
                     );
-                    if (res?.fee) {
-                        setShippingFee(res.fee);
+                    if (res?.data?.fee) {
+                        setShippingFee(res.data.fee);
                     }
                 } catch (error) {
                     setShippingFee(0);
@@ -467,6 +466,8 @@ const page = () => {
             note: storeLocation.note,
             location: [storeLocation.lon, storeLocation.lat],
             vouchers: voucherIds,
+            shippingFee: shippingFee
+
         };
 
         try {
@@ -533,7 +534,6 @@ const page = () => {
                 });
 
                 if (response?.data?.orderId) {
-                    toast.success("Đặt thành công");
                     refreshOrder?.();
                     refreshCart?.();
                     router.push(

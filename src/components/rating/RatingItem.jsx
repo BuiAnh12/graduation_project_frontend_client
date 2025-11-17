@@ -52,8 +52,9 @@ const RatingItem = ({
         <div className="flex items-center gap-4">
           <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-primary shadow-sm">
             <Image
-              src={rating?.users?.avatarImage?.url || "/assets/default_avatar.png"}
-              alt="avatar"
+              src={rating?.users?.avatarImage?.url||
+                "/assets/avatar_default.png"}
+              alt="avatar" 
               fill
               className="object-cover"
             />
