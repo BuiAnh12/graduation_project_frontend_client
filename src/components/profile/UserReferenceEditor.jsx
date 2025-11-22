@@ -97,6 +97,13 @@ export default function UserReferenceEditor() {
                 setData={setUserRef}
                 tagType="taste_tags"
             />
+            <TagGroupSection 
+                title="Cách chế biến không thích"
+                groupKey="dislike_cooking_method" 
+                data={userRef}
+                setData={setUserRef}
+                tagType="cooking_method_tags"
+            />
             <TagGroupSection
                 title="Thực phẩm thích"
                 groupKey="like_food"
@@ -110,6 +117,13 @@ export default function UserReferenceEditor() {
                 data={userRef}
                 setData={setUserRef}
                 tagType="culture_tags"
+            />
+            <TagGroupSection 
+                title="Cách chế biến yêu thích"
+                groupKey="like_cooking_method" 
+                data={userRef}
+                setData={setUserRef}
+                tagType="cooking_method_tags"
             />
 
             <button

@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import moment from "moment";
 import StarRating from "./StarRating.jsx";
-import { toast } from "react-toastify";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { ratingService } from "@/api/ratingService";
@@ -137,15 +136,16 @@ const RatingItem = ({
               .join(", ")}
           </p>
         )}
+        {rating.storeReply && (
+        <div className="mt-3 bg-gradient-to-r from-primary to-accent text-white p-4 rounded-xl">
+          <p className="font-semibold mb-1 text-black">Phản hồi từ quán</p>
+          <p className="opacity-90 text-sm text-black">{rating.storeReply}</p>
+        </div>
+      )}
       </div>
 
       {/* Store reply */}
-      {rating.storeReply && (
-        <div className="mt-3 bg-gradient-to-r from-primary to-accent text-white p-4 rounded-xl">
-          <p className="font-semibold mb-1">💬 Phản hồi từ quán</p>
-          <p className="opacity-90 text-sm">{rating.storeReply}</p>
-        </div>
-      )}
+      
     </div>
   );
 };

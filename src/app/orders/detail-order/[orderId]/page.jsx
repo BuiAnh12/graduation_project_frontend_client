@@ -14,6 +14,8 @@ import { useOrder } from "@/context/orderContext";
 import { useCart } from "@/context/cartContext";
 import { useSearchParams } from "next/navigation";
 import { shippingFeeService } from "@/api/shippingFeeService";
+// import TagRecommendationModal from "@/components/modal/TagRecommendationModal";
+import TagRecommendationToast from "@/components/modal/TagRecommendationToast";
 
 const Page = () => {
     const router = useRouter();
@@ -26,6 +28,9 @@ const Page = () => {
     const [orderDetail, setOrderDetail] = useState(null);
     const [participantBreakdown, setParticipantBreakdown] = useState(null);
 
+    const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+    const [dishIdsForRecommendation, setDishIdsForRecommendation] = useState([]);
+
     const { user } = useAuth();
     const { refreshOrder } = useOrder();
     const { refreshCart } = useCart();
@@ -35,10 +40,20 @@ const Page = () => {
         try {
             const response = await orderService.getOrderDetail(orderId);
             setOrderDetail(response.data);
+            if (response.data?.items) {
+                const ids = response.data.items.map(item => item.dishId?._id || item.dishId);
+                setDishIdsForRecommendation(ids);
+            }
         } catch (error) {
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        if (orderDetail && dishIdsForRecommendation.length > 0) {
+             setIsTagModalOpen(true);
+        }
+    }, [orderDetail, dishIdsForRecommendation]);
 
     useEffect(() => {
         if (paymentStatus === "success") {
@@ -47,8 +62,14 @@ const Page = () => {
             const url = new URL(window.location.href);
             url.searchParams.delete("status");
             window.history.replaceState({}, "", url);
+
+            // if(orderDetail) { // Ensure orderDetail is loaded first
+            //     setIsTagModalOpen(true);
+            // }
         }
-    }, [paymentStatus]);
+    }, [paymentStatus, 
+        // orderDetail
+    ]);
 
     useEffect(() => {
         // Ensure user is loaded before fetching
@@ -232,6 +253,9 @@ const Page = () => {
                 });
                 // toast.success("Xác nhận đơn hàng thành công!");
                 getOrderDetail();
+                if (dishIdsForRecommendation.length > 0) {
+                    setIsTagModalOpen(true);
+                }
             } catch (error) {}
         }
     };
@@ -242,6 +266,12 @@ const Page = () => {
             <div className="hidden md:block">
                 <Header />
             </div>
+
+            <TagRecommendationToast 
+                isOpen={isTagModalOpen} 
+                onClose={() => setIsTagModalOpen(false)} 
+                dishIds={dishIdsForRecommendation}
+            />
 
             {/* --- FIX: Corrected Auth Logic & JSX Structure --- */}
             {!orderDetail || !user ? (
@@ -498,12 +528,12 @@ const Page = () => {
                                     {
                                         icon: "/assets/account.png",
                                         value: orderDetail?.shipInfo
-                                            ?.contactName,
+                                            ?.contactName || orderDetail?.users?.name
                                     },
                                     {
                                         icon: "/assets/phone.png",
                                         value: orderDetail?.shipInfo
-                                            ?.contactPhonenumber,
+                                            ?.contactPhonenumber || orderDetail?.users?.phonenumber
                                     },
                                     {
                                         icon: "/assets/location.png",

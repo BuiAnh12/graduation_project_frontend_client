@@ -25,6 +25,13 @@ const deleteUserReference = async (data) => {
   return handleApiResponse(instance.delete(`/reference`, { data, ...config() }, {successMessage:'Xóa sở thích thành công'})); // show toast
 };
 
+const addTagsToReference = async (tags) => {
+  return handleApiResponse(
+    instance.post(`/reference/add-tags`, { tags }, config()), 
+    { showToast: true, successMessage: "Đã cập nhật sở thích của bạn!" }
+  );
+};
+
 export const userService = {
   getCurrentUser,
   updateUser,
@@ -32,4 +39,5 @@ export const userService = {
   getUserReference,
   updateUserReference,
   deleteUserReference,
+  addTagsToReference,
 };
