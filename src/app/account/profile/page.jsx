@@ -14,10 +14,13 @@ import { useAuth } from "@/context/authContext";
 import { uploadService } from "@/api/uploadService";
 import { userService } from "@/api/userService";
 import UserReferenceEditor from "@/components/profile/UserReferenceEditor"
+import { recommendService } from "@/api/recommendService";
+import { ThreeDot } from "react-loading-indicators";
 const page = () => {
   const { notifications } = useSocket();
 
   const [avatarFile, setAvatarFile] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { user, fetchUser } = useAuth();
 
@@ -69,6 +72,18 @@ const page = () => {
       }
     },
   });
+
+  const handleRefreshRecommendations = async () => {
+    if (!user) return;
+    setIsRefreshing(true);
+    try {
+      await recommendService.refreshUserEmbedding(user);
+    } catch (error) {
+      console.error("Refresh failed", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   return (
     <div className="pt-[30px] pb-[100px] px-[20px] md:pt-[75px] md:mt-[20px] md:px-0 bg-[#fff] md:bg-[#f9f9f9] min-h-screen">
@@ -227,6 +242,35 @@ const page = () => {
           </button>
         </form>
         <UserReferenceEditor/>
+        <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Cập nhật gợi ý</h3>
+            <p className="text-sm text-gray-500 mb-4">
+                Nếu bạn vừa thay đổi sở thích, hãy nhấn nút bên dưới để hệ thống cập nhật món ăn gợi ý ngay lập tức.
+            </p>
+            <button
+                onClick={handleRefreshRecommendations}
+                disabled={isRefreshing}
+                className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
+                    isRefreshing 
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white border-2 border-[#fc2111] text-[#fc2111] hover:bg-[#fc2111] hover:text-white shadow-sm hover:shadow-md"
+                }`}
+            >
+                {isRefreshing ? (
+                    <>
+                       <ThreeDot color="#fc2111" size="small" /> 
+                       <span className="ml-2">Đang xử lý...</span>
+                    </>
+                ) : (
+                    <>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        Làm mới gợi ý món ăn
+                    </>
+                )}
+            </button>
+        </div>
       </div>
 
       {/* Bottom navbar */}

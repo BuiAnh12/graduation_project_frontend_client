@@ -16,8 +16,31 @@ const getRecommendTagsForOrder = async (dishIds) => {
   );
 };
 
+const refreshUserEmbedding = async (user) => {
+  // Construct the payload structure expected by the backend
+  const payload = {
+    user_id: user._id,
+    user_data: {
+      age: user.age,
+      gender: user.gender,
+      // Add location if your model uses it
+      location: user.location 
+      // Note: 'preferences' are usually fetched by the backend from the DB directly 
+      // during the refresh call if your backend logic supports it. 
+      // If your backend expects preferences in the payload, you'd add them here.
+      // Based on previous steps, we designed the backend to take raw data override.
+    }
+  };
+
+  return handleApiResponse(
+    instance.post(`/recommend/refresh/user`, payload, config()), 
+    { showToast: true, successMessage: "Đã cập nhật gợi ý cho bạn!" }
+  );
+};
+
 export const recommendService = {
   getRecommendDish,
   getSimilarDish,
   getRecommendTagsForOrder,
+  refreshUserEmbedding
 };
