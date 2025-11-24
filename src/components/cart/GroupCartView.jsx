@@ -234,7 +234,7 @@ const ParticipantSection = ({
 };
 
 // --- Main Group Cart Component ---
-const GroupCartView = ({ data, voucher }) => {
+const GroupCartView = ({ data, voucher, shippingFee }) => {
     const { cart, participants, totals } = data;
     const { user } = useAuth();
     const { refreshCart } = useCart();
@@ -357,7 +357,7 @@ const GroupCartView = ({ data, voucher }) => {
 
     // 4. Tính toán tổng cuối cùng (client-side)
     // (Lưu ý: Phí ship sẽ được cộng ở component cha, ở đây chỉ tính subtotal - discount)
-    const clientFinalTotal = apiSubtotal - clientDiscount;
+    const clientFinalTotal = apiSubtotal - clientDiscount + shippingFee;
 
     // 5. Tính toán lại số tiền phải trả của mỗi người
     const participantBreakdown = participants.map(p => {
@@ -575,7 +575,7 @@ const GroupCartView = ({ data, voucher }) => {
                     {/* Note: Shipping fee is handled by the main page, but we can show this */}
                     <div className="flex items-center justify-between text-gray-700">
                         <span>Phí vận chuyển</span>
-                        <span>...</span>
+                        <span>{Number(shippingFee.toFixed(0)).toLocaleString("vi-VN")}đ</span>
                         {/* This will be added in the main page's total */}
                     </div>
 

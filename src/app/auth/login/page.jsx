@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -15,6 +15,7 @@ const LoginPage = () => {
   const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const { fetchUser } = useAuth();
+  const searchParams = useSearchParams();
   const schema = yup.object().shape({
     email: yup.string().email("Email không hợp lệ!").required("Vui lòng nhập Email!"),
     password: yup.string().required("Vui lòng nhập mật khẩu!"),
@@ -34,7 +35,15 @@ const LoginPage = () => {
           // localStorage.setItem("userId", JSON.stringify(res.data._id));
           await fetchUser(res.data._id);
           formik.resetForm();
-          router.push("/home");
+          const redirectUrl = searchParams.get("redirect");
+
+          if (redirectUrl) {
+            // If redirect exists (e.g., /join-cart/token123), go there
+            router.push(redirectUrl);
+          } else {
+            // Default behavior
+            router.push("/home");
+          }
           
         }
       } catch (error) {

@@ -15,7 +15,15 @@ const updateNotificationStatus = async (id) => {
   );
 };
 
+const markAllAsRead = async () => {
+  return handleApiResponse(
+    instance.put(`/notification/mark-all-read`, null, config()),
+    { showToast: true, successMessage: "Đã đánh dấu tất cả là đã đọc" }
+  );
+};
+
 export const notificationService = {
   getAllNotifications,
   updateNotificationStatus,
+  markAllAsRead
 };

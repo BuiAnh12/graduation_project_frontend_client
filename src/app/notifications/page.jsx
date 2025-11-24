@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { React, useState} from "react";
 import { useSocket } from "@/context/socketContext";
 import Header from "@/components/header/Header";
 import MobileHeader from "@/components/header/MobileHeader";
@@ -8,10 +8,12 @@ import NavBar from "@/components/header/NavBar";
 import { notificationService } from "@/api/notificationService";
 import NotificationItem from "@/components/notification/NotificationItem";
 import Image from "next/image";
+import { ThreeDot } from "react-loading-indicators";
 
 const NotificationPage = () => {
   const { notifications, setNotifications } = useSocket();
-
+  const unreadCount = notifications.filter((n) => n.status === "unread").length;
+  const [isMarking, setIsMarking] = useState(false);
   const handleNotificationStatusChange = async (id) => {
     try {
       await notificationService.updateNotificationStatus(id);
@@ -22,6 +24,23 @@ const NotificationPage = () => {
       );
     } catch (error) {
       console.error("Error updating notification status:", error);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    if (unreadCount === 0) return;
+    setIsMarking(true);
+    try {
+      await notificationService.markAllAsRead();
+      
+      // Update local state immediately so badges disappear
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, status: "read" }))
+      );
+    } catch (error) {
+      console.error("Error marking all as read:", error);
+    } finally {
+      setIsMarking(false);
     }
   };
 
@@ -42,6 +61,31 @@ const NotificationPage = () => {
 
       {/* Notifications List */}
       <div className="pt-6 lg:w-[60%] md:w-[80%] md:mx-auto px-4 md:px-0">
+      <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold text-gray-800">
+            Tất cả thông báo
+          </h3>
+          
+          {/* Only show button if there are unread notifications */}
+          {unreadCount > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              disabled={isMarking}
+              className="text-sm text-[#fc2111] font-medium hover:text-[#d91b0e] hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all flex items-center gap-2"
+            >
+              {isMarking ? (
+                 <ThreeDot color="#fc2111" size="small" />
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Đánh dấu đã đọc tất cả
+                </>
+              )}
+            </button>
+          )}
+        </div>
         {sortedNotifications && sortedNotifications.length > 0 ? (
           <div className="space-y-4">
             {sortedNotifications.map((notification, index) => (

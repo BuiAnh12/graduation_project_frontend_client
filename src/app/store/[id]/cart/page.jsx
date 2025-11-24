@@ -482,10 +482,22 @@ const page = () => {
 
                 // Group cart only supports cash for now
                 if (paymentMethod === "VNPay") {
-                    toast.error(
-                        "Thanh toán online chưa được hỗ trợ cho giỏ hàng nhóm."
+                    const paymentRes =
+                    await paymentService.createVNPayOrder(
+                        groupCartData?.cart?._id,
+                        {
+                            paymentMethod: "vnpay",
+                            userId: user?._id,
+                            ...commonPayload,
+                        }
                     );
-                    return;
+                    if (paymentRes?.data) {
+                        router.push(paymentRes?.data);
+                        return;
+                    } else {
+                        toast.error("Lỗi phương thức thanh toán online");
+                        return;
+                    }
                 }
 
                 const response = await cartService.completeGroupCart(
@@ -509,7 +521,7 @@ const page = () => {
                 // --- PRIVATE CART LOGIC (Your existing logic) ---
             } else if (detailCart) {
                 if (paymentMethod === "VNPay") {
-                    const redirectUrlResponse =
+                    const paymentRes =
                         await paymentService.createVNPayOrder(
                             detailCart.cartId,
                             {
@@ -517,8 +529,8 @@ const page = () => {
                                 ...commonPayload,
                             }
                         );
-                    if (redirectUrlResponse?.paymentUrl) {
-                        router.push(redirectUrlResponse.paymentUrl);
+                    if (paymentRes?.data) {
+                        router.push(paymentRes?.data);
                         return;
                     } else {
                         toast.error("Lỗi phương thức thanh toán online");
@@ -945,7 +957,7 @@ const page = () => {
                                         storeId={storeId}
                                         storeCartItems={detailCart?.items || []}
                                     />
-                                <GroupCartView data={groupCartData} voucher={selectedVouchers} />
+                                <GroupCartView data={groupCartData} voucher={selectedVouchers} shippingFee={shippingFee} />
                                 </>
                             ) : (
                                 // --- RENDER PRIVATE CART ---

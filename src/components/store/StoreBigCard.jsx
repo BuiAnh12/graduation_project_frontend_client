@@ -68,6 +68,26 @@ const StoreBigCard = ({ store }) => {
             ))}
           </p>
         )}
+        {store?.foundDishes && store.foundDishes.length > 0 && (
+    <div className="mt-3 px-1">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {store.foundDishes.map(dish => (
+                <div key={dish._id} className="min-w-[120px] max-w-[120px] bg-gray-50 rounded-lg p-2 border border-gray-100">
+                    <div className="relative w-full h-[80px] rounded overflow-hidden mb-2">
+                        <Image 
+                            src={dish.image?.url || "/assets/default_dish.png"} 
+                            alt={dish.name}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <p className="text-xs font-medium truncate text-gray-700">{dish.name}</p>
+                    <p className="text-xs font-bold text-[#fc2111]">{dish.price?.toLocaleString()}đ</p>
+                </div>
+            ))}
+        </div>
+    </div>
+)}
       </div>
     </Link>
   );

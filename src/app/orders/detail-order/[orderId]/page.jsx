@@ -13,7 +13,8 @@ import Swal from "sweetalert2";
 import { useOrder } from "@/context/orderContext";
 import { useCart } from "@/context/cartContext";
 import { useSearchParams } from "next/navigation";
-import { shippingFeeService } from "@/api/shippingFeeService";
+// import { shippingFeeService } from "@/api/shippingFeeService";
+import { toast } from "react-toastify";
 // import TagRecommendationModal from "@/components/modal/TagRecommendationModal";
 import TagRecommendationToast from "@/components/modal/TagRecommendationToast";
 
@@ -57,7 +58,7 @@ const Page = () => {
 
     useEffect(() => {
         if (paymentStatus === "success") {
-            // toast.success("Thanh toán thành công");
+            toast.success("Thanh toán thành công");
             // Remove `payment` param from URL without reload
             const url = new URL(window.location.href);
             url.searchParams.delete("status");
