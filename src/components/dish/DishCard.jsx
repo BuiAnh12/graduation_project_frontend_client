@@ -94,7 +94,7 @@ const DishCard = ({
 
     const isDisabled =
         storeInfo?.openStatus === "closed" ||
-        dish?.stockStatus === "out_of_stock" ||
+        dish?.stockCount == 0 ||
         dish?.suitability === "prohibit";
     const suitabilityStyles = {
         suitable: "border-transparent",
@@ -125,7 +125,7 @@ const DishCard = ({
                 href={`/store/${dish.storeId}/dish/${dish._id}`}
                 name="storeCard"
                 className={`flex gap-4 items-start p-3 rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-300 
-                ${cardStyle} 
+                ${cardStyle}
                 ${isDisabled ? "pointer-events-none" : ""}
                 `}
             >

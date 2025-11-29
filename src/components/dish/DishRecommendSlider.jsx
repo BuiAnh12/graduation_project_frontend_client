@@ -124,8 +124,8 @@ const DishCard = ({ dish }) => {
           <span className="font-semibold text-[#fc2111] text-base">
             {data.price?.toLocaleString()}₫
           </span>
-          <span className="text-xs text-gray-400 truncate max-w-[80px]">
-            #{data.cultureTags?.[0]?.name}
+          <span className="text-xs bg-gray-50 text-gray-600 px-2 py-1 rounded border border-gray-100">
+            {data.cultureTags?.[0]?.name}
           </span>
         </div>
       </div>

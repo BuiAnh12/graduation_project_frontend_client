@@ -23,7 +23,7 @@ const page = () => {
             keyword: searchParams.get("keyword") || "",
             category: searchParams.get("category") || "",
             sort: searchParams.get("sort") || "",
-            limit: searchParams.get("limit") || "20",
+            limit: searchParams.get("limit") || "5",
             page: searchParams.get("page") || "1",
         }),
         [searchParams.toString()]
@@ -31,12 +31,6 @@ const page = () => {
 
     const { allStore, ratingStore, standoutStore, loading, error } =
         useStoreSearch(query);
-
-    useEffect(() => {
-        console.log(allStore);
-        console.log(ratingStore);
-        console.log(standoutStore);
-    }, [loading]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -142,8 +136,8 @@ const page = () => {
                     {/* Store Grid (Desktop) */}
                     <div className="hidden md:block">
                       <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-6">
-                        {allStore?.length > 0 ? (
-                          allStore.map((store) => (
+                        {allStore?.data?.length > 0 ? (
+                          allStore?.data?.map((store) => (
                             <StoreBigCard key={store._id} store={store} />
                           ))
                         ) : (
@@ -162,19 +156,23 @@ const page = () => {
                       <SortBy />
                     </div>
     
-                    {/* Standout Store */}
                     <div className="rounded-xl mb-6 bg-white overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                       <h3 className="text-white text-[20px] bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-center px-4 py-3 font-semibold">
                         Quán ăn nổi bật
                       </h3>
-                      <ul className="flex flex-col gap-3 p-3 max-h-[280px] overflow-y-auto small-scrollbar">
-                        {standoutStore?.length > 0 ? (
-                          standoutStore.map((store) => (
+                      {/* Added min-h-[100px] to prevent layout shift */}
+                      <ul className="flex flex-col gap-3 p-3 max-h-[280px] min-h-[100px] overflow-y-auto small-scrollbar relative">
+                        {loading ? (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
+                            <span className="loading loading-spinner text-primary"></span>
+                          </div>
+                        ) : standoutStore?.total > 0 ? (
+                          standoutStore.data.map((store) => (
                             <StoreSmallCard key={store._id} store={store} />
                           ))
                         ) : (
-                          <li className="text-center text-gray-500 italic py-4">
-                            Không có dữ liệu
+                          <li className="flex flex-col items-center justify-center h-full text-gray-500 italic py-4">
+                            <span>Không có dữ liệu</span>
                           </li>
                         )}
                       </ul>
@@ -186,13 +184,17 @@ const page = () => {
                         Quán ăn được đánh giá tốt
                       </h3>
                       <ul className="flex flex-col gap-3 p-3 max-h-[280px] overflow-y-auto small-scrollbar">
-                        {ratingStore?.length > 0 ? (
-                          ratingStore.map((store) => (
+                        {loading ? (
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
+                            <span className="loading loading-spinner text-primary"></span>
+                          </div>
+                        ) : ratingStore?.total > 0 ? (
+                          ratingStore.data.map((store) => (
                             <StoreSmallCard key={store._id} store={store} />
                           ))
                         ) : (
-                          <li className="text-center text-gray-500 italic py-4">
-                            Không có dữ liệu
+                          <li className="flex flex-col items-center justify-center h-full text-gray-500 italic py-4">
+                            <span>Không có dữ liệu</span>
                           </li>
                         )}
                       </ul>
@@ -213,7 +215,7 @@ const page = () => {
                         <StoreBigCard key={store._id} store={store} />
                       ))
                     ) : (
-                      <h3 className="text-lg text-gray-700 font-semibold">
+                      <h3 className="text-lg text-gray-700 font-semibold">  
                         Không tìm thấy cửa hàng nào
                       </h3>
                     )}
@@ -221,11 +223,11 @@ const page = () => {
                 </div>
     
                 {/* Pagination */}
-                {allStore?.length > 0 && (
+                {allStore?.data?.length > 0 && (
                   <Pagination
-                    page={query.page}
-                    limit={query.limit}
-                    total={allStore.length}
+                    page={allStore.page}
+                    limit={allStore.limit}
+                    total={allStore.total}
                   />
                 )}
               </div>

@@ -481,7 +481,7 @@ const page = () => {
                 }
 
                 // Group cart only supports cash for now
-                if (paymentMethod === "VNPay") {
+                if (paymentMethod === "vnpay") {
                     const paymentRes =
                     await paymentService.createVNPayOrder(
                         groupCartData?.cart?._id,
@@ -520,7 +520,7 @@ const page = () => {
 
                 // --- PRIVATE CART LOGIC (Your existing logic) ---
             } else if (detailCart) {
-                if (paymentMethod === "VNPay") {
+                if (paymentMethod === "vnpay") {
                     const paymentRes =
                         await paymentService.createVNPayOrder(
                             detailCart.cartId,
@@ -858,7 +858,7 @@ const page = () => {
                                             <div
                                                 className="flex flex-1 items-center justify-between cursor-pointer"
                                                 onClick={() =>
-                                                    setPaymentMethod("VNPay")
+                                                    setPaymentMethod("vnpay")
                                                 }
                                             >
                                                 <h3 className="text-[#4A4B4D] text-[18px] font-bold md:text-[16px]">
@@ -867,7 +867,7 @@ const page = () => {
                                                 <Image
                                                     src={`/assets/${
                                                         paymentMethod ===
-                                                        "VNPay"
+                                                        "vnpay"
                                                             ? "button_active.png"
                                                             : "button.png"
                                                     }`}

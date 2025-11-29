@@ -8,68 +8,100 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import DetailHero from "./DetailHero";
 
 const Hero = ({ allStore }) => {
-  return (
-    <div className="hidden md:block relative h-[calc(100vh-225px)]">
-      <div className="relative h-full overflow-hidden rounded-b-3xl shadow-xl">
-        <Swiper
-          slidesPerView={1}
-          spaceBetween={0}
-          autoplay={{
-            delay: 6000,
-            disableOnInteraction: false,
-          }}
-          loop={true}
-          pagination={{
-            clickable: true,
-            bulletClass: "swiper-pagination-bullet custom-bullet",
-            bulletActiveClass: "swiper-pagination-bullet-active custom-bullet-active",
-          }}
-          navigation={true}
-          modules={[Autoplay, Pagination, Navigation]}
-          className="hero-swiper"
-        >
-          {allStore?.slice(0, 8).map((store) => (
-            <SwiperSlide key={store._id} className=" py-4">
-              <DetailHero store={store} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+    // 1. Handle data structure safely (check if it's the object {data: []} or just an array)
+    const stores = allStore?.data || (Array.isArray(allStore) ? allStore : []);
 
-        {/* Gradient overlay on top for fade effect */}
-        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/50 to-transparent pointer-events-none z-20"></div>
-      </div>
+    // If no stores, don't render the huge empty block
+    if (!stores || stores.length === 0) return null;
 
-      {/* Decorative glow bar (red accent) */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120px] h-[5px] bg-red-500 rounded-full blur-[2px]"></div>
+    return (
+        // Height matched to DetailHero (md:h-[450px]) to prevent gaps
+        <div className="hidden md:block relative w-full h-[450px] mb-8">
+            <div className="relative h-full w-full shadow-2xl overflow-hidden group/hero">
+                <Swiper
+                    slidesPerView={1}
+                    spaceBetween={0}
+                    centeredSlides={true}
+                    autoplay={{
+                        delay: 5000,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                    }}
+                    loop={stores.length > 1} // Only loop if more than 1 store
+                    pagination={{
+                        clickable: true,
+                        bulletClass: "swiper-pagination-bullet custom-bullet",
+                        bulletActiveClass:
+                            "swiper-pagination-bullet-active custom-bullet-active",
+                    }}
+                    navigation={true}
+                    modules={[Autoplay, Pagination, Navigation]}
+                    className="hero-swiper h-full w-full"
+                >
+                    {stores.slice(0, 8).map((store) => (
+                        <SwiperSlide key={store._id}>
+                            <DetailHero store={store} />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
 
-      <style jsx global>{`
-        /* Customize Swiper navigation & pagination */
-        .hero-swiper .swiper-button-prev,
-        .hero-swiper .swiper-button-next {
-          color: white;
-          opacity: 0.7;
-          transition: opacity 0.3s;
-        }
-        .hero-swiper .swiper-button-prev:hover,
-        .hero-swiper .swiper-button-next:hover {
-          opacity: 1;
-        }
+                {/* --- Custom Navigation Buttons Styling --- */}
+                <style jsx global>{`
+                    .hero-swiper .swiper-button-prev,
+                    .hero-swiper .swiper-button-next {
+                        color: white;
+                        background: rgba(0, 0, 0, 0.3);
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        backdrop-filter: blur(4px);
+                        opacity: 0; /* Hidden by default */
+                        transition: all 0.3s ease;
+                    }
 
-        .custom-bullet {
-          background-color: rgba(255, 255, 255, 0.5);
-          width: 10px;
-          height: 10px;
-          margin: 0 6px !important;
-          border-radius: 50%;
-          transition: all 0.3s ease;
-        }
-        .custom-bullet-active {
-          background-color: #ef4444; /* red-500 */
-          transform: scale(1.3);
-        }
-      `}</style>
-    </div>
-  );
+                    .hero-swiper .swiper-button-prev::after,
+                    .hero-swiper .swiper-button-next::after {
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+
+                    /* Show navigation on hover */
+                    .group\/hero:hover .swiper-button-prev,
+                    .group\/hero:hover .swiper-button-next {
+                        opacity: 1;
+                    }
+
+                    .hero-swiper .swiper-button-prev:hover,
+                    .hero-swiper .swiper-button-next:hover {
+                        background: #fc2111;
+                        transform: scale(1.1);
+                    }
+
+                    /* Pagination Dots */
+                    .hero-swiper .swiper-pagination {
+                        bottom: 20px !important; /* Move up slightly */
+                    }
+
+                    .custom-bullet {
+                        background-color: rgba(255, 255, 255, 0.4);
+                        width: 8px;
+                        height: 8px;
+                        margin: 0 6px !important;
+                        border-radius: 50%;
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                        display: inline-block;
+                    }
+
+                    .custom-bullet-active {
+                        background-color: #fc2111;
+                        width: 24px; /* Elongate active dot */
+                        border-radius: 4px;
+                    }
+                `}</style>
+            </div>
+        </div>
+    );
 };
 
 export default Hero;
