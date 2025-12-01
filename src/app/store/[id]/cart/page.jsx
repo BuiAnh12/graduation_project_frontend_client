@@ -154,6 +154,7 @@ const page = () => {
                     const response = await cartService.getDetailCart(
                         foundCart._id
                     );
+                    console.log("CHECK", response)
                     if (
                         response.success &&
                         response.data &&
@@ -746,7 +747,7 @@ const page = () => {
                                 </div>
                             </div>
                             {/* --- Shipping Info --- */}
-                            {isGroupOwner ? (
+                            {isGroupOwner ||  detailCart?.cart?.mode == 'private' ? (
                                 <>
                                     <div className="h-[6px] w-full bg-transparent my-4 rounded-full"></div>
                                     <div className="mt-[25px] md:mt-0 bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">

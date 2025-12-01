@@ -2,7 +2,7 @@ import { config, instance } from "@/utils/axiosConfig";
 import { handleApiResponse } from "@/utils/apiHelper";
 
 const register = async (userData) => {
-  return handleApiResponse(instance.post(`/auth/register`, userData, config()));
+  return handleApiResponse(instance.post(`/auth/register`, userData, config()), {successMessage:'Đăng nhập ký thành công'});
 };
 
 const login = async (userData) => {

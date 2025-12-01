@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -8,12 +8,15 @@ import Header from "@/components/header/Header";
 import Heading from "@/components/Heading";
 import { useStoreLocation } from "@/context/storeLocationContext";
 import { locationService } from "@/api/locationService";
+import { useLocation } from "@/context/locationContext";
 
 const page = () => {
   const router = useRouter();
   const { id: storeId } = useParams();
 
   const { storeLocation, setStoreLocation } = useStoreLocation();
+
+  const { location } = useLocation();
 
   const [name, setName] = useState(storeLocation.name || "");
   const [address, setAddress] = useState(storeLocation.address || "");
@@ -22,6 +25,21 @@ const page = () => {
   const [detailAddress, setDetailAddress] = useState(storeLocation.detailAddress || "");
   const [note, setNote] = useState(storeLocation.note || "");
   const [addSuccess, setAddSuccess] = useState(false);
+
+  useEffect(() => {
+    // If the global location context has an address (meaning user selected one)
+    if (location && location.address) {
+      setAddress(location.address);
+      
+      // Update the form's specific context as well so we have lat/lon for API submission
+      setStoreLocation((prev) => ({
+        ...prev,
+        address: location.address,
+        lat: location.lat,
+        lon: location.lon,
+      }));
+    }
+  }, [location, setStoreLocation]);
 
   const addToLocation = async () => {
     if (!name) {
@@ -89,6 +107,7 @@ const page = () => {
 
           <div
             className='relative flex items-center justify-between gap-[10px] bg-[#fff] text-[#636464] w-full px-[10px] pt-[28px] pb-[12px]'
+            onClick={() => router.push("/account/location/choose-location")} // Redirect to Map Page
             style={{ borderBottom: "1px solid #e0e0e0a3" }}
           >
             <div className='flex-1 line-clamp-1'>
