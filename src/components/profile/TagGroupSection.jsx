@@ -11,17 +11,25 @@ export default function TagGroupSection({
 }) {
     const [showModal, setShowModal] = useState(false);
 
+    // Safety check: Ensure we have an array to work with, even if data is null/undefined
+    const currentTags = data?.[groupKey] || [];
+
     const handleRemove = (tagId) => {
         const updated = {
-            ...data,
-            [groupKey]: data[groupKey].filter((tag) => tag._id !== tagId),
+            ...(data || {}), // Safety check in case data itself is null
+            [groupKey]: currentTags.filter((tag) => tag._id !== tagId),
         };
         setData(updated);
     };
 
     const handleAdd = (newTag) => {
-        if (data[groupKey].some((t) => t._id === newTag._id)) return;
-        const updated = { ...data, [groupKey]: [...data[groupKey], newTag] };
+        // Use the safe 'currentTags' variable
+        if (currentTags.some((t) => t._id === newTag._id)) return;
+        
+        const updated = { 
+            ...(data || {}), 
+            [groupKey]: [...currentTags, newTag] 
+        };
         setData(updated);
     };
 
@@ -41,21 +49,26 @@ export default function TagGroupSection({
 
             {/* Display existing tags */}
             <div className="flex flex-wrap gap-2">
-                {data[groupKey].map((tag) => (
-                    <DisplayTag
-                        key={tag._id}
-                        tag={tag}
-                        onRemove={() => handleRemove(tag._id)}
-                    />
-                ))}
+                {/* Check length to conditionally render placeholder or map */}
+                {currentTags.length === 0 ? (
+                    <span className="text-gray-400 text-sm italic">Chưa có tags</span>
+                ) : (
+                    currentTags.map((tag) => (
+                        <DisplayTag
+                            key={tag._id}
+                            tag={tag}
+                            onRemove={() => handleRemove(tag._id)}
+                        />
+                    ))
+                )}
             </div>
 
             {/* Modal for selecting tags */}
             {showModal && (
                 <AddTagModal
                     tagType={tagType}
-                    groupKey={groupKey} 
-                    data={data} 
+                    groupKey={groupKey}
+                    data={data || {}} // Pass empty object if data is null
                     onSelect={(tag) => handleAdd(tag)}
                     onClose={() => setShowModal(false)}
                 />

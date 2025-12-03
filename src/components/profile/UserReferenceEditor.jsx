@@ -4,8 +4,8 @@ import { userService } from "@/api/userService";
 import { toast } from "react-toastify";
 
 export default function UserReferenceEditor() {
-    const [userRef, setUserRef] = useState(null);
-    const [original, setOriginal] = useState(null);
+    const [userRef, setUserRef] = useState({});
+    const [original, setOriginal] = useState({});
     const [hasChanges, setHasChanges] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -13,9 +13,9 @@ export default function UserReferenceEditor() {
         (async () => {
             try {
                 const res = await userService.getUserReference(); // returns { success, data }
-                console.log(res);
-                setUserRef(res.data);
-                setOriginal(JSON.parse(JSON.stringify(res.data)));
+                const data = res.data || {};
+                setUserRef(data);
+                setOriginal(JSON.parse(JSON.stringify(data)));
             } catch (err) {
                 console.error("Failed to fetch user reference", err);
             }
@@ -23,15 +23,19 @@ export default function UserReferenceEditor() {
     }, []);
 
     useEffect(() => {
-        if (!userRef || !original) return;
+        const allKeys = new Set([...Object.keys(userRef), ...Object.keys(original)]);
 
-        const changed = Object.keys(userRef).some((key) => {
-            if (Array.isArray(userRef[key]) && Array.isArray(original[key])) {
-                const currIds = userRef[key].map((t) => t._id);
-                const origIds = original[key].map((t) => t._id);
-                return currIds.sort().join(",") !== origIds.sort().join(",");
-            }
-            return false;
+        const changed = Array.from(allKeys).some((key) => {
+            const currArr = Array.isArray(userRef[key]) ? userRef[key] : [];
+            const origArr = Array.isArray(original[key]) ? original[key] : [];
+
+            // 1. Check length difference
+            if (currArr.length !== origArr.length) return true;
+
+            const currIds = currArr.map((t) => t._id).sort().join(",");
+            const origIds = origArr.map((t) => t._id).sort().join(",");
+
+            return currIds !== origIds;
         });
 
         setHasChanges(changed);
@@ -52,7 +56,6 @@ export default function UserReferenceEditor() {
         }
     };
 
-    if (!userRef) return <p>Loading...</p>;
 
     return (
         <div className="p-5 space-y-6">

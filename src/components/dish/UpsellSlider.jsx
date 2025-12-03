@@ -43,7 +43,8 @@ const UpsellSlider = ({ storeId, storeCartItems = [] }) => {
           // Fetch slightly more recommendations for filtering
         const res = await recommendService.getRecommendDish({
             user_id: user._id,
-            top_k: 10 // Fetch more to increase chances after filtering
+            top_k: 10, // Fetch more to increase chances after filtering
+            storeId
         });
 
         if (res.success && Array.isArray(res.data?.recommendations)) {
@@ -77,6 +78,7 @@ const UpsellSlider = ({ storeId, storeCartItems = [] }) => {
           });
 
           setRecommendations(filtered);
+          console.log(filtered)
           console.log(`Upsell: Found ${filtered.length} suitable recommendations.`);
 
         } else {
@@ -99,7 +101,7 @@ const UpsellSlider = ({ storeId, storeCartItems = [] }) => {
   //   return null; // Or a subtle loading indicator if preferred
   // }
 
-  return (
+  return ( recommendations.length != 0 && 
     // <div className="bg-white flex flex-col p-5 border border-red-100 rounded-xl shadow-sm md:p-6 hover:shadow-md transition-all">
     <div className="mt-4 mb-2 p-4 bg-white border border-red-100 rounded-xl shadow-sm">
         <h4 className="text-md font-semibold text-gray-700 mb-3">Các món bạn có thể thích</h4>
