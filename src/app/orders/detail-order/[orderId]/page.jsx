@@ -89,6 +89,7 @@ const Page = () => {
                 finished: "Món ăn đã hoàn thành",
                 taken: "Shipper đã lấy món ăn",
                 delivering: "Shipper đang vận chuyển đến chỗ bạn",
+                store_delivering: "Đơn hàng đang được cửa hàng vận chuyển",
                 delivered: "Đơn hàng đã được giao tới nơi",
                 done: "Đơn hàng được giao hoàn tất",
             };
@@ -404,7 +405,7 @@ const Page = () => {
 
                                     {isCreator &&
                                         orderDetail?.status ===
-                                            "delivering" && (
+                                            "store_delivering" && (
                                             <button
                                                 className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#fc2111] to-[#ff8743] text-white font-semibold shadow-md hover:scale-105 transition"
                                                 onClick={confirmTakeOrder}
@@ -420,7 +421,7 @@ const Page = () => {
 
                             {/* Status */}
                             <div className="bg-white flex flex-col p-5 border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition">
-                                <span className="text-[#333] text-lg font-medium block mb-2">
+                                <span className="text-lg font-medium block mb-2">
                                     {status}
                                 </span>
 
@@ -450,6 +451,7 @@ const Page = () => {
                                                     "finished",
                                                     "taken",
                                                     "delivering",
+                                                    "store_delivering",
                                                     "delivered",
                                                     "done",
                                                 ].includes(orderDetail?.status)
@@ -468,6 +470,7 @@ const Page = () => {
                                                     "finished",
                                                     "taken",
                                                     "delivering",
+                                                    "store_delivering",
                                                     "delivered",
                                                     "done",
                                                 ].includes(orderDetail?.status)
@@ -481,6 +484,7 @@ const Page = () => {
                                                 [
                                                     "taken",
                                                     "delivering",
+                                                    "store_delivering",
                                                     "delivered",
                                                     "done",
                                                 ].includes(orderDetail?.status)
@@ -850,7 +854,7 @@ const Page = () => {
                                         </button>
                                     )}
 
-                                    {orderDetail?.status === "store_delivering" && (
+                                    {orderDetail?.status === "done" && (
                                         <>
                                             <Link
                                                 href={`/store/${orderDetail.storeId}/rating/add-rating/${orderId}`}

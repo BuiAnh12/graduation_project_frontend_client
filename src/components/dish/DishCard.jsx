@@ -122,7 +122,7 @@ const DishCard = ({
 
             {/* Nội dung chính */}
             <Link
-                href={`/store/${dish.storeId}/dish/${dish._id}`}
+                href={`/store/${dish.storeId}/dish/${dish._id}?cartId=${storeCart?._id}`}
                 name="storeCard"
                 className={`flex gap-4 items-start p-3 rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-300 
                 ${cardStyle}

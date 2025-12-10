@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useCart } from '@/context/cartContext';
 import { cartService } from '@/api/cartService';
@@ -11,6 +11,7 @@ import { useAuth } from '@/context/authContext';
 
 const UpsellDishCard = ({ dish, storeId }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { refreshCart } = useCart();
 
@@ -44,11 +45,13 @@ const UpsellDishCard = ({ dish, storeId }) => {
 
     // Add directly if no toppings
     try {
-      const update_res = await cartService.updateCart({
+      const cartIdFromQuery = searchParams.get("id");
+      const update_res = await cartService.upsertGroupCartItem({
         storeId: storeId,
         dishId: dishId,
         quantity: 1, // Add quantity 1
         action: "add_item",
+        cartId: cartIdFromQuery
       });
 
       if (!update_res.success) {

@@ -45,7 +45,7 @@ const CartItem = ({ cartItem }) => {
 
   return (
     <Link
-      href={`/store/${cartItem.store._id}/cart`}
+      href={`/store/${cartItem.store._id}/cart?id=${cartItem._id}`}
       className="relative block bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-[0_8px_20px_rgba(252,33,17,0.15)] hover:-translate-y-1 transition-transform duration-300 overflow-hidden"
     >
       {/* --- Image Section --- */}

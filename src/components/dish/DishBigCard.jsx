@@ -129,7 +129,7 @@ const DishBigCard = ({
 
             {/* --- 2. LINK CLASSNAME FIXED --- */}
             <Link
-                href={`/store/${dish.storeId}/dish/${dish._id}`}
+                href={`/store/${dish.storeId}/dish/${dish._id}?cartId=${storeCart?._id}`}
                 name="storeCard"
                 className={`${isDisabled ? "pointer-events-none" : ""}`}
             >

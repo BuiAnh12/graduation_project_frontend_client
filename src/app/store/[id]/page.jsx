@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import { useCart } from "@/context/cartContext";
 import { useFavorite } from "@/context/favoriteContext";
@@ -48,6 +48,7 @@ const homeIcon = new L.Icon({
 
 const page = () => {
     const { id: storeId } = useParams();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const [isGroupCart, setIsGroupCart] = useState(false);
     const [storeInfo, setStoreInfo] = useState(null);
@@ -63,7 +64,8 @@ const page = () => {
     const [storeLoading, setStoreLoading] = useState(true);
     const [similarDishes, setSimilarDishes] = useState([]);
     const [showSimilarPopup, setShowSimilarPopup] = useState(false);
-    const [initialSimilarFetched, setInitialSimilarFetched] = useState(false);
+    const [showCartSelectModal, setShowCartSelectModal] = useState(false);
+    const [availableCarts, setAvailableCarts] = useState([]);
 
     const { notifications } = useSocket();
     const { cart } = useCart();
@@ -169,6 +171,80 @@ const page = () => {
     };
 
     useEffect(() => {
+        const dishIdToRecommend = searchParams.get('recommendDish');
+        
+        // We ensure 'user' is loaded because handleShowSimilar requires it
+        if (dishIdToRecommend && user && storeId) {
+            console.log("Triggering recommendation for:", dishIdToRecommend);
+            
+            // 1. Trigger the popup
+            handleShowSimilar(dishIdToRecommend);
+
+            // 2. Remove the param from URL so it doesn't trigger again on refresh
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete('recommendDish');
+            
+            // Construct new URL (preserving cartId if it exists)
+            const newUrl = params.toString() 
+                ? `/store/${storeId}?${params.toString()}`
+                : `/store/${storeId}`;
+
+            // Use 'replace' to update URL without reloading the page
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [searchParams, user, storeId]);
+
+    useEffect(() => {
+        if (cart && storeId) {
+            const cartsForThisStore = cart.filter(c => c.store._id === storeId && !c.completed);
+            setAvailableCarts(cartsForThisStore);
+        }
+    }, [cart, storeId]);
+
+    useEffect(() => {
+        if (!storeId) return;
+
+        const paramCartId = searchParams.get('cartId');
+        
+        // A. If URL has cartId, verify it exists and set it
+        if (paramCartId) {
+            const target = availableCarts.find(c => c._id === paramCartId);
+            if (target) {
+                setStoreCart(target);
+                setIsGroupCart(target.mode === 'group');
+                setShowCartSelectModal(false); // Close modal if URL is valid
+                return;
+            }
+        }
+
+        // B. If no URL param (or invalid), decide what to do
+        if (availableCarts.length > 1) {
+            // Multiple carts exist -> FORCE user to choose
+            // Don't set a default to avoid confusion
+            setShowCartSelectModal(true);
+        } else if (availableCarts.length === 1) {
+            // Only 1 cart -> Auto select it
+            setStoreCart(availableCarts[0]);
+            setIsGroupCart(availableCarts[0].mode === 'group');
+        } else {
+            // No carts -> Default state (will create private on add)
+            setStoreCart(null);
+            setIsGroupCart(false);
+        }
+
+    }, [availableCarts, storeId, searchParams]);
+
+    const handleSelectCartContext = (selectedCart) => {
+        setStoreCart(selectedCart);
+        setIsGroupCart(selectedCart.mode === 'group');
+        setShowCartSelectModal(false);
+        
+        // Update URL to lock this choice (shallow routing to not reload)
+        // This ensures if they refresh or go to dish detail, the ID persists
+        router.replace(`/store/${storeId}?cartId=${selectedCart._id}`, { scroll: false });
+    };
+
+    useEffect(() => {
         // ONLY hide the popup if the cart for this specific store becomes empty.
         // We remove the logic that tried to show it automatically based on cart content.
         console.log("Store cart", storeCart)
@@ -261,8 +337,6 @@ const page = () => {
             }
 
             setStoreCart(foundCart || null);
-
-            // --- ALSO UPDATE THE LINK ---
             if (foundCart?.mode === 'group') {
                 setCartLink(`/store/${storeId}/cart?id=${foundCart._id}`);
                 setIsGroupCart(true);
@@ -336,6 +410,60 @@ const page = () => {
             <div className="hidden md:block">
                 <Header />
             </div>
+
+            {showCartSelectModal && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+                        <div className="bg-[#fc2111] p-4 text-white">
+                            <h3 className="text-lg font-bold text-center">Chọn giỏ hàng</h3>
+                            <p className="text-sm text-center opacity-90">Bạn có nhiều đơn hàng tại quán</p>
+                        </div>
+                        <div className="p-5 flex flex-col gap-3">
+                            {availableCarts.map((c) => {
+                                const isGroup = c.mode === 'group';
+                                const ownerName = c.userId === user?._id ? "Bạn" : (c.userId?.name || "Chủ nhóm");
+                                return (
+                                    <button
+                                        key={c._id}
+                                        onClick={() => handleSelectCartContext(c)}
+                                        className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:border-[#fc2111] hover:bg-red-50 transition-all group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-full ${isGroup ? 'bg-orange-100' : 'bg-orange-100'}`}>
+                                                <Image 
+                                                    src={isGroup ? "/assets/users_group.png" : "/assets/user.png"} // Ensure you have icons or use generic ones
+                                                    alt="icon" 
+                                                    width={24} height={24} 
+                                                    // Fallback icon logic if image fails not included for brevity
+                                                    className="opacity-70 group-hover:opacity-100"
+                                                />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-bold text-gray-800">
+                                                    {isGroup ? "Đơn nhóm" : "Đơn cá nhân"}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    {isGroup ? `Tạo bởi: ${ownerName}` : "Giỏ hàng riêng của bạn"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-[#fc2111] font-bold">
+                                                {c.items?.length || 0} món
+                                            </span>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                            
+                            {/* Option to create fresh private cart if user wants? 
+                                Usually not needed as 'upsert' handles it, 
+                                but good to know you can add a 'Start New' button here. 
+                            */}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {storeInfo ? (
                 <>
@@ -516,6 +644,23 @@ const page = () => {
                                 )}
                             </div>
                         </div>
+                        {availableCarts.length > 1 && !showCartSelectModal && (
+                            <div className="px-5 md:px-6 mt-4">
+                                <div className="flex items-center justify-between bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-yellow-800">
+                                            Đang xem: <strong>{isGroupCart ? "Giỏ hàng nhóm" : "Giỏ cá nhân"}</strong>
+                                        </span>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowCartSelectModal(true)}
+                                        className="text-xs bg-white border border-yellow-400 text-yellow-800 px-3 py-1 rounded-full font-semibold hover:bg-yellow-100"
+                                    >
+                                        Đổi giỏ hàng
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Content */}
                         <div className="px-5 md:px-6 mt-[20px] pb-6">
@@ -666,7 +811,7 @@ const page = () => {
                     {cartQuantity > 0 && storeCart && (
                         <Link
                             name="cartDetailBtn"
-                            href={cartLink}
+                            href={`/store/${storeId}/cart?id=${storeCart._id}`}
                             className="fixed bottom-0 left-0 right-0 bg-[#fff] px-[20px] py-[15px] z-[100] flex items-center justify-center"
                         >
                             <div

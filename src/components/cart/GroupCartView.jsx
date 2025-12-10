@@ -264,6 +264,7 @@ const GroupCartView = ({ data, voucher, shippingFee }) => {
                 case "updateItem":
                     response = await cartService.upsertGroupCartItem({
                         userId: user._id,
+                        cartId: cart._id,
                         itemId: args[0], // itemId
                         quantity: args[1], // newQuantity
                         action: "update_item",
@@ -273,6 +274,7 @@ const GroupCartView = ({ data, voucher, shippingFee }) => {
                     response = await cartService.upsertGroupCartItem({
                         userId: user._id,
                         itemId: args[0], // itemId
+                        cartId: cart._id,
                         action: "remove_item",
                     });
                     break;
@@ -288,6 +290,7 @@ const GroupCartView = ({ data, voucher, shippingFee }) => {
                     response = await cartService.upsertGroupCartItem({
                         userId: user._id,
                         itemId: item._id,
+                        cartId: cart._id,
                         toppings: newToppingIds,
                         action: "update_item",
                     });
