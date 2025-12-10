@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Header from "@/components/header/Header";
 import Heading from "@/components/Heading";
@@ -16,7 +16,6 @@ import { useOrder } from "@/context/orderContext";
 import { useVoucher } from "@/context/voucherContext";
 import { paymentService } from "@/api/paymentService";
 import { shippingFeeService } from "@/api/shippingFeeService";
-import { useSearchParams } from "next/navigation";
 import UpsellSlider from "@/components/dish/UpsellSlider";
 import EnableGroupCart from "@/components/cart/EnableGroupCart";
 import GroupCartView from "@/components/cart/GroupCartView";
@@ -679,7 +678,7 @@ const page = () => {
                             {/* --- Store Header --- */}
                             <div className="fixed top-0 right-0 left-0 z-10 flex items-center gap-[40px] bg-[#fff] h-[85px] p-5 md:static md:gap-[20px] border border-gray-100 rounded-xl shadow-md md:p-6 hover:shadow-lg transition-all duration-300">
                                 <Link
-                                    href={`/store/${storeId}`}
+                                    href={`/store/${storeId}?cartId=${storeCart._id}`}
                                     className="relative w-[30px] pt-[30px] md:hidden"
                                 >
                                     <Image
@@ -691,7 +690,7 @@ const page = () => {
                                 </Link>
 
                                 <Link
-                                    href={`/store/${storeId}`}
+                                    href={`/store/${storeId}?cartId=${storeCart._id}`}
                                     className="relative w-[70px] pt-[70px] rounded-[12px] overflow-hidden hidden md:block"
                                 >
                                     <Image
@@ -707,7 +706,7 @@ const page = () => {
 
                                 <div>
                                     <Link
-                                        href={`/store/${storeId}`}
+                                        href={`/store/${storeId}?cartId=${storeCart._id}`}
                                         className="text-red-600 text-[24px] font-bold line-clamp-1 hover:text-red-700 transition"
                                     >
                                         {store.name}

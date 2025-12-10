@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Header from "@/components/header/Header";
@@ -22,6 +22,7 @@ const page = () => {
 
     const [dishInfo, setDishInfo] = useState(null);
     const [storeCart, setStoreCart] = useState(null);
+    const searchParams = useSearchParams();
 
     const [note, setNote] = useState("");
     const [quantity, setQuantity] = useState(1);
@@ -34,6 +35,8 @@ const page = () => {
 
     const { cart, refreshCart } = useCart();
     const { user, userId } = useAuth();
+
+    const targetCartId = searchParams.get('cartId');
 
     const router = useRouter();
     const getDishInfo = async () => {
@@ -130,18 +133,25 @@ const page = () => {
     }, [quantity, toppings, dishInfo]);
 
     useEffect(() => {
-        if (cart) {
-            // 1. Chỉ tìm store cart
-            const store = cart.find((c) => c.storeId._id === storeId);
-            setStoreCart(store);
+        if (cart && storeId) {
+            let found = null;
+
+            // A. If URL has ID, find that specific cart
+            if (targetCartId) {
+                found = cart.find(c => c._id === targetCartId);
+            }
+            // B. Fallback: If no ID in URL, prioritize Group then Private (or just pick first)
+            if (!found) {
+                found = cart.find(c => c.store._id === storeId && c.mode === 'group');
+                if (!found) {
+                    found = cart.find(c => c.store._id === storeId && c.mode === 'private');
+                }
+            }
+            setStoreCart(found || null);
         }
-
-        // 2. Reset note (vì đây là trang thêm mới)
+        
         setNote("");
-
-        // 3. Không setQuantity hay setToppings ở đây nữa
-        // useEffect[dishInfo] đã xử lý việc đó
-    }, [cart, storeId]);
+    }, [cart, storeId, targetCartId]);
 
     const handleQuantityInputChange = (e) => {
         let inputValue = parseInt(e.target.value, 10);
@@ -271,7 +281,19 @@ const page = () => {
                     setShowSimilarPopup(false);
                 }
                 refreshCart();
-                router.push(`/store/${storeId}`);
+                let redirectLink = `/store/${storeId}`;
+                const params = new URLSearchParams();
+
+                // Add cartId param if we have one (to keep context)
+                if (storeCart?._id) {
+                    params.append('cartId', storeCart._id);
+                }
+                
+                // Add parameter to trigger recommendation popup
+                // The store page will check for 'recommendDish', show popup, then remove param
+                params.append('recommendDish', dishId);
+
+                router.push(`${redirectLink}?${params.toString()}`);
             } else {
                 // Show backend error
                 // toast.error(res.errorMessage || "Không thể cập nhật giỏ hàng!");
