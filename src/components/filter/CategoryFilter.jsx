@@ -4,38 +4,48 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { systemCategoryService } from "@/api/systemCategoryService";
 
-const CategoryFilter = () => {
+const CategoryFilter = ({ currentCategory }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  // Initialize from prop, fallback to empty array
+  // We use this local state for optimistic UI updates (instant checkbox toggle)
+  const [selectedCategories, setSelectedCategories] = useState(
+    currentCategory ? currentCategory.split(",") : []
+  );
+  
   const [allCategories, setAllCategories] = useState([]);
 
-  const name = searchParams.get("name") || "";
-  const category = searchParams.get("category") || "";
-  const sort = searchParams.get("sort") || "";
-  const limit = searchParams.get("limit") || "20";
-  const page = searchParams.get("page") || "1";
-
+  // Sync local state if URL changes externally (e.g. back button)
   useEffect(() => {
-    setSelectedCategories(category !== "" ? category.split(",") : []);
-  }, [category]);
+    setSelectedCategories(currentCategory ? currentCategory.split(",") : []);
+  }, [currentCategory]);
 
   const handleCategoryClick = (typeId) => {
     let updatedCategories = [...selectedCategories];
+    
+    // Toggle logic
     if (updatedCategories.includes(typeId)) {
       updatedCategories = updatedCategories.filter((id) => id !== typeId);
     } else {
       updatedCategories.push(typeId);
     }
+
+    // Update local UI immediately
     setSelectedCategories(updatedCategories);
 
-    const params = new URLSearchParams();
-    if (name) params.set("name", name);
-    if (updatedCategories.length > 0) params.set("category", updatedCategories.join(","));
-    if (sort) params.set("sort", sort);
-    if (limit) params.set("limit", limit);
-    if (page) params.set("page", page);
+    // Update URL
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (updatedCategories.length > 0) {
+      params.set("category", updatedCategories.join(","));
+    } else {
+      params.delete("category");
+    }
+    
+    // Reset page to 1 when filter changes usually a good UX practice
+    params.set("page", "1"); 
+
     router.push(`/search?${params.toString()}`);
   };
 
@@ -67,11 +77,15 @@ const CategoryFilter = () => {
             }`}
             style={{ borderBottom: "1px solid #eaeaea" }}
           >
-            <h3 className='text-[#4A4B4D] text-[18px] font-medium line-clamp-1 w-[98%]'>{category.name}</h3>
+            <h3 className='text-[#4A4B4D] text-[18px] font-medium line-clamp-1 w-[98%]'>
+              {category.name}
+            </h3>
             <div className=''>
               <Image
                 src={`/assets/${
-                  selectedCategories.includes(category?._id) ? "check_box_checked" : "check_box_empty"
+                  selectedCategories.includes(category?._id)
+                    ? "check_box_checked"
+                    : "check_box_empty"
                 }.png`}
                 alt=''
                 width={24}

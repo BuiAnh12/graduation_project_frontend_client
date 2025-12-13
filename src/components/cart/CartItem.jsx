@@ -52,7 +52,7 @@ const CartItem = ({ cartItem }) => {
       <div className="relative w-full h-56 rounded-t-2xl overflow-hidden bg-[#fff5f4]">
         {cartItem.items.slice(0, 4).map((item, index) => {
           const total = cartItem.items.length;
-          const imageUrl = item.dish?.image?.url || "/assets/default-dish.png";
+          const imageUrl = item.dishId?.image?.url || "/assets/default-dish.png";
 
           let className = "absolute w-full h-full";
           if (total === 2) {

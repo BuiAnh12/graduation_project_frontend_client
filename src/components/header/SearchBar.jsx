@@ -24,7 +24,8 @@ const SearchBar = () => {
     if (sort) params.set("sort", sort);
     if (limit) params.set("limit", limit);
     if (page) params.set("page", page);
-
+    console.log(search)
+    console.log(`/search?${params.toString()}`)
     router.push(`/search?${params.toString()}`);
   };
 
