@@ -17,16 +17,21 @@ import CategoryFilter from "@/components/filter/CategoryFilter";
 const page = () => {
     const searchParams = useSearchParams();
     const [openFilter, setOpenFilter] = useState(null);
+    const initialKeyword = searchParams.get("keyword") || "";
+    const initialCategory = searchParams.get("category") || "";
+    const initialSort = searchParams.get("sort") || "";
+    const initialLimit = searchParams.get("limit") || "5";
+    const initialPage = searchParams.get("page") || "1";
 
     const query = useMemo(
         () => ({
-            keyword: searchParams.get("keyword") || "",
-            category: searchParams.get("category") || "",
-            sort: searchParams.get("sort") || "",
-            limit: searchParams.get("limit") || "5",
-            page: searchParams.get("page") || "1",
+            keyword: initialKeyword,
+            category: initialCategory,
+            sort: initialSort,
+            limit: initialLimit,
+            page: initialPage,
         }),
-        [searchParams.toString()]
+        [initialKeyword, initialCategory, initialSort, initialLimit, initialPage]
     );
 
     const { allStore, ratingStore, standoutStore, loading, error } =

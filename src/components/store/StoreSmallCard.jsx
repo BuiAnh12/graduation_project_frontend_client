@@ -6,7 +6,7 @@ const StoreSmallCard = ({ store }) => {
   const hasFoundDishes = store?.foundDishes && store.foundDishes.length > 0;
 
   return (
-    <div className="flex flex-col w-full bg-white rounded-xl border border-gray-100 hover:border-[#fc2111]/40 hover:shadow-md hover:-translate-y-[2px] transition-all duration-300 overflow-hidden">
+    <div className="flex flex-col w-full h-auto bg-white rounded-xl border border-gray-100 hover:border-[#fc2111]/40 hover:shadow-md hover:-translate-y-[2px] transition-all duration-300">
       {/* --- Store Header Section --- */}
       <Link href={`/store/${store._id}`} className="group flex gap-3 items-start w-full p-3">
         {/* Store Image */}

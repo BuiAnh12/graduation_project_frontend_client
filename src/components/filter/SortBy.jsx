@@ -1,32 +1,33 @@
 "use client";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react"; // Removed unnecessary useEffect
 
-const SortBy = () => {
+// Accept currentSort as a prop to control initial visual state
+const SortBy = ({ currentSort }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [sort, setSort] = useState(searchParams.get("sort") || "");
+  // We don't need local state 'sort' to trigger an effect. 
+  // We can just use the prop for UI and function for logic.
 
-  const name = searchParams.get("name");
-  const category = searchParams.get("category") || "";
-  const limit = searchParams.get("limit") || "20";
-  const page = searchParams.get("page") || "1";
+  const handleSort = (selectedSortKey) => {
+    // 1. If clicking the same sort, do nothing (optional optimization)
+    if (selectedSortKey === currentSort) return;
 
-  const handleSort = () => {
-    const params = new URLSearchParams();
-    if (name) params.set("name", name);
-    if (category) params.set("category", category);
-    if (sort) params.set("sort", sort);
-    if (limit) params.set("limit", limit);
-    if (page) params.set("page", page);
+    // 2. Clone current params to preserve keyword, page, etc.
+    const params = new URLSearchParams(searchParams.toString());
+
+    // 3. Update the 'sort' param
+    if (selectedSortKey) {
+      params.set("sort", selectedSortKey);
+    } else {
+      params.delete("sort");
+    }
+
+    // 4. Push new URL
     router.push(`/search?${params.toString()}`);
   };
-
-  useEffect(() => {
-    handleSort();
-  }, [sort]);
 
   const sortOptions = [
     { key: "name", label: "Tên", icon: "/assets/store.png" },
@@ -44,9 +45,10 @@ const SortBy = () => {
         {sortOptions.map((option) => (
           <div
             key={option.key}
-            onClick={() => setSort(option.key)}
+            // Call handleSort directly on click
+            onClick={() => handleSort(option.key)}
             className={`flex items-center gap-4 p-4 cursor-pointer transition-all hover:bg-[#fff7f2] ${
-              sort === option.key ? "bg-[#fff1e7]" : ""
+              currentSort === option.key ? "bg-[#fff1e7]" : ""
             }`}
             style={{ borderBottom: "1px solid #eaeaea" }}
           >
@@ -57,7 +59,9 @@ const SortBy = () => {
               <h3 className='text-[#4A4B4D] text-[18px] font-medium'>{option.label}</h3>
               <div className='relative w-[26px] h-[26px]'>
                 <Image
-                  src={`/assets/${sort === option.key ? "button_active" : "button"}.png`}
+                  src={`/assets/${
+                    currentSort === option.key ? "button_active" : "button"
+                  }.png`}
                   alt=''
                   layout='fill'
                   objectFit='contain'
