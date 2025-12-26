@@ -639,8 +639,11 @@ const Page = () => {
                                 detailItems={orderDetail?.items}
                                 subtotalPrice={orderDetail?.subtotalPrice}
                                 shippingFee={orderDetail?.shippingFee}
+                                orderId={orderDetail?._id}
+                                storeId={orderDetail?.storeId}
                                 totalDiscount={orderDetail?.totalDiscount}
                                 isReadOnly={true}
+                                orderStatus={orderDetail?.status}
                             />
                             {orderDetail.isGroupOrder && (
                                 <div className="bg-white mt-6 p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition">
