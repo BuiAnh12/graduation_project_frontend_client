@@ -3,7 +3,7 @@ const ErrorMessages = {
   INTERNAL_SERVER_ERROR: "Đã xảy ra lỗi, vui lòng thử lại sau.",
   INVALID_KEY: "Khóa không hợp lệ cho thao tác này.",
   INVALID_REQUEST: "Yêu cầu không hợp lệ.",
-
+  DISH_ALREADY_REPORTED: "Bạn đã gửi báo cáo cho món ăn của đơn hàng này rồi",
   // Auth / Account
   MISSING_REQUIRED_FIELDS: "Vui lòng nhập đầy đủ các trường bắt buộc.",
   EMAIL_EXISTS: "Email đã tồn tại.",

@@ -1,17 +1,117 @@
 "use client";
 import React from "react";
 import Image from "next/image"; // For potential remove icon
-
+import { reportService } from "@/api/reportService";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 // Add onRemoveTopping prop, remove onRemoveItem
 const OrderSummary = ({
   detailItems,
   subtotalPrice,
   shippingFee,
+  orderId, 
+  storeId,
   totalDiscount,
   onUpdateQuantity, 
   onRemoveTopping,
   isReadOnly = false, 
+  orderStatus
 }) => {
+  const handleReportDish = async (dishItem) => {
+    try {
+      // 1. Fetch danh sách lý do từ API trước khi mở Modal
+      // Hiển thị loading nhẹ nếu cần, hoặc để Swal tự xử lý delay
+      const res = await reportService.getAllReasons();
+      
+      // Kiểm tra dữ liệu trả về (tùy format response của bạn: res.data hoặc res)
+      const reasons = res.data || []; 
+
+      if (!reasons.length) {
+        toast.error("Không tải được danh sách lý do báo cáo.");
+        return;
+      }
+
+      // 2. Tạo HTML Options từ dữ liệu API
+      const optionsHtml = reasons.map(r => 
+        `<option value="${r._id}">${r.name}</option>`
+      ).join('');
+
+      // 3. Hiển thị Modal
+      const { value: formValues } = await Swal.fire({
+        title: `<h3 class="text-xl font-bold text-gray-800">Báo cáo món: ${dishItem.dishName}</h3>`,
+        html: `
+          <div class="text-left">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Lý do báo cáo:</label>
+            <select id="report-reason" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 mb-3">
+              <option value="" disabled selected>-- Chọn lý do --</option>
+              ${optionsHtml} </select>
+            
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Chi tiết (Bắt buộc nếu chọn lý do 'Khác'):
+            </label>
+            <textarea id="report-note" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" rows="3" placeholder="Mô tả chi tiết vấn đề..."></textarea>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Gửi báo cáo',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: '#fc2111',
+        focusConfirm: false,
+        showLoaderOnConfirm: true, // Hiển thị loading khi bấm nút gửi
+        preConfirm: async () => {
+          const reasonId = document.getElementById('report-reason').value;
+          const note = document.getElementById('report-note').value;
+          
+          if (!reasonId) {
+            Swal.showValidationMessage('Vui lòng chọn lý do báo cáo');
+            return false;
+          }
+
+          // Kiểm tra logic 'Khác' ở client (tùy chọn, backend đã check rồi)
+          // Tìm object reason tương ứng để check thuộc tính 'other'
+          const selectedReason = reasons.find(r => r._id === reasonId);
+          if (selectedReason?.other && !note.trim()) {
+             Swal.showValidationMessage('Vui lòng nhập chi tiết cho lý do này');
+             return false;
+          }
+          
+          // Trả về dữ liệu để xử lý tiếp
+          return { reasonId, note };
+        }
+      });
+
+      // 4. Gọi API tạo báo cáo nếu người dùng bấm Gửi
+      if (formValues) {
+        const payload = {
+          orderId: orderId,
+          storeId: storeId,
+          dishId: dishItem.dishId._id || dishItem.dishId,
+          reasonId: formValues.reasonId, // Đây là ObjectId thật từ DB
+          note: formValues.note
+        };
+
+        const createRes = await reportService.createReport(payload);
+
+        // if (createRes.success) {
+        //     await Swal.fire({
+        //     icon: 'success',
+        //     title: 'Đã gửi báo cáo!',
+        //     text: 'Cảm ơn phản hồi của bạn.',
+        //     confirmButtonColor: '#fc2111',
+        //     });
+        // } else {
+        //     // Xử lý lỗi từ backend trả về (ví dụ: đã báo cáo rồi)
+        //     toast.error(createRes.message || "Gửi báo cáo thất bại");
+        // }
+      }
+
+    } catch (error) {
+      console.error(error);
+      // Nếu backend trả về lỗi trùng lặp (400), hiển thị thông báo
+      const errorMessage = error.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu";
+      toast.error(errorMessage);
+    }
+  };
   return (
     <div className="bg-white rounded-2xl shadow-md p-5 md:p-6 border border-red-100 hover:shadow-lg transition">
       {/* Header */}
@@ -62,8 +162,17 @@ const OrderSummary = ({
                 <div className="flex-1 flex flex-col mr-2">
                   <h3 className="text-gray-800 text-base md:text-lg font-semibold line-clamp-2" name="dishName">
                     {item?.dishName || item?.dishId?.name}
+                    
                   </h3>
-
+                  {isReadOnly && orderStatus && orderStatus == 'done' && (
+                          <button 
+                            onClick={() => handleReportDish(item)}
+                            className="w-5 h-5 flex items-center justify-center rounded-full bg-red-100 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white transition-all cursor-pointer shadow-sm"
+                            title="Báo cáo vấn đề về món ăn này"
+                          >
+                              <span className="font-bold text-xs">!</span>
+                          </button>
+                      )}
                   {/* Toppings with Remove Buttons */}
                   {item.toppings?.length > 0 &&
                     item.toppings.map((topping, tIdx) => (
